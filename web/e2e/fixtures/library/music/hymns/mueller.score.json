@@ -1,0 +1,51 @@
+{
+  "id": "mueller",
+  "title": "Away In A Manger",
+  "composer": "James Ramsey Murray (1841–1905)",
+  "melody": "MUELLER",
+  "copyright": "Public domain",
+  "publication": "\"Hymnal for American Youth\", Hymn 84 1919 ed. H. Augustine Smith",
+  "licence": "public-domain",
+  "source": "Open Hymnal Project",
+  "source_url": "https://openhymnal.org",
+  "tags": [
+    "hymn",
+    "christmas"
+  ],
+  "bpm": 100.0,
+  "time": "3/4",
+  "key": "F",
+  "pickup": 1.0,
+  "verses": 3,
+  "gap": 2.0,
+  "registration": [
+    "great principal 8",
+    "great flute 8",
+    "great principal 4",
+    "swell flute 8",
+    "swell principal 4",
+    "swell to great",
+    "pedal flute 16",
+    "pedal principal 8",
+    "great to pedal"
+  ],
+  "verse_registration": {
+    "3": [
+      "+great principal 2",
+      "+swell reed 8"
+    ]
+  },
+  "expression": {
+    "swell": 90
+  },
+  "parts": [
+    {
+      "division": "great",
+      "notes": "[A4 C5]:1 | [A4 C5]:1.5 [G4 Bb4]:0.5 [F4 A4]:1 | [F4 A4]:1.5 [E4 G4]:0.5 [C4 F4]:1 | [D4 F4]:1 [C4 E4]:1 [Bb3 D4]:1 | [A3 C4]:2 [A3 C4]:1 | [Bb3 C4]:1.5 [Bb3 D4]:0.5 [Bb3 C4]:1 | [Bb3 C4]:1 [Bb3 G4]:1 [Bb3 E4]:1 | [Bb3 D4]:1 [A3 C4]:1 [C4 F4]:1 | [F4 A4]:2 [A4 C5]:1 | [A4 C5]:1.5 [G4 Bb4]:0.5 [F4 A4]:1 | [F4 A4]:1.5 [E4 G4]:0.5 [C4 F4]:1 | [D4 F4]:1 [C4 E4]:1 [Bb3 D4]:1 | [A3 C4]:2 [A3 C4]:1 | [G4 Bb4]:1.5 [F4 A4]:0.5 [E4 G4]:1 | [F4 A4]:1 [C4 G4]:1 [C4 F4]:1 | [D4 G4]:1 [Bb3 D4]:1 [C4 E4]:1 | [C4 F4]:2"
+    },
+    {
+      "division": "great",
+      "notes": "[F3 F4]:1 | [F3 F4]:3 | [F3 F4]:3 | [Bb2 Bb3]:3 | [F3 F4]:2 [F3 F4]:1 | [C4 E4]:3 | [C4 E4]:2 C4:1 | [F3 F4]:3~ | [F3 F4]:2 [F3 F4]:1 | [F3 F4]:3 | [F3 F4]:3 | [Bb2 Bb3]:3 | [F3 F4]:2 [F3 F4]:1 | [C3 C4]:3 | [F3 F4]:3 | [Bb2 Bb3]:2 [C3 C4]:1 | [F3 F4]:2"
+    }
+  ]
+}

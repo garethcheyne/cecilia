@@ -36,7 +36,10 @@ export function Keyboard({
   label: string
   onNote: (key: number, on: boolean) => void
 }) {
-  const keys = React.useMemo(() => Array.from({ length: high - low + 1 }, (_, i) => low + i), [low, high])
+  const keys = React.useMemo(
+    () => Array.from({ length: high - low + 1 }, (_, i) => low + i),
+    [low, high]
+  )
   const whites = keys.filter((k) => !isBlackKey(k))
   const whiteIndex = new Map(whites.map((k, i) => [k, i]))
   const down = React.useRef(new Set<number>())
@@ -74,7 +77,8 @@ export function Keyboard({
   React.useEffect(() => {
     const el = scroller.current
     if (!el || el.scrollWidth <= el.clientWidth) return
-    const centreKey = low <= 60 && high >= 60 ? 60 : Math.round((low + high) / 2)
+    const centreKey =
+      low <= 60 && high >= 60 ? 60 : Math.round((low + high) / 2)
     const idx = whites.findIndex((k) => k >= centreKey)
     const x = (Math.max(idx, 0) / whites.length) * el.scrollWidth
     el.scrollLeft = x - el.clientWidth / 2
@@ -83,11 +87,17 @@ export function Keyboard({
   }, [low, high])
 
   return (
-    <div ref={scroller} className="overflow-x-auto overscroll-x-contain rounded-lg bg-black/40 p-1 [scrollbar-width:thin]">
+    <div
+      ref={scroller}
+      className="[scrollbar-width:thin] overflow-x-auto overscroll-x-contain rounded-lg bg-black/40 p-1"
+    >
       <div
         role="group"
         aria-label={label}
-        className={cn("relative flex w-full gap-px touch-none select-none", pedal ? "h-16" : "h-28 sm:h-32")}
+        className={cn(
+          "relative flex w-full touch-none gap-px select-none",
+          pedal ? "h-16" : "h-28 sm:h-32"
+        )}
         style={{ minWidth: `${whites.length * MIN_WHITE_REM}rem` }}
       >
         {whites.map((key) => {
@@ -99,6 +109,7 @@ export function Keyboard({
               role="button"
               aria-label={noteName(key)}
               aria-pressed={isHeld}
+              data-coupled={isCoupled || undefined}
               {...handlers(key)}
               className={cn(
                 "relative flex flex-1 items-end justify-center rounded-b-[5px] pb-1.5",
@@ -106,12 +117,20 @@ export function Keyboard({
                 isHeld
                   ? cn(colorClass, "shadow-[inset_0_2px_6px_rgb(0_0_0/0.25)]")
                   : isCoupled
-                    ? cn(colorClass, "opacity-55 shadow-[inset_0_2px_6px_rgb(0_0_0/0.25)]")
+                    ? cn(
+                        colorClass,
+                        "opacity-55 shadow-[inset_0_2px_6px_rgb(0_0_0/0.25)]"
+                      )
                     : "bg-key-white shadow-[inset_0_-4px_0_rgb(0_0_0/0.07)] hover:bg-[color-mix(in_oklch,var(--key-white),black_4%)]"
               )}
             >
               {key % 12 === 0 && (
-                <span className={cn("text-[0.6rem] font-medium", isHeld || isCoupled ? "text-white/90" : "text-black/35")}>
+                <span
+                  className={cn(
+                    "text-[0.6rem] font-medium",
+                    isHeld || isCoupled ? "text-white/90" : "text-black/35"
+                  )}
+                >
                   {noteName(key)}
                 </span>
               )}
@@ -128,6 +147,7 @@ export function Keyboard({
               role="button"
               aria-label={noteName(key)}
               aria-pressed={isHeld}
+              data-coupled={isCoupled || undefined}
               {...handlers(key)}
               className={cn(
                 "absolute top-0 z-10 -translate-x-1/2 rounded-b-[4px] shadow-[0_3px_6px_rgb(0_0_0/0.35)]",
@@ -139,7 +159,10 @@ export function Keyboard({
                     ? cn(colorClass, "opacity-55")
                     : "bg-key-black bg-[linear-gradient(to_bottom,transparent_80%,rgb(255_255_255/0.12))] ring-1 ring-black/40"
               )}
-              style={{ left: `${left}%`, width: `${whiteWidth * (pedal ? 0.5 : 0.62)}%` }}
+              style={{
+                left: `${left}%`,
+                width: `${whiteWidth * (pedal ? 0.5 : 0.62)}%`,
+              }}
             />
           )
         })}

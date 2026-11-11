@@ -1,6 +1,10 @@
 import { expect, test } from "@playwright/test"
 
-test("a password locks other browsers until they sign in", async ({ page, browser, request }) => {
+test("a password locks other browsers until they sign in", async ({
+  page,
+  browser,
+  request,
+}) => {
   // Set the password from this test's own browser session.
   await page.goto("/setup/settings/")
   await page.getByLabel("Password", { exact: true }).fill("magnificat")
@@ -16,7 +20,9 @@ test("a password locks other browsers until they sign in", async ({ page, browse
     await expect(p2.getByText("That password isn't right.")).toBeVisible()
     await p2.getByLabel("Password").fill("magnificat")
     await p2.getByRole("button", { name: "Sign in" }).click()
-    await expect(p2.getByPlaceholder("Search titles, composers, tunes")).toBeVisible()
+    await expect(
+      p2.getByPlaceholder("Search titles, composers, tunes")
+    ).toBeVisible()
     await other.close()
   } finally {
     // Remove it again so other tests aren't locked out.
@@ -24,5 +30,7 @@ test("a password locks other browsers until they sign in", async ({ page, browse
     await page.getByRole("button", { name: "Remove password" }).click()
     await expect(page.getByText("Password removed")).toBeVisible()
   }
-  expect((await (await request.get("/api/v1/auth")).json()).required).toBe(false)
+  expect((await (await request.get("/api/v1/auth")).json()).required).toBe(
+    false
+  )
 })

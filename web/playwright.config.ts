@@ -40,6 +40,8 @@ export default defineConfig({
       CECILIA_DATA_DIR: dataDir,
       CECILIA_WEB_DIR: path.resolve(here, "out"),
       CECILIA_AUDIO: "0",
+      // A small copy of the shared library, so tests don't need the internet.
+      CECILIA_LIBRARY_URL: path.resolve(here, "e2e/fixtures/library"),
     },
   },
 })
