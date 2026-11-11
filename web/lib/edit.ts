@@ -225,6 +225,34 @@ export function pasteClip(e: EditTrack, clip: Clip, at: number): EditTrack {
   return { ...next, nextId: id }
 }
 
+/** Copy chosen notes (times relative to the earliest). */
+export function copyNotes(e: EditTrack, ids: Set<number>): Clip {
+  const chosen = e.notes.filter((n) => ids.has(n.id))
+  if (chosen.length === 0) return { length: 0, notes: [], controls: [] }
+  const start = Math.min(...chosen.map((n) => n.start))
+  const end = Math.max(...chosen.map((n) => n.end))
+  return {
+    length: end - start,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    notes: chosen.map(({ id, ...n }) => ({ ...n, start: n.start - start, end: n.end - start })),
+    controls: [],
+  }
+}
+
+/** Lay a clip's notes and changes over the track at `at`, without moving
+ * anything that's already there. Returns the new notes' ids. */
+export function overlayClip(e: EditTrack, clip: Clip, at: number): [EditTrack, number[]] {
+  let id = e.nextId
+  const added = clip.notes.map((n) => ({ ...n, id: id++, start: n.start + at, end: n.end + at }))
+  const controls = clip.controls.map((c) => ({ ...c, id: id++, t: c.t + at }) as Control)
+  return [{ ...e, notes: [...e.notes, ...added], controls: [...e.controls, ...controls], nextId: id }, added.map((n) => n.id)]
+}
+
+/** Turn a stop change into its opposite (drawn becomes pushed in). */
+export function flipStop(e: EditTrack, id: number): EditTrack {
+  return { ...e, controls: e.controls.map((c) => (c.id === id && c.type === "stop" ? { ...c, on: !c.on } : c)) }
+}
+
 /** Snap a time to a grid (ms), or leave it when the grid is 0. */
 export function snap(t: number, grid: number): number {
   return grid > 0 ? Math.round(t / grid) * grid : t

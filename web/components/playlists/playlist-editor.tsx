@@ -393,6 +393,26 @@ export function PlaylistEditor() {
                 <div className="flex flex-wrap items-end gap-3 pl-0 sm:pl-10">
                   <DelayInput row={row} onChange={(r) => replace(i, r)} />
                   <VersesInput row={row} recorded={t?.verses ?? 1} onChange={(r) => replace(i, r)} />
+                  <Field className="w-24">
+                    <FieldLabel className="text-xs">Tempo</FieldLabel>
+                    <InputGroup>
+                      <InputGroupInput
+                        type="number"
+                        min={50}
+                        max={150}
+                        step={5}
+                        placeholder="100"
+                        value={row.tempo ?? ""}
+                        onChange={(e) => {
+                          const v = e.target.value === "" ? null : Math.max(50, Math.min(150, Number(e.target.value) || 100))
+                          replace(i, { ...row, tempo: v })
+                        }}
+                        aria-label="Tempo for this piece, percent"
+                        title="Play this piece faster or slower than recorded"
+                      />
+                      <InputGroupAddon align="inline-end">%</InputGroupAddon>
+                    </InputGroup>
+                  </Field>
                   <Field className="min-w-40 flex-1">
                     <FieldLabel className="text-xs">Note</FieldLabel>
                     <Input

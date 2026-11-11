@@ -3,7 +3,10 @@ import { describe, expect, it } from "vitest"
 import type { Track } from "@/lib/api/client"
 
 import {
+  copyNotes,
   copyRange,
+  flipStop,
+  overlayClip,
   deleteRange,
   fromEdit,
   History,
@@ -126,6 +129,25 @@ describe("sections", () => {
     e = pasteClip(e, clip, 4000)
     expect(e.notes.filter((n) => n.key === 60).map((n) => n.start)).toEqual([1000, 4100])
     expect(new Set(e.notes.map((n) => n.id)).size).toBe(e.notes.length)
+  })
+})
+
+describe("context menu edits", () => {
+  it("copies notes and lays them over another place", () => {
+    let e = toEdit(track())
+    const clip = copyNotes(e, new Set([e.notes[0].id]))
+    expect(clip.length).toBe(900)
+    let ids: number[]
+    ;[e, ids] = overlayClip(e, clip, 3000)
+    expect(e.notes).toHaveLength(3)
+    expect(e.notes.find((n) => n.id === ids[0])).toMatchObject({ key: 60, start: 3000, end: 3900 })
+    expect(e.track.duration_ms).toBe(5000)
+  })
+  it("flips a stop change", () => {
+    const e = toEdit(track())
+    const id = e.controls[0].id
+    const c = flipStop(e, id).controls[0]
+    expect(c.type === "stop" && c.on).toBe(false)
   })
 })
 

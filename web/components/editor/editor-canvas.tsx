@@ -27,6 +27,14 @@ export const EMPTY_SELECTION: Selection = { notes: new Set(), controls: new Set(
 
 export type ChangePhase = "start" | "move" | "end"
 
+/** What's under the pointer when the context menu opens. */
+export type ContextTarget =
+  | { kind: "note"; id: number; ms: number; key: number }
+  | { kind: "stop"; id: number; ms: number }
+  | { kind: "verse"; index: number; ms: number }
+  | { kind: "roll"; ms: number; key: number }
+  | { kind: "lane"; ms: number }
+
 interface Props {
   edit: EditTrack
   selection: Selection
@@ -44,6 +52,8 @@ interface Props {
   /** Drags report start/move/end so one drag is one undo step. */
   onChange: (next: EditTrack, phase: ChangePhase) => void
   organ: OrganDefinition | null
+  /** Called with what was right-clicked (or long-pressed). */
+  onContextTarget?: (t: ContextTarget) => void
 }
 
 const GUTTER = 44
@@ -413,7 +423,42 @@ export function EditorCanvas(p: Props) {
 
   const verseAt = (px: number) => (track.verses ?? []).findIndex((v) => Math.abs(x(v) - px) <= 7)
 
+  /** What's at a point, for the context menu. */
+  function targetAt(px: number, py: number): ContextTarget {
+    const ms = Math.max(0, msAt(px))
+    if (py >= RULER && py < RULER + STOPS) {
+      const m = markerAt(px, py)
+      if (m) return { kind: "stop", id: m.id, ms: m.t }
+    }
+    if (py >= rollBottom) {
+      const i = verseAt(px)
+      if (i >= 0) return { kind: "verse", index: i, ms: track.verses![i] }
+    }
+    if (py >= rollTop && py < rollBottom && px >= GUTTER) {
+      const n = noteAt(px, py)
+      if (n) return { kind: "note", id: n.id, ms, key: n.key }
+      return { kind: "roll", ms: snap(ms, p.grid), key: keyAt(py) }
+    }
+    return { kind: "lane", ms: snap(ms, p.grid) }
+  }
+
+  function onContextMenu(e: React.MouseEvent) {
+    const { px, py } = local(e)
+    const t = targetAt(px, py)
+    // Act on what was clicked: select it if it isn't already.
+    if (t.kind === "note" && !p.selection.notes.has(t.id)) p.onSelect({ ...EMPTY_SELECTION, notes: new Set([t.id]) })
+    if (t.kind === "stop") p.onSelect({ ...EMPTY_SELECTION, controls: new Set([t.id]) })
+    if (t.kind === "verse") p.onSelect({ ...EMPTY_SELECTION, verse: t.index })
+    if (t.kind === "roll" || t.kind === "lane") p.onCursor(t.ms)
+    p.onContextTarget?.(t)
+  }
+
   function onPointerDown(e: React.PointerEvent) {
+    // A long press on a touch screen opens the menu for what was touched.
+    if (e.pointerType === "touch") {
+      const { px, py } = local(e)
+      p.onContextTarget?.(targetAt(px, py))
+    }
     if (e.button !== 0) return
     touch.current = e.pointerType === "touch"
     canvas.current?.setPointerCapture(e.pointerId)
@@ -616,6 +661,7 @@ export function EditorCanvas(p: Props) {
           onPointerCancel={onPointerUp}
           onPointerLeave={() => setHover(null)}
           onDoubleClick={onDoubleClick}
+          onContextMenu={onContextMenu}
           onWheel={onWheel}
           role="application"
           aria-label="Piano roll: notes, stop changes, swell pedal and verse markers"

@@ -56,6 +56,17 @@ export function ServiceView() {
   const next = () => act(call(api.POST("/api/v1/service/next")))
   const previous = () => act(call(api.POST("/api/v1/service/previous")))
   const select = (row: number) => act(call(api.POST("/api/v1/service/select", { body: { row } })))
+  // One tap gets a piece ready; a second tap (or a double-click) plays it now.
+  const lastTap = React.useRef<{ row: number; at: number } | null>(null)
+  const tapRow = (row: number, now: number) => {
+    const again = lastTap.current?.row === row && now - lastTap.current.at < 450
+    lastTap.current = again ? null : { row, at: now }
+    if (again) {
+      act(call(api.POST("/api/v1/service/select", { body: { row } })).then(() => call(api.POST("/api/v1/player/play"))))
+    } else {
+      select(row)
+    }
+  }
   const end = () => act(call(api.POST("/api/v1/service/end")))
   const playPause = React.useCallback(() => (state === "playing" ? t.pause() : t.play()), [state, t])
 
@@ -135,9 +146,10 @@ export function ServiceView() {
             <li key={i} ref={current ? currentRef : undefined}>
               <button
                 type="button"
-                onClick={() => select(i)}
+                onClick={(e) => tapRow(i, e.timeStamp)}
+                title="Tap to get it ready; double-tap to play it now"
                 className={cn(
-                  "flex w-full items-center gap-4 rounded-2xl border bg-card px-4 py-4 text-left transition-colors outline-none hover:bg-accent/40 focus-visible:ring-3 focus-visible:ring-ring/50 sm:px-5",
+                  "flex w-full touch-manipulation items-center gap-4 rounded-2xl border bg-card px-4 py-4 text-left transition-colors outline-none hover:bg-accent/40 focus-visible:ring-3 focus-visible:ring-ring/50 sm:px-5",
                   current && "border-primary bg-primary/5 ring-2 ring-primary/30"
                 )}
                 aria-current={current ? "step" : undefined}
@@ -196,7 +208,9 @@ export function ServiceView() {
         <span>
           <Kbd>→</Kbd> next piece
         </span>
+        <span>Double-click a piece to play it now</span>
       </p>
+      <p className="text-center text-sm text-muted-foreground md:hidden">Double-tap a piece to play it now</p>
     </div>
   )
 }
