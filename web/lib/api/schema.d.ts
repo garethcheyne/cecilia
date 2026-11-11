@@ -22,6 +22,94 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Whether a password is needed, and whether this browser is signed in. */
+        get: operations["auth_status"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sign in. */
+        post: operations["login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sign out. */
+        post: operations["logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set, change or remove the password (needs a session if one is set).
+         *     Other signed-in browsers are signed out.
+         */
+        put: operations["set_password"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/export/backup.zip": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Everything that matters (library, organs, playlists, settings) in one zip. */
+        get: operations["backup"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/export/library-midi.zip": {
         parameters: {
             query?: never;
@@ -107,6 +195,27 @@ export interface paths {
          *     and whether it was recorded on the current organ.
          */
         post: operations["analyse"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/import/backup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Restore a backup made with `export/backup.zip`. Items with the same name
+         *     are replaced; everything else is kept. This machine's MIDI ports and
+         *     password stay as they are.
+         */
+        post: operations["restore"];
         delete?: never;
         options?: never;
         head?: never;
@@ -355,6 +464,26 @@ export interface paths {
         put?: never;
         /** Stop test recording or playback. */
         post: operations["test_stop"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/omr": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Read printed music from a scan or photo with the OMR engine and return
+         *     MusicXML, ready for the usual import.
+         */
+        post: operations["omr"];
         delete?: never;
         options?: never;
         head?: never;
@@ -815,6 +944,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Recording and playback settings. */
+        get: operations["get_settings"];
+        /** Change recording and playback settings (they apply straight away). */
+        put: operations["put_settings"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/simulator": {
         parameters: {
             query?: never;
@@ -925,6 +1072,11 @@ export interface components {
         Assistant: {
             /** @description What the assistant is called (and, with voice control, its wake word). */
             name: string;
+        };
+        AuthStatus: {
+            /** @description A password is set. */
+            required: boolean;
+            signed_in: boolean;
         };
         ChannelInfo: {
             /**
@@ -1128,6 +1280,9 @@ export interface components {
             play?: boolean;
             track_id: string;
         };
+        Login: {
+            password: string;
+        };
         /** @enum {string} */
         Manufacturer: "generic" | "hauptwerk" | "allen" | "classic_organ_works" | "content" | "johannus" | "johannus_programmable" | "makin" | "peterson" | "rodgers" | "rodgers_phase2" | "solid_state1" | "solid_state2" | "viscount" | "walker" | "wyvern";
         /**
@@ -1196,6 +1351,10 @@ export interface components {
         };
         /** @enum {string} */
         Mode: "major" | "minor";
+        NewPassword: {
+            /** @description The new password, or null to remove the password. */
+            password?: string | null;
+        };
         NewPlaylist: {
             name: string;
         };
@@ -1291,6 +1450,20 @@ export interface components {
              */
             tempo?: number | null;
             verses?: null | components["schemas"]["VersePlan"];
+        };
+        PlaybackSettings: {
+            /**
+             * Format: int32
+             * @description Length of a fade-out. 1-30 s.
+             * @default 5000
+             */
+            fade_ms: number;
+            /**
+             * Format: int32
+             * @description Wait after a general cancel on organs whose stops toggle.
+             * @default 400
+             */
+            settle_ms: number;
         };
         PlayerEvent: (components["schemas"]["PlayerStatus"] & {
             /** @enum {string} */
@@ -1404,6 +1577,26 @@ export interface components {
             saved: number;
             state: components["schemas"]["RecorderState"];
         };
+        /** @description How the auto-recorder splits a service into pieces. */
+        RecordingSettings: {
+            /**
+             * Format: int32
+             * @default 2000
+             */
+            margin_end_ms: number;
+            /**
+             * Format: int32
+             * @description Silence kept before the first note and after the last. 0-15 s.
+             * @default 2000
+             */
+            margin_start_ms: number;
+            /**
+             * Format: int32
+             * @description Silence (after the last key is released) that ends a piece. 2-60 s.
+             * @default 8000
+             */
+            silence_ms: number;
+        };
         /** @description Stops drawn plus pedal positions at one moment. */
         Registration: {
             /** @description Expression per division, 0-127. */
@@ -1413,6 +1606,11 @@ export interface components {
             /** Format: int32 */
             master_volume?: number | null;
             stops?: components["schemas"]["StopRef"][];
+        };
+        RestoreResult: {
+            organs: number;
+            playlists: number;
+            tracks: number;
         };
         Seek: {
             /**
@@ -1439,6 +1637,10 @@ export interface components {
             /** @description Row index (into the playlist's rows) of the current track. */
             row?: number | null;
             state: components["schemas"]["ServiceState"];
+        };
+        SettingsBody: {
+            playback: components["schemas"]["PlaybackSettings"];
+            recording: components["schemas"]["RecordingSettings"];
         };
         SimSnapshot: {
             /** @description Name of the audio device, if sound is available. */
@@ -1786,6 +1988,127 @@ export interface operations {
             };
         };
     };
+    auth_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthStatus"];
+                };
+            };
+        };
+    };
+    login: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Login"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    set_password: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NewPassword"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    backup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/zip": unknown;
+                };
+            };
+        };
+    };
     export_zip: {
         parameters: {
             query?: never;
@@ -1903,6 +2226,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ImportAnalysis"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    restore: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/zip": number[];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RestoreResult"];
                 };
             };
             400: {
@@ -2390,6 +2744,48 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MidiStatus"];
+                };
+            };
+        };
+    };
+    omr: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The scan's file name (PNG, JPEG, TIFF or PDF). */
+                name: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/octet-stream": number[];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/vnd.recordare.musicxml": unknown;
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            501: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
                 };
             };
         };
@@ -3149,6 +3545,56 @@ export interface operations {
                 };
             };
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    get_settings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SettingsBody"];
+                };
+            };
+        };
+    };
+    put_settings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SettingsBody"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SettingsBody"];
+                };
+            };
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };

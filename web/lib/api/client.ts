@@ -34,6 +34,7 @@ export type ServiceStatus = Schemas["ServiceStatus"]
 export type ImportAnalysis = Schemas["ImportAnalysis"]
 export type LiveSnapshot = Schemas["LiveSnapshot"]
 export type Manufacturer = OrganDefinition["manufacturer"]
+export type SettingsBody = Schemas["SettingsBody"]
 export type ImportOptions = Schemas["ImportOptions"]
 export type XmlImportOptions = Schemas["XmlImportOptions"]
 
@@ -48,7 +49,7 @@ export async function uploadFile<T>(path: string, file: File, options?: unknown)
   if (options !== undefined) params.set("options", JSON.stringify(options))
   let res: Response
   try {
-    res = await fetch(apiUrl(`${path}?${params}`), { method: "POST", body: file })
+    res = await fetch(apiUrl(`${path}?${params}`), { method: "POST", body: file, credentials: "include" })
   } catch {
     throw new ApiError("Can't reach the Registra server. Is it running?")
   }
@@ -60,7 +61,7 @@ export async function uploadFile<T>(path: string, file: File, options?: unknown)
 /** Empty string = same origin (production, served by organ-server). */
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? ""
 
-export const api = createClient<paths>({ baseUrl: API_URL })
+export const api = createClient<paths>({ baseUrl: API_URL, credentials: "include" })
 
 export function eventsUrl(): string {
   const base = API_URL || window.location.origin

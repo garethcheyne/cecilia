@@ -13,6 +13,7 @@ import {
   ListMusicIcon,
   MonitorPlayIcon,
   PianoIcon,
+  SettingsIcon,
   type LucideIcon,
 } from "lucide-react"
 
@@ -55,6 +56,7 @@ const SETUP: NavItem[] = [
   { title: "MIDI Setup", href: "/setup/midi", icon: CableIcon },
   { title: "Organs", href: "/organs", icon: Music4Icon },
   { title: "Assistant", href: "/setup/assistant", icon: MicIcon },
+  { title: "Settings", href: "/setup/settings", icon: SettingsIcon },
 ]
 
 function NavGroup({ label, items }: { label: string; items: NavItem[] }) {

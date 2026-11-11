@@ -21,6 +21,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Spinner } from "@/components/ui/spinner"
 import {
+  apiUrl,
   uploadFile,
   type DivisionRole,
   type ImportAnalysis,
@@ -86,10 +87,22 @@ export function ImportDialog({ open, onOpenChange }: { open: boolean; onOpenChan
     setBusy(false)
   }
 
-  async function choose(f: File) {
-    setFile(f)
+  async function choose(picked: File) {
+    setFile(picked)
     setBusy(true)
     try {
+      let f = picked
+      if (/\.(png|jpe?g|tiff?|pdf)$/i.test(picked.name)) {
+        // A scan: read the music first (this can take a minute).
+        const res = await fetch(apiUrl(`/api/v1/omr?name=${encodeURIComponent(picked.name)}`), {
+          method: "POST",
+          body: picked,
+          credentials: "include",
+        })
+        if (!res.ok) throw new Error((await res.json().catch(() => null))?.error ?? "The scan couldn't be read")
+        f = new File([await res.blob()], picked.name.replace(/\.[^.]+$/, ".mxl"))
+        setFile(f)
+      }
       const a = await uploadFile<ImportAnalysis>("/api/v1/import/analyse", f)
       setAnalysis(a)
       setTitle(a.title)
@@ -169,7 +182,7 @@ export function ImportDialog({ open, onOpenChange }: { open: boolean; onOpenChan
         <input
           ref={input}
           type="file"
-          accept=".mid,.midi,.musicxml,.xml,.mxl"
+          accept=".mid,.midi,.musicxml,.xml,.mxl,.png,.jpg,.jpeg,.tif,.tiff,.pdf"
           className="sr-only"
           onChange={(e) => {
             const f = e.target.files?.[0]
@@ -193,7 +206,11 @@ export function ImportDialog({ open, onOpenChange }: { open: boolean; onOpenChan
           >
             {busy ? <Spinner /> : <UploadIcon className="size-8 text-muted-foreground" aria-hidden />}
             <span className="font-medium">{busy ? `Reading ${file?.name}…` : "Choose a file, or drop it here"}</span>
-            <span className="text-sm text-muted-foreground">.mid, .musicxml or .mxl</span>
+            <span className="text-sm text-muted-foreground">
+              {busy && /\.(png|jpe?g|tiff?|pdf)$/i.test(file?.name ?? "")
+                ? "Reading the printed music. This can take a minute."
+                : "MIDI (.mid), MusicXML (.musicxml, .mxl), or a scan or photo of printed music"}
+            </span>
           </button>
         ) : (
           <div className="flex max-h-[60svh] flex-col gap-5 overflow-y-auto px-0.5">

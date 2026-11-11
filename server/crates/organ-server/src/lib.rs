@@ -205,6 +205,8 @@ fn cors_layer(origins: Vec<HeaderValue>) -> CorsLayer {
         .allow_origin(origins)
         .allow_methods([Method::GET, Method::POST, Method::PUT, Method::PATCH, Method::DELETE])
         .allow_headers(AllowHeaders::mirror_request())
+        // So the sign-in cookie works for the dev UI on another port.
+        .allow_credentials(true)
 }
 
 /// Audiveris on the PATH, if installed.

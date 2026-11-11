@@ -70,6 +70,136 @@
         }
       }
     },
+    "/api/v1/auth": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Whether a password is needed, and whether this browser is signed in.",
+        "operationId": "auth_status",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Sign in.",
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Sign out.",
+        "operationId": "logout",
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/auth/password": {
+      "put": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Set, change or remove the password (needs a session if one is set).\nOther signed-in browsers are signed out.",
+        "operationId": "set_password",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewPassword"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/export/backup.zip": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Everything that matters (library, organs, playlists, settings) in one zip.",
+        "operationId": "backup",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/zip": {}
+            }
+          }
+        }
+      }
+    },
     "/api/v1/export/library-midi.zip": {
       "get": {
         "tags": [
@@ -249,6 +379,52 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ImportAnalysis"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/import/backup": {
+      "post": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Restore a backup made with `export/backup.zip`. Items with the same name\nare replaced; everything else is kept. This machine's MIDI ports and\npassword stay as they are.",
+        "operationId": "restore",
+        "requestBody": {
+          "content": {
+            "application/zip": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestoreResult"
                 }
               }
             }
@@ -873,6 +1049,69 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/MidiStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/omr": {
+      "post": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Read printed music from a scan or photo with the OMR engine and return\nMusicXML, ready for the usual import.",
+        "operationId": "omr",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "The scan's file name (PNG, JPEG, TIFF or PDF).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/vnd.recordare.musicxml": {}
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "501": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
                 }
               }
             }
@@ -1852,6 +2091,66 @@
         }
       }
     },
+    "/api/v1/settings": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Recording and playback settings.",
+        "operationId": "get_settings",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsBody"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Change recording and playback settings (they apply straight away).",
+        "operationId": "put_settings",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SettingsBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsBody"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/simulator": {
       "get": {
         "tags": [
@@ -2090,6 +2389,22 @@
           "name": {
             "type": "string",
             "description": "What the assistant is called (and, with voice control, its wake word)."
+          }
+        }
+      },
+      "AuthStatus": {
+        "type": "object",
+        "required": [
+          "required",
+          "signed_in"
+        ],
+        "properties": {
+          "required": {
+            "type": "boolean",
+            "description": "A password is set."
+          },
+          "signed_in": {
+            "type": "boolean"
           }
         }
       },
@@ -2741,6 +3056,17 @@
           }
         }
       },
+      "Login": {
+        "type": "object",
+        "required": [
+          "password"
+        ],
+        "properties": {
+          "password": {
+            "type": "string"
+          }
+        }
+      },
       "Manufacturer": {
         "type": "string",
         "enum": [
@@ -2899,6 +3225,18 @@
           "major",
           "minor"
         ]
+      },
+      "NewPassword": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The new password, or null to remove the password."
+          }
+        }
       },
       "NewPlaylist": {
         "type": "object",
@@ -3224,6 +3562,25 @@
                 "description": "Default: every recorded verse once."
               }
             ]
+          }
+        }
+      },
+      "PlaybackSettings": {
+        "type": "object",
+        "properties": {
+          "fade_ms": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Length of a fade-out. 1-30 s.",
+            "default": 5000,
+            "minimum": 0
+          },
+          "settle_ms": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Wait after a general cancel on organs whose stops toggle.",
+            "default": 400,
+            "minimum": 0
           }
         }
       },
@@ -3582,6 +3939,32 @@
           }
         }
       },
+      "RecordingSettings": {
+        "type": "object",
+        "description": "How the auto-recorder splits a service into pieces.",
+        "properties": {
+          "margin_end_ms": {
+            "type": "integer",
+            "format": "int32",
+            "default": 2000,
+            "minimum": 0
+          },
+          "margin_start_ms": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Silence kept before the first note and after the last. 0-15 s.",
+            "default": 2000,
+            "minimum": 0
+          },
+          "silence_ms": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Silence (after the last key is released) that ends a piece. 2-60 s.",
+            "default": 8000,
+            "minimum": 0
+          }
+        }
+      },
       "Registration": {
         "type": "object",
         "description": "Stops drawn plus pedal positions at one moment.",
@@ -3621,6 +4004,28 @@
               "$ref": "#/components/schemas/StopRef"
             },
             "uniqueItems": true
+          }
+        }
+      },
+      "RestoreResult": {
+        "type": "object",
+        "required": [
+          "tracks",
+          "organs",
+          "playlists"
+        ],
+        "properties": {
+          "organs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "playlists": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "tracks": {
+            "type": "integer",
+            "minimum": 0
           }
         }
       },
@@ -3705,6 +4110,21 @@
           },
           "state": {
             "$ref": "#/components/schemas/ServiceState"
+          }
+        }
+      },
+      "SettingsBody": {
+        "type": "object",
+        "required": [
+          "recording",
+          "playback"
+        ],
+        "properties": {
+          "playback": {
+            "$ref": "#/components/schemas/PlaybackSettings"
+          },
+          "recording": {
+            "$ref": "#/components/schemas/RecordingSettings"
           }
         }
       },
