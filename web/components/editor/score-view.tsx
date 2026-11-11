@@ -47,7 +47,7 @@ function render(vf: VF, el: HTMLDivElement, measures: Measure[], staves: StaffId
   // Like printed music: notes, clefs and signatures in strong ink; staff,
   // bar and ledger lines in a soft grey behind them.
   const ink = dark ? "#eceef3" : "#1b1f2b"
-  const rule = dark ? "#5c6273" : "#a4a9b5"
+  const rule = dark ? "#b4bac7" : "#a4a9b5"
   const inkStyle = { fillStyle: ink, strokeStyle: ink }
   const lineStyle = { fillStyle: rule, strokeStyle: rule }
   ctx.setFillStyle(ink)
@@ -95,6 +95,11 @@ function render(vf: VF, el: HTMLDivElement, measures: Measure[], staves: StaffId
           const parts = durationParts(slice.len)
           parts.forEach((part, pi) => {
             const n = new StaveNote({ keys, duration: part.duration + (rest ? "r" : ""), clef: CLEF[staff], dots: part.dots, autoStem: true })
+            // Stems and flags have their own (black) default colour.
+            n.setStyle(inkStyle)
+            n.setStemStyle(inkStyle)
+            n.setFlagStyle(inkStyle)
+            n.setLedgerLineStyle(lineStyle)
             if (part.dots) Dot.buildAndAttach([n], { all: true })
             notes.push(n)
             if (!rest) {
