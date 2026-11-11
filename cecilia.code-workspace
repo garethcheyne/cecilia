@@ -1,11 +1,13 @@
 {
-  // Cecilia and its shared library, side by side. Clone both into the same
-  // parent folder:
+  // Cecilia, its shared library and its website, side by side. Clone all
+  // three into the same parent folder:
   //   git clone https://github.com/garethcheyne/cecilia
   //   git clone https://github.com/garethcheyne/cecilia-library
+  //   git clone https://github.com/garethcheyne/cecilia-site
   "folders": [
     { "name": "cecilia", "path": "." },
-    { "name": "cecilia-library", "path": "../cecilia-library" }
+    { "name": "cecilia-library", "path": "../cecilia-library" },
+    { "name": "cecilia-site", "path": "../cecilia-site" }
   ],
   "settings": {
     "files.eol": "\n",
@@ -14,7 +16,7 @@
     "[rust]": { "editor.defaultFormatter": "rust-lang.rust-analyzer" },
     "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
     "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
-    "eslint.workingDirectories": ["web"],
+    "eslint.workingDirectories": ["web", "../cecilia-site"],
     "typescript.tsdk": "web/node_modules/typescript/lib",
     "json.schemas": [
       { "fileMatch": ["*.track.json"], "url": "./web/lib/api/openapi.json#/components/schemas/Track" }
@@ -62,6 +64,14 @@
         "command": "node scripts/test-all.mjs",
         "options": { "cwd": "${workspaceFolder:cecilia}" },
         "group": "test",
+        "problemMatcher": []
+      },
+      {
+        "label": "Site: dev server",
+        "type": "shell",
+        "command": "npm run dev -- --port 3100",
+        "options": { "cwd": "${workspaceFolder:cecilia-site}" },
+        "isBackground": true,
         "problemMatcher": []
       },
       {

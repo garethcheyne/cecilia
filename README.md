@@ -44,12 +44,21 @@ Its feature set is modelled on the *publicly documented behaviour* of OrganAssis
 - A built-in **simulator** with sound, so all of this works without an
   organ.
 
-## Shared library
+## Website, guide and shared library
 
-Music and organ setups to share between churches live in
-[cecilia-library](https://github.com/garethcheyne/cecilia-library). Open
-`cecilia.code-workspace` in VS Code to work on both repos together (clone them
-side by side).
+- **Website and user guide:** https://garethcheyne.github.io/cecilia-site/
+  ([cecilia-site](https://github.com/garethcheyne/cecilia-site))
+- **Shared music and organ setups:**
+  [cecilia-library](https://github.com/garethcheyne/cecilia-library)
+
+Open `cecilia.code-workspace` in VS Code to work on all three together (clone
+them side by side).
+
+Cecilia is inspired by **OrganAssist** by David Glover
+(https://www.organassist.com). It is an independent, clean-room project: it
+contains none of OrganAssist's code, is not affiliated with or endorsed by
+David Glover, and was written using only OrganAssist's published user guide
+and website.
 
 ## Running (development)
 
