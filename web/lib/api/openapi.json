@@ -183,6 +183,172 @@
         }
       }
     },
+    "/api/v1/community": {
+      "get": {
+        "tags": [
+          "community"
+        ],
+        "summary": "What's in the shared library.",
+        "operationId": "catalogue",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Catalogue"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/community/music/{id}/add": {
+      "post": {
+        "tags": [
+          "community"
+        ],
+        "summary": "Add a piece from the shared library to this Cecilia's library.",
+        "operationId": "add_music",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Piece id in the shared library",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrackSummary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/community/organs/{id}/add": {
+      "post": {
+        "tags": [
+          "community"
+        ],
+        "summary": "Add an organ setup from the shared library (as one you can edit).",
+        "operationId": "add_organ",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Organ id in the shared library",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganSummary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/community/refresh": {
+      "post": {
+        "tags": [
+          "community"
+        ],
+        "summary": "Check the shared library again now.",
+        "operationId": "refresh",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Catalogue"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/export/backup.zip": {
       "get": {
         "tags": [
@@ -2408,6 +2574,33 @@
           }
         }
       },
+      "Catalogue": {
+        "type": "object",
+        "required": [
+          "schema",
+          "music",
+          "organs"
+        ],
+        "properties": {
+          "music": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MusicEntry"
+            }
+          },
+          "organs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrganEntry"
+            }
+          },
+          "schema": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          }
+        }
+      },
       "Ceciliation": {
         "type": "object",
         "description": "Stops drawn plus pedal positions at one moment.",
@@ -2511,6 +2704,15 @@
             ]
           }
         }
+      },
+      "Confidence": {
+        "type": "string",
+        "description": "How far a shared organ definition can be trusted.",
+        "enum": [
+          "template",
+          "learned",
+          "verified"
+        ]
       },
       "Connection": {
         "type": "object",
@@ -3268,6 +3470,67 @@
           "minor"
         ]
       },
+      "MusicEntry": {
+        "type": "object",
+        "required": [
+          "id",
+          "path",
+          "kind",
+          "title",
+          "composer",
+          "melody",
+          "licence",
+          "tags",
+          "verses",
+          "duration_ms"
+        ],
+        "properties": {
+          "composer": {
+            "type": "string"
+          },
+          "duration_ms": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/MusicKind"
+          },
+          "licence": {
+            "type": "string"
+          },
+          "melody": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string",
+            "description": "Path within the library, with forward slashes."
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "title": {
+            "type": "string"
+          },
+          "verses": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "MusicKind": {
+        "type": "string",
+        "enum": [
+          "score",
+          "recording"
+        ]
+      },
       "NewPassword": {
         "type": "object",
         "properties": {
@@ -3380,6 +3643,39 @@
             "items": {
               "$ref": "#/components/schemas/Stop"
             }
+          }
+        }
+      },
+      "OrganEntry": {
+        "type": "object",
+        "required": [
+          "id",
+          "path",
+          "name",
+          "meta",
+          "divisions",
+          "stops"
+        ],
+        "properties": {
+          "divisions": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/OrganMeta"
+          },
+          "name": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "stops": {
+            "type": "integer",
+            "minimum": 0
           }
         }
       },
@@ -3519,6 +3815,44 @@
           }
         ],
         "description": "Something that happened on (or should happen to) an organ console."
+      },
+      "OrganMeta": {
+        "type": "object",
+        "required": [
+          "maker",
+          "model",
+          "confidence",
+          "licence"
+        ],
+        "properties": {
+          "confidence": {
+            "$ref": "#/components/schemas/Confidence"
+          },
+          "contributor": {
+            "type": "string"
+          },
+          "licence": {
+            "type": "string",
+            "description": "Always CC0-1.0 in the shared library."
+          },
+          "maker": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Anything to do on the organ first (\"set MIDI to mode B\")."
+          },
+          "years": {
+            "type": "string",
+            "description": "e.g. \"1995–2005\"."
+          }
+        }
       },
       "OrganSummary": {
         "type": "object",

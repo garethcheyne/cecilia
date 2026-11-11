@@ -2,6 +2,7 @@
 //! engine. `main.rs` runs it; integration tests start it on a spare port.
 
 pub mod api;
+pub mod community_api;
 pub mod files_api;
 pub mod library;
 pub mod mcp;
@@ -49,7 +50,12 @@ pub struct Config {
     pub mcp_token: Option<String>,
     /// OMR command template with `{input}` and `{output}` placeholders.
     pub omr_command: Option<String>,
+    /// The shared library: a web address (ending in /) or a local folder.
+    pub library_url: String,
 }
+
+/// Where the shared Cecilia Library is published.
+pub const DEFAULT_LIBRARY_URL: &str = "https://garethcheyne.github.io/cecilia-library/";
 
 impl Config {
     /// Read the `CECILIA_*` environment variables (see `main.rs`).
@@ -67,6 +73,7 @@ impl Config {
             audio: env("AUDIO").as_deref() != Some("0"),
             mcp_token: env("MCP_TOKEN").filter(|t| !t.is_empty()),
             omr_command: env("OMR").filter(|c| !c.trim().is_empty()).or_else(find_audiveris),
+            library_url: env("LIBRARY_URL").unwrap_or_else(|| DEFAULT_LIBRARY_URL.into()),
         })
     }
 
@@ -79,6 +86,7 @@ impl Config {
             audio: false,
             mcp_token: None,
             omr_command: None,
+            library_url: DEFAULT_LIBRARY_URL.into(),
         }
     }
 }
@@ -155,10 +163,12 @@ pub async fn build(config: Config) -> anyhow::Result<App> {
         data_dir: config.data_dir.clone(),
         sessions: Default::default(),
         omr_command: config.omr_command.clone(),
+        community: crate::community_api::Community::new(config.library_url.clone()),
     };
     let mut router = Router::new()
         .nest("/api/v1", api::router().merge(music::router()).merge(playlist_api::router())
                 .merge(organ_api::router())
+                .merge(community_api::router())
                 .merge(system_api::router().layer(axum::extract::DefaultBodyLimit::max(200 * 1024 * 1024)))
                 .merge(files_api::router().layer(axum::extract::DefaultBodyLimit::max(files_api::MAX_IMPORT_BYTES))))
         .route("/mcp", post(mcp::post).get(mcp::get))

@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 
-import { LibraryView } from "@/components/library/library-view"
+import { LibraryTabs } from "@/components/library/library-tabs"
 import { PageHeader } from "@/components/page-header"
 
 export const metadata: Metadata = { title: "Library" }
@@ -9,7 +9,7 @@ export default function LibraryPage() {
   return (
     <>
       <PageHeader title="Library" />
-      <LibraryView />
+      <LibraryTabs />
     </>
   )
 }

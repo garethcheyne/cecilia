@@ -49,6 +49,7 @@ pub struct AppState {
     pub data_dir: std::path::PathBuf,
     pub sessions: crate::system_api::Sessions,
     pub omr_command: Option<String>,
+    pub community: crate::community_api::Community,
 }
 
 impl AppState {
@@ -117,7 +118,9 @@ pub fn router() -> Router<AppState> {
         crate::organ_api::copy_organ, crate::organ_api::save_organ, crate::organ_api::delete_organ,
         crate::system_api::get_settings, crate::system_api::put_settings, crate::system_api::backup,
         crate::system_api::restore, crate::system_api::auth_status, crate::system_api::login,
-        crate::system_api::logout, crate::system_api::set_password, crate::system_api::omr
+        crate::system_api::logout, crate::system_api::set_password, crate::system_api::omr,
+        crate::community_api::catalogue, crate::community_api::refresh,
+        crate::community_api::add_music, crate::community_api::add_organ
     ),
     components(schemas(
         Health, ApiErrorBody, PortList, MidiConfig, MidiStatus, TestStatus, TestState,
@@ -144,7 +147,10 @@ pub fn router() -> Router<AppState> {
         organ_core::musicxml::XmlImportOptions, crate::organ_api::CopyOrgan,
         crate::system_api::SettingsBody, crate::system_api::RestoreResult, crate::system_api::AuthStatus,
         crate::system_api::Login, crate::system_api::NewPassword,
-        crate::settings::RecordingSettings, crate::settings::PlaybackSettings
+        crate::settings::RecordingSettings, crate::settings::PlaybackSettings,
+        organ_core::community::Catalogue, organ_core::community::MusicEntry,
+        organ_core::community::OrganEntry, organ_core::community::OrganMeta,
+        organ_core::community::Confidence, organ_core::community::MusicKind
     ))
 )]
 pub struct ApiDoc;

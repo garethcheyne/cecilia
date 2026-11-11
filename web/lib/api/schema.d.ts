@@ -93,6 +93,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/community": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** What's in the shared library. */
+        get: operations["catalogue"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/community/music/{id}/add": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add a piece from the shared library to this Cecilia's library. */
+        post: operations["add_music"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/community/organs/{id}/add": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add an organ setup from the shared library (as one you can edit). */
+        post: operations["add_organ"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/community/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Check the shared library again now. */
+        post: operations["refresh"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/export/backup.zip": {
         parameters: {
             query?: never;
@@ -1078,6 +1146,12 @@ export interface components {
             required: boolean;
             signed_in: boolean;
         };
+        Catalogue: {
+            music: components["schemas"]["MusicEntry"][];
+            organs: components["schemas"]["OrganEntry"][];
+            /** Format: int32 */
+            schema: number;
+        };
         /** @description Stops drawn plus pedal positions at one moment. */
         Ceciliation: {
             /** @description Expression per division, 0-127. */
@@ -1112,6 +1186,11 @@ export interface components {
             polyphony: number;
             suggested?: null | components["schemas"]["DivisionRole"];
         };
+        /**
+         * @description How far a shared organ definition can be trusted.
+         * @enum {string}
+         */
+        Confidence: "template" | "learned" | "verified";
         /** @description How to cable the organ, in the words printed beside its sockets. */
         Connection: {
             /**
@@ -1361,6 +1440,22 @@ export interface components {
         };
         /** @enum {string} */
         Mode: "major" | "minor";
+        MusicEntry: {
+            composer: string;
+            /** Format: int32 */
+            duration_ms: number;
+            id: string;
+            kind: components["schemas"]["MusicKind"];
+            licence: string;
+            melody: string;
+            /** @description Path within the library, with forward slashes. */
+            path: string;
+            tags: string[];
+            title: string;
+            verses: number;
+        };
+        /** @enum {string} */
+        MusicKind: "score" | "recording";
         NewPassword: {
             /** @description The new password, or null to remove the password. */
             password?: string | null;
@@ -1394,6 +1489,14 @@ export interface components {
             /** Format: int32 */
             schema: number;
             stops: components["schemas"]["Stop"][];
+        };
+        OrganEntry: {
+            divisions: number;
+            id: string;
+            meta: components["schemas"]["OrganMeta"];
+            name: string;
+            path: string;
+            stops: number;
         };
         /** @description Something that happened on (or should happen to) an organ console. */
         OrganEvent: {
@@ -1433,6 +1536,18 @@ export interface components {
         } | {
             /** @enum {string} */
             type: "all_stops_off";
+        };
+        OrganMeta: {
+            confidence: components["schemas"]["Confidence"];
+            contributor?: string;
+            /** @description Always CC0-1.0 in the shared library. */
+            licence: string;
+            maker: string;
+            model: string;
+            /** @description Anything to do on the organ first ("set MIDI to mode B"). */
+            notes?: string[];
+            /** @description e.g. "1995–2005". */
+            years?: string;
         };
         OrganSummary: {
             /** @description Shipped with Cecilia (read-only) rather than user-created. */
@@ -2092,6 +2207,136 @@ export interface operations {
                 };
             };
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    catalogue: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Catalogue"];
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    add_music: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Piece id in the shared library */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackSummary"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    add_organ: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organ id in the shared library */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrganSummary"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    refresh: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Catalogue"];
+                };
+            };
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };

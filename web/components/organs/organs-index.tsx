@@ -7,6 +7,7 @@ import { CheckIcon, CopyIcon, PencilIcon, Trash2Icon } from "lucide-react"
 import { toast } from "sonner"
 
 import { useEngine } from "@/components/engine-provider"
+import { CommunityOrgans } from "@/components/organs/community-organs"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -156,6 +157,8 @@ export function OrgansIndex() {
           })}
         </div>
       )}
+
+      <CommunityOrgans />
 
       <Dialog open={!!copying} onOpenChange={(o) => !o && setCopying(null)}>
         <DialogContent className="sm:max-w-md">
