@@ -25,7 +25,27 @@ Use the sockets as labelled on the organ:
 Before recording, press the organ's **General Cancel** so Cecilia and the
 organ agree that every stop is in.
 
-## Installing
+## The quickest way: a ready-made SD card
+
+Every release includes **`cecilia-pi-arm64.img.xz`**: Raspberry Pi OS Lite with
+Cecilia already installed, and nothing else.
+
+1. Download it from the Releases page.
+2. In **Raspberry Pi Imager**, choose *Use custom* and pick the file.
+3. When Imager offers **OS customisation**, set a username and password
+   (don't keep the defaults, `organist` / `cecilia`) and your Wi-Fi details.
+4. Write the card, put it in the Pi, and switch on. After a couple of minutes
+   open **http://cecilia.local:7070**.
+
+## Or: one command on an existing Pi
+
+On Raspberry Pi OS (Lite is enough):
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/garethcheyne/cecilia/main/packaging/install.sh | sudo sh
+```
+
+## Installing the package by hand
 
 1. Install Raspberry Pi OS (64-bit) with Raspberry Pi Imager. In its settings,
    set a host name such as `cecilia`, turn on SSH, and enter the church Wi-Fi.
