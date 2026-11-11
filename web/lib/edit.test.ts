@@ -137,8 +137,8 @@ describe("context menu edits", () => {
     let e = toEdit(track())
     const clip = copyNotes(e, new Set([e.notes[0].id]))
     expect(clip.length).toBe(900)
-    let ids: number[]
-    ;[e, ids] = overlayClip(e, clip, 3000)
+    const [overlaid, ids] = overlayClip(e, clip, 3000)
+    e = overlaid
     expect(e.notes).toHaveLength(3)
     expect(e.notes.find((n) => n.id === ids[0])).toMatchObject({ key: 60, start: 3000, end: 3900 })
     expect(e.track.duration_ms).toBe(5000)

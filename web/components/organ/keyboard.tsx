@@ -12,12 +12,14 @@ const MIN_WHITE_REM = 1.45
 
 /**
  * A playable keyboard (or pedalboard). Keys light up in the division's colour
- * when held, whether pressed here or by MIDI from elsewhere.
+ * when held, whether pressed here or by MIDI from elsewhere. Keys a coupler is
+ * playing from another keyboard light more softly.
  */
 export function Keyboard({
   low,
   high,
   held,
+  coupled,
   colorClass,
   pedal = false,
   label,
@@ -26,6 +28,8 @@ export function Keyboard({
   low: number
   high: number
   held: ReadonlySet<number>
+  /** Keys played through a coupler from another keyboard. */
+  coupled?: ReadonlySet<number>
   /** e.g. "bg-division-great" */
   colorClass: string
   pedal?: boolean
@@ -88,6 +92,7 @@ export function Keyboard({
       >
         {whites.map((key) => {
           const isHeld = held.has(key)
+          const isCoupled = !isHeld && !!coupled?.has(key)
           return (
             <div
               key={key}
@@ -100,11 +105,13 @@ export function Keyboard({
                 "transition-[background-color,box-shadow] duration-75",
                 isHeld
                   ? cn(colorClass, "shadow-[inset_0_2px_6px_rgb(0_0_0/0.25)]")
-                  : "bg-key-white shadow-[inset_0_-4px_0_rgb(0_0_0/0.07)] hover:bg-[color-mix(in_oklch,var(--key-white),black_4%)]"
+                  : isCoupled
+                    ? cn(colorClass, "opacity-55 shadow-[inset_0_2px_6px_rgb(0_0_0/0.25)]")
+                    : "bg-key-white shadow-[inset_0_-4px_0_rgb(0_0_0/0.07)] hover:bg-[color-mix(in_oklch,var(--key-white),black_4%)]"
               )}
             >
               {key % 12 === 0 && (
-                <span className={cn("text-[0.6rem] font-medium", isHeld ? "text-white/90" : "text-black/35")}>
+                <span className={cn("text-[0.6rem] font-medium", isHeld || isCoupled ? "text-white/90" : "text-black/35")}>
                   {noteName(key)}
                 </span>
               )}
@@ -113,6 +120,7 @@ export function Keyboard({
         })}
         {keys.filter(isBlackKey).map((key) => {
           const isHeld = held.has(key)
+          const isCoupled = !isHeld && !!coupled?.has(key)
           const left = ((whiteIndex.get(key - 1) ?? 0) + 1) * whiteWidth
           return (
             <div
@@ -127,7 +135,9 @@ export function Keyboard({
                 pedal ? "h-[55%]" : "h-[62%]",
                 isHeld
                   ? colorClass
-                  : "bg-key-black bg-[linear-gradient(to_bottom,transparent_80%,rgb(255_255_255/0.12))] ring-1 ring-black/40"
+                  : isCoupled
+                    ? cn(colorClass, "opacity-55")
+                    : "bg-key-black bg-[linear-gradient(to_bottom,transparent_80%,rgb(255_255_255/0.12))] ring-1 ring-black/40"
               )}
               style={{ left: `${left}%`, width: `${whiteWidth * (pedal ? 0.5 : 0.62)}%` }}
             />

@@ -32,11 +32,15 @@ import {
   type OrganSummary,
 } from "@/lib/api/client"
 import { noteName } from "@/lib/midi"
+import { formatFootage } from "@/lib/organ"
+import { keyboardSpeaks, starterStop } from "@/lib/sounding"
 
 const SIM_PORT = "Cecilia Simulator"
 
 function act(event: OrganEvent) {
-  call(api.POST("/api/v1/simulator/act", { body: event })).catch((e: Error) => toast.error(e.message))
+  return call(api.POST("/api/v1/simulator/act", { body: event })).catch((e: Error) => {
+    toast.error(e.message)
+  })
 }
 
 export function SimulatorView() {
@@ -69,8 +73,36 @@ export function SimulatorView() {
     ? playOn
     : (organ?.divisions.find((d) => d.role !== "pedal")?.role ?? "great")
 
+  // Stops that are on, including ones just drawn whose update hasn't come back yet.
+  const stopsOn = React.useRef<string[]>([])
+  const consoleStops = simulator?.console.stops
+  React.useEffect(() => {
+    stopsOn.current = consoleStops ?? []
+  }, [consoleStops])
+
+  /**
+   * Like a real organ, keys make no sound until a stop is drawn. Rather than
+   * leave a silent simulator, draw a soft stop first and say so.
+   */
+  async function press(event: OrganEvent) {
+    if (organ && event.type === "note" && event.velocity > 0 && !keyboardSpeaks(organ, stopsOn.current, event.division)) {
+      const stop = starterStop(organ, event.division)
+      if (stop) {
+        stopsOn.current = [...stopsOn.current, stop.id]
+        await act({ type: "stop", stop: stop.id, on: true })
+        const feet = stop.equivalent.type === "voice" ? ` ${formatFootage(stop.equivalent.footage)}` : ""
+        const name = stop.full_name ?? stop.names.join(" ")
+        toast(`Drew ${name}${feet} so you can hear the keys`, {
+          id: "starter-stop",
+          description: "An organ is silent until a stop is drawn. Choose other stops above to change the sound.",
+        })
+      }
+    }
+    void act(event)
+  }
+
   const { base } = useComputerKeyboard(!!organ, (key, on) =>
-    act({ type: "note", division: playDivision, key, velocity: on ? 96 : 0 })
+    press({ type: "note", division: playDivision, key, velocity: on ? 96 : 0 })
   )
 
   async function loadOrgan(id: string) {
@@ -159,7 +191,7 @@ export function SimulatorView() {
         )}
 
         {organ && simulator ? (
-          <OrganConsole organ={organ} state={simulator.console} onAct={act} activeDivision={playDivision} />
+          <OrganConsole organ={organ} state={simulator.console} onAct={press} activeDivision={playDivision} />
         ) : (
           <Skeleton className="h-[36rem] w-full rounded-xl" />
         )}

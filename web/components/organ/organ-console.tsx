@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils"
 import { CONSOLE_ORDER, DIVISION_BG, DIVISION_RING } from "./divisions"
 import { Drawstop } from "./drawstop"
 import { Keyboard } from "./keyboard"
+import { coupledKeys } from "@/lib/sounding"
 
 type ConsoleState = SimSnapshot["console"]
 
@@ -38,6 +39,7 @@ export function OrganConsole({
     [organ]
   )
   const drawn = React.useMemo(() => new Set(state.stops), [state.stops])
+  const coupled = React.useMemo(() => coupledKeys(organ, state.stops, state.notes), [organ, state.stops, state.notes])
 
   return (
     <div className="console-panel flex w-full min-w-0 flex-col gap-8 rounded-2xl p-3 text-panel-foreground sm:p-6">
@@ -92,6 +94,7 @@ export function OrganConsole({
                 low={division.low_key}
                 high={division.high_key}
                 held={held}
+                coupled={coupled.get(division.role)}
                 pedal={isPedal}
                 label={`${division.name} keys`}
                 colorClass={DIVISION_BG[division.role]}
