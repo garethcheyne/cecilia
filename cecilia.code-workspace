@@ -1,15 +1,17 @@
 {
-  // Cecilia, its shared library, the community service and the website, side
-  // by side. Clone all four into the same parent folder:
+  // Cecilia, its shared library, the community service, the website and the
+  // Raspberry Pi image, side by side. Clone all five into the same parent folder:
   //   git clone https://github.com/garethcheyne/cecilia
   //   git clone https://github.com/garethcheyne/cecilia-library
   //   git clone https://github.com/garethcheyne/cecilia-community
   //   git clone https://github.com/garethcheyne/cecilia-site
+  //   git clone https://github.com/garethcheyne/cecilia-pi
   "folders": [
     { "name": "cecilia", "path": "." },
     { "name": "cecilia-library", "path": "../cecilia-library" },
     { "name": "cecilia-community", "path": "../cecilia-community" },
-    { "name": "cecilia-site", "path": "../cecilia-site" }
+    { "name": "cecilia-site", "path": "../cecilia-site" },
+    { "name": "cecilia-pi", "path": "../cecilia-pi" }
   ],
   "settings": {
     "files.eol": "\n",

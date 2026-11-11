@@ -27,14 +27,17 @@ organ agree that every stop is in.
 
 ## The quickest way: a ready-made SD card
 
-Every release includes **`cecilia-pi-arm64.img.xz`**: Raspberry Pi OS Lite with
-Cecilia already installed, and nothing else.
+The SD card image is built by [cecilia-pi](https://github.com/garethcheyne/cecilia-pi):
+Raspberry Pi OS Lite with Cecilia installed, branded from power-on to sign-in,
+and keeping itself up to date.
 
-1. Download it from the Releases page.
-2. In **Raspberry Pi Imager**, choose *Use custom* and pick the file.
-3. When Imager offers **OS customisation**, set a username and password
-   (don't keep the defaults, `organist` / `cecilia`) and your Wi-Fi details.
-4. Write the card, put it in the Pi, and switch on. After a couple of minutes
+1. In **Raspberry Pi Imager**, set the content repository to
+   `https://garethcheyne.github.io/cecilia-pi/os_list.json` (or download the
+   `.img.xz` from cecilia-pi's Releases and choose *Use custom*).
+2. Choose your Pi, then **Cecilia**, then the card.
+3. When Imager offers **OS customisation**, set your own username and
+   password, the church Wi-Fi and your time zone.
+4. Write the card, put it in the Pi, and switch on. After a minute or two
    open **http://cecilia.local:7070**.
 
 ## Or: one command on an existing Pi
