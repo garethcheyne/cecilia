@@ -14,3 +14,7 @@
 # Local
 .env*.local
 *.log
+
+# Tests
+/web/test-results/
+/web/playwright-report/

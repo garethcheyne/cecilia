@@ -1,16 +1,10 @@
 "use client"
 
 import type { Stop } from "@/lib/api/client"
+import { formatFootage } from "@/lib/organ"
 import { cn } from "@/lib/utils"
 
 import { stopKind } from "./divisions"
-
-const FRACTIONS: Record<string, string> = { "1/2": "½", "1/3": "⅓", "2/3": "⅔", "1/4": "¼", "3/5": "⅗", "1/5": "⅕", "4/5": "⅘", "1/7": "⅐", "1/8": "⅛" }
-
-function formatFootage(footage: string): string {
-  const parts = footage.split(/\s+/).map((p) => FRACTIONS[p] ?? p)
-  return `${parts.join("")}′`
-}
 
 /** Label colour by stop kind: lit (on) and unlit (off). */
 const LABEL: Record<ReturnType<typeof stopKind>, { on: string; off: string }> = {
