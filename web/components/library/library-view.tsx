@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Link from "next/link"
 import {
   ArrowDownIcon,
   ArrowUpIcon,
@@ -11,6 +12,7 @@ import {
   FileDownIcon,
   LibraryIcon,
   PencilIcon,
+  PianoIcon,
   PlayIcon,
   SearchIcon,
   Trash2Icon,
@@ -126,6 +128,10 @@ function TrackMenu({
       />
       <DropdownMenuContent align="end">
         <DropdownMenuGroup>
+          <DropdownMenuItem render={<Link href={`/library/edit/?id=${encodeURIComponent(track.id)}`} />}>
+            <PianoIcon />
+            Open in editor
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={onEdit}>
             <PencilIcon />
             Edit details
