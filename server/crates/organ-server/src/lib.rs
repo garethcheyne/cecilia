@@ -6,6 +6,7 @@ pub mod files_api;
 pub mod library;
 pub mod mcp;
 pub mod music;
+pub mod organ_api;
 pub mod organs;
 pub mod playlist_api;
 pub mod playlists;
@@ -149,6 +150,7 @@ pub async fn build(config: Config) -> anyhow::Result<App> {
     };
     let mut router = Router::new()
         .nest("/api/v1", api::router().merge(music::router()).merge(playlist_api::router())
+                .merge(organ_api::router())
                 .merge(files_api::router().layer(axum::extract::DefaultBodyLimit::max(files_api::MAX_IMPORT_BYTES))))
         .route("/mcp", post(mcp::post).get(mcp::get))
         .with_state(state.clone())

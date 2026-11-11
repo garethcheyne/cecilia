@@ -378,6 +378,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organs/copy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Make a new organ as a copy of another (the way to start a definition for
+         *     your own instrument, e.g. from the Makin template).
+         */
+        post: operations["copy_organ"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organs/{id}": {
         parameters: {
             query?: never;
@@ -388,6 +408,43 @@ export interface paths {
         /** A full organ definition. */
         get: operations["get_organ"];
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organs/{id}/delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Delete a user organ. If it was in use, the demo organ takes over. */
+        post: operations["delete_organ"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organs/{id}/save": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Save changes to a user organ. If it's the organ in use, it's reloaded
+         *     everywhere straight away.
+         */
+        put: operations["save_organ"];
         post?: never;
         delete?: never;
         options?: never;
@@ -918,6 +975,11 @@ export interface components {
             };
             /** @description Ids of stops that are on. */
             stops: string[];
+        };
+        CopyOrgan: {
+            /** @description Organ to start from. */
+            from: string;
+            name: string;
         };
         /** @enum {string} */
         CouplerPitch: "sub" | "unison" | "super";
@@ -2351,6 +2413,37 @@ export interface operations {
             };
         };
     };
+    copy_organ: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CopyOrgan"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrganDefinition"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
     get_organ: {
         parameters: {
             query?: never;
@@ -2372,6 +2465,84 @@ export interface operations {
                 };
             };
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    delete_organ: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organ id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    save_organ: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organ id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrganDefinition"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrganDefinition"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

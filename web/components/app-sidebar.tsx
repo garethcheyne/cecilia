@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation"
 import {
   CableIcon,
   MicIcon,
+  Music4Icon,
   GaugeIcon,
   LayoutDashboardIcon,
   LibraryIcon,
@@ -52,6 +53,7 @@ const PERFORM: NavItem[] = [
 
 const SETUP: NavItem[] = [
   { title: "MIDI Setup", href: "/setup/midi", icon: CableIcon },
+  { title: "Organs", href: "/organs", icon: Music4Icon },
   { title: "Assistant", href: "/setup/assistant", icon: MicIcon },
 ]
 

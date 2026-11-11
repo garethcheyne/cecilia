@@ -904,6 +904,47 @@
         }
       }
     },
+    "/api/v1/organs/copy": {
+      "post": {
+        "tags": [
+          "organs"
+        ],
+        "summary": "Make a new organ as a copy of another (the way to start a definition for\nyour own instrument, e.g. from the Makin template).",
+        "operationId": "copy_organ",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CopyOrgan"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganDefinition"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/organs/{id}": {
       "get": {
         "tags": [
@@ -934,6 +975,113 @@
             }
           },
           "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organs/{id}/delete": {
+      "post": {
+        "tags": [
+          "organs"
+        ],
+        "summary": "Delete a user organ. If it was in use, the demo organ takes over.",
+        "operationId": "delete_organ",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Organ id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organs/{id}/save": {
+      "put": {
+        "tags": [
+          "organs"
+        ],
+        "summary": "Save changes to a user organ. If it's the organ in use, it's reloaded\neverywhere straight away.",
+        "operationId": "save_organ",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Organ id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrganDefinition"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganDefinition"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "409": {
             "description": "",
             "content": {
               "application/json": {
@@ -2101,6 +2249,22 @@
             },
             "description": "Ids of stops that are on.",
             "uniqueItems": true
+          }
+        }
+      },
+      "CopyOrgan": {
+        "type": "object",
+        "required": [
+          "from",
+          "name"
+        ],
+        "properties": {
+          "from": {
+            "type": "string",
+            "description": "Organ to start from."
+          },
+          "name": {
+            "type": "string"
           }
         }
       },

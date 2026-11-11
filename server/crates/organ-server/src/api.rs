@@ -110,7 +110,8 @@ pub fn router() -> Router<AppState> {
         crate::playlist_api::service_previous, crate::playlist_api::service_select,
         crate::playlist_api::service_end,
         crate::files_api::analyse, crate::files_api::import, crate::files_api::export_midi,
-        crate::files_api::export_csv, crate::files_api::export_zip
+        crate::files_api::export_csv, crate::files_api::export_zip,
+        crate::organ_api::copy_organ, crate::organ_api::save_organ, crate::organ_api::delete_organ
     ),
     components(schemas(
         Health, ApiErrorBody, PortList, MidiConfig, MidiStatus, TestStatus, TestState,
@@ -134,7 +135,7 @@ pub fn router() -> Router<AppState> {
         crate::files_api::FileKind, crate::files_api::ImportAnalysis,
         organ_core::smf::MidiAnalysis, organ_core::smf::ChannelInfo, organ_core::smf::ImportOptions,
         organ_core::smf::ExportFormat, organ_core::musicxml::XmlAnalysis, organ_core::musicxml::Stream,
-        organ_core::musicxml::XmlImportOptions
+        organ_core::musicxml::XmlImportOptions, crate::organ_api::CopyOrgan
     ))
 )]
 pub struct ApiDoc;

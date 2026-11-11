@@ -58,4 +58,49 @@ impl OrganStore {
     pub fn get(&self, id: &str) -> Option<OrganDefinition> {
         self.organs.read().unwrap().get(id).map(|(o, _)| o.clone())
     }
+
+    /// Shipped with Registra (can't be changed, only copied).
+    pub fn is_builtin(&self, id: &str) -> bool {
+        self.organs.read().unwrap().get(id).is_some_and(|(_, b)| *b)
+            && !self.dir.join(format!("{id}.organ.json")).exists()
+    }
+
+    /// Save a user organ (validated first).
+    pub fn save(&self, organ: &OrganDefinition) -> anyhow::Result<()> {
+        organ.validate()?;
+        let path = self.dir.join(format!("{}.organ.json", organ.id));
+        let tmp = path.with_extension("json.tmp");
+        std::fs::write(&tmp, serde_json::to_vec_pretty(organ)?)?;
+        std::fs::rename(&tmp, &path)?;
+        self.organs.write().unwrap().insert(organ.id.clone(), (organ.clone(), false));
+        Ok(())
+    }
+
+    /// Delete a user organ. Returns false if there's no such user organ.
+    pub fn delete(&self, id: &str) -> anyhow::Result<bool> {
+        let path = self.dir.join(format!("{id}.organ.json"));
+        if !organ_core::track::valid_id(id) || !path.exists() {
+            return Ok(false);
+        }
+        std::fs::remove_file(path)?;
+        self.reload();
+        Ok(true)
+    }
+
+    pub fn unique_id(&self, name: &str) -> String {
+        let base: String = name
+            .chars()
+            .map(|c| if c.is_ascii_alphanumeric() { c.to_ascii_lowercase() } else { '-' })
+            .collect::<String>()
+            .split('-')
+            .filter(|s| !s.is_empty())
+            .collect::<Vec<_>>()
+            .join("-");
+        let base = if base.is_empty() { "organ".to_string() } else { base.chars().take(50).collect() };
+        let taken = |id: &str| self.organs.read().unwrap().contains_key(id);
+        if !taken(&base) {
+            return base;
+        }
+        (2..).map(|n| format!("{base}-{n}")).find(|id| !taken(id)).unwrap()
+    }
 }

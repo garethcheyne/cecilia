@@ -38,6 +38,8 @@ interface EngineContextValue {
   live: { organ_id: string; console: SimSnapshot["console"] } | null
   /** performance.now() when `status` arrived, for interpolating timers. */
   statusAt: number
+  /** Hear every MIDI message as it arrives (even with the monitor paused). */
+  onMidi: (listener: (e: MidiEvent) => void) => () => void
 }
 
 interface MonitorContextValue {
@@ -74,6 +76,13 @@ export function EngineProvider({ children }: { children: React.ReactNode }) {
   const [skipped, setSkipped] = React.useState(0)
   const [paused, setPaused] = React.useState(false)
 
+  const listeners = React.useRef(new Set<(e: MidiEvent) => void>())
+  const onMidi = React.useCallback((listener: (e: MidiEvent) => void) => {
+    listeners.current.add(listener)
+    return () => {
+      listeners.current.delete(listener)
+    }
+  }, [])
   const pausedRef = React.useRef(paused)
   React.useEffect(() => {
     pausedRef.current = paused
@@ -119,6 +128,7 @@ export function EngineProvider({ children }: { children: React.ReactNode }) {
           setStatus(event)
           setStatusAt(performance.now())
         } else if (event.type === "midi") {
+          for (const l of listeners.current) l(event)
           if (pausedRef.current) return
           pending.push({ ...event, id: nextId++ })
           if (!frame) frame = requestAnimationFrame(flush)
@@ -164,8 +174,8 @@ export function EngineProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const value = React.useMemo(
-    () => ({ connected, status, simulator, player, playerAt, recorder, libraryVersion, service, live, statusAt }),
-    [connected, status, simulator, player, playerAt, recorder, libraryVersion, service, live, statusAt]
+    () => ({ connected, status, simulator, player, playerAt, recorder, libraryVersion, service, live, statusAt, onMidi }),
+    [connected, status, simulator, player, playerAt, recorder, libraryVersion, service, live, statusAt, onMidi]
   )
   const monitor = React.useMemo(
     () => ({ events, skipped, paused, setPaused, clearEvents }),
