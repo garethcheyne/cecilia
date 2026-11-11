@@ -23,6 +23,7 @@ assets = [
     ["../../../web/out/**/*", "usr/share/cecilia/web/", "644"],
     ["../../../packaging/cecilia.service", "lib/systemd/system/cecilia.service", "644"],
     ["../../../packaging/cecilia.default", "etc/default/cecilia", "644"],
+    ["../../../packaging/cecilia-modules.conf", "usr/lib/modules-load.d/cecilia.conf", "644"],
 ]
 
 [lib]

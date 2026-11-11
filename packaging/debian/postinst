@@ -6,6 +6,8 @@ if [ "$1" = "configure" ]; then
     fi
     # MIDI (ALSA sequencer and USB MIDI) and the sound card.
     adduser cecilia audio >/dev/null 2>&1 || true
+    # Load the ALSA sequencer now (and at every boot, via modules-load.d).
+    modprobe snd-seq 2>/dev/null || true
     mkdir -p /var/lib/cecilia
     chown cecilia:cecilia /var/lib/cecilia
     if [ -d /run/systemd/system ]; then

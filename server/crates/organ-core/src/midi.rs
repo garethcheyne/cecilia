@@ -333,7 +333,17 @@ impl Engine {
         // A dropped reply just means the caller went away; ignore it.
         match cmd {
             Cmd::Ports(r) => {
-                let ports = list_ports().map(|mut p| {
+                let ports = match list_ports() {
+                    Ok(p) => Ok(p),
+                    // No MIDI system (e.g. Linux without the ALSA sequencer):
+                    // the simulator still works, so offer it on its own.
+                    Err(err) if self.simulator.is_some() => {
+                        tracing::warn!(%err, "no MIDI system; only the simulator is available");
+                        Ok(PortList { inputs: Vec::new(), outputs: Vec::new() })
+                    }
+                    Err(err) => Err(err),
+                };
+                let ports = ports.map(|mut p| {
                     if self.simulator.is_some() {
                         p.inputs.push(SIMULATOR_PORT.into());
                         p.outputs.push(SIMULATOR_PORT.into());
