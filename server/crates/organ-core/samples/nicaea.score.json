@@ -1,0 +1,49 @@
+{
+  "id": "nicaea",
+  "title": "Holy, Holy, Holy! Lord God Almighty",
+  "composer": "John Bacchus Dykes, 1861",
+  "melody": "NICAEA",
+  "publication": "Registra sample arrangement",
+  "copyright": "Public domain",
+  "bpm": 100,
+  "time": "4/4",
+  "key": "D",
+  "verses": 4,
+  "gap": 2,
+  "registration": [
+    "great principal 8",
+    "great flute 8",
+    "great principal 4",
+    "swell flute 8",
+    "swell principal 4",
+    "swell to great",
+    "pedal flute 16",
+    "pedal principal 8",
+    "great to pedal",
+    "great principal 2"
+  ],
+  "verse_registration": {
+    "2": ["-great principal 2", "-great principal 4"],
+    "3": ["+great principal 4", "-great principal 8", "-great principal 4", "-swell principal 4", "+swell string 8", "+swell celeste 8", "-pedal principal 8", "-great to pedal", "+swell to pedal"],
+    "4": ["+great principal 8", "+great principal 4", "+swell principal 4", "-swell string 8", "-swell celeste 8", "+pedal principal 8", "+great to pedal", "-swell to pedal", "+great principal 2", "+great mixture 1 1/3", "+swell reed 8", "+great reed 8", "+pedal principal 4", "+pedal reed 16"]
+  },
+  "expression": { "swell": 100 },
+  "parts": [
+    {
+      "division": "great",
+      "notes": "D4:1 D4:1 F#4:1 F#4:1 | A4:2 A4:2 | B4:2 B4:1 B4:1 | A4:2 F#4:2 | A4:1.5 A4:0.5 A4:1 A4:1 | D5:2 C#5:1 A4:1 | E4:1 A4:1 B4:1.5 A4:0.5 | A4:4 | D4:1 D4:1 F#4:1 F#4:1 | A4:2 A4:2 | B4:1.5 B4:0.5 B4:1 B4:1 | A4:2 A4:2 | D5:2 A4:1 A4:1 | B4:2 F#4:2 | G4:1 E4:1 E4:1.5 D4:0.5 | D4:4 |"
+    },
+    {
+      "division": "great",
+      "notes": "A3:1 A3:1 D4:1 D4:1 | C#4:1 E4:1 D4:1 C#4:1 | B3:1 C#4:1 D4:1 E4:1 | F#4:2 D4:2 | E4:1 E4:1 F#4:1 E4:1 | D4:1 E4:1 E4:1 F#4:1 | E4:1 C#4:1 D4:1.5 C#4:0.5 | C#4:4 | A3:1 A3:1 D4:1 D4:1 | C#4:1 E4:1 D4:1 C#4:1 | B3:1 C#4:1 D4:1 E4:1 | F#4:2 D4:2 | D4:2 D4:1 D4:1 | D4:2 D4:1 C4:1 | B3:1 B3:1 C#4:1.5 D4:0.5 | D4:4 |"
+    },
+    {
+      "division": "great",
+      "notes": "F#3:1 F#3:1 D3:1 D3:1 | E3:1 G3:1 F#3:1 A3:1 | G3:1 A3:1 B3:1 C#4:1 | D4:1 A3:1 A3:2 | A3:1 A3:1 A3:1 A3:1 | F#3:1 G#3:1 A3:1 A3:1 | C#4:1 A3:1 G#3:1.5 A3:0.5 | A3:2 G3:2 | F#3:1 F#3:1 D3:1 D3:1 | E3:1 G3:1 F#3:1 A3:1 | G3:1 A3:1 B3:1 C#4:1 | D4:1 A3:1 F#3:2 | F#3:1 G3:1 A3:1 C4:1 | B3:2 A3:2 | G3:1 G3:1 G3:1.5 F#3:0.5 | F#3:4 |"
+    },
+    {
+      "division": "pedal",
+      "notes": "D3:1 D3:1 B2:1 B2:1 | A2:2 D3:2 | G2:2 G3:1 G3:1 | D3:2 D3:2 | C#3:1 C#3:1 D3:1 C#3:1 | B2:2 C#3:1 D3:1 | E3:1 E3:1 E3:1.5 A2:0.5 | A2:4 | D3:1 D3:1 B2:1 B2:1 | A2:2 D3:2 | G2:1.5 G2:0.5 G3:1 G3:1 | D3:2 D3:2 | B2:2 F#2:1 F#2:1 | G2:2 D3:2 | G2:1 G2:1 A2:1.5 D3:0.5 | D3:4 |"
+    }
+  ]
+}

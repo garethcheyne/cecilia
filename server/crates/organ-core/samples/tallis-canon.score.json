@@ -1,0 +1,46 @@
+{
+  "id": "tallis-canon",
+  "title": "Glory to Thee, My God, This Night",
+  "composer": "Thomas Tallis, c. 1567",
+  "melody": "TALLIS'S CANON",
+  "publication": "Registra sample arrangement",
+  "copyright": "Tune public domain; arrangement CC0",
+  "bpm": 80,
+  "time": "4/4",
+  "key": "G",
+  "verses": 4,
+  "gap": 2,
+  "registration": [
+    "great principal 8",
+    "great flute 8",
+    "swell flute 8",
+    "swell principal 4",
+    "swell to great",
+    "pedal flute 16",
+    "great to pedal"
+  ],
+  "verse_registration": {
+    "2": ["-great principal 8", "-swell principal 4", "+swell string 8", "+swell celeste 8", "-great to pedal", "+swell to pedal"],
+    "3": ["+great principal 8", "+swell principal 4", "-swell string 8", "-swell celeste 8", "+great to pedal", "-swell to pedal"],
+    "4": ["+great principal 4", "+great principal 2", "+great mixture 1 1/3", "+swell reed 8", "+pedal principal 8", "+pedal principal 4"]
+  },
+  "expression": { "swell": 90 },
+  "parts": [
+    {
+      "division": "great",
+      "notes": "G4:1 G4:1 F#4:1 G4:1 | G4:1 A4:1 A4:1 B4:1 | G4:1 C5:1 C5:1 B4:1 | B4:1 A4:1 A4:1 G4:1 | D5:1 C5:1 A4:1 B4:1 | B4:1 A4:1 A4:1 G4:1 | D4:1 E4:1 F#4:1 G4:1 | B4:1 A4:1 A4:1 G4:1~ | G4:1"
+    },
+    {
+      "division": "great",
+      "notes": "D4:1 E4:1 D4:1 D4:1 | E4:1 C4:1 D4:1 D4:1 | E4:1 E4:1 F#4:1 G4:1 | E4:1 E4:1 F#4:1 D4:1 | G4:1 E4:1 F#4:1 D4:1 | G4:1 E4:1 F#4:1 D4:1 | B3:1 C4:1 C4:1 B3:1 | D4:1 C4:1 C4:1 B3:1~ | B3:1"
+    },
+    {
+      "division": "great",
+      "notes": "B3:1 A3:1 A3:1 G3:1 | G3:1 G3:1 F#3:1 G3:1 | G3:1 A3:1 A3:1 B3:1 | G3:1 C4:1 C4:1 B3:1 | B3:1 A3:1 A3:1 G3:1 | D4:1 C4:1 A3:1 B3:1 | B3:1 A3:1 A3:1 G3:1 | D3:1 E3:1 F#3:1 G3:1~ | G3:1"
+    },
+    {
+      "division": "pedal",
+      "notes": "G2:1 C3:1 D3:1 B2:1 | C3:1 A2:1 D3:1 G2:1 | E3:1 A2:1 D3:1 B2:1 | E3:1 C3:1 D3:1 G2:1 | G2:1 A2:1 D3:1 G2:1 | E3:1 C3:1 D3:1 G2:1 | G2:1 C3:1 D3:1 G2:1 | G2:1 C3:1 D3:1 G2:1~ | G2:1"
+    }
+  ]
+}

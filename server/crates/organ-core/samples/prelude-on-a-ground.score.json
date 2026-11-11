@@ -1,0 +1,42 @@
+{
+  "id": "prelude-on-a-ground",
+  "title": "Prelude on a Ground in F",
+  "composer": "Registra contributors",
+  "publication": "Registra original",
+  "copyright": "CC0",
+  "bpm": 84,
+  "time": "4/4",
+  "key": "F",
+  "verses": 3,
+  "gap": 2,
+  "registration": [
+    "great flute 8",
+    "swell string 8",
+    "swell celeste 8",
+    "pedal flute 16",
+    "swell to pedal"
+  ],
+  "verse_registration": {
+    "2": ["+great principal 4", "+swell flute 8", "-swell celeste 8", "+pedal principal 8"],
+    "3": ["-great principal 4", "-swell flute 8", "+swell celeste 8", "+swell tremulant", "-pedal principal 8"]
+  },
+  "expression": { "swell": 75 },
+  "parts": [
+    {
+      "division": "great",
+      "notes": "C5:2 C5:2 | D5:2 C5:2 | Bb4:2 G4:2 | A4:2 G4:1 Bb4:1 | C5:1 D5:1 E5:1 C5:1 | D5:1 F5:1 E5:1 C5:1 | F5:1 D5:1 E5:1 G5:1 | F5:2 E5:1 D5:1 | C5:2 C5:1 Bb4:1 | A4:2 C5:2 | D5:2 C5:1 Bb4:1 | A4:4 |"
+    },
+    {
+      "division": "swell",
+      "notes": "A4:2 G4:2 | F4:2 E4:2 | D4:2 E4:2 | F4:2 E4:2 | A4:2 G4:2 | F4:2 C4:2 | D4:2 G4:2 | A4:2 G4:2 | A4:2 G4:2 | F4:2 E4:2 | D4:2 E4:2 | F4:4 |"
+    },
+    {
+      "division": "swell",
+      "notes": "C4:2 C4:2 | A3:2 A3:2 | F3:2 C4:2 | C4:2 C4:2 | C4:2 C4:2 | A3:2 A3:2 | F3:2 C4:2 | C4:2 C4:2 | C4:2 C4:2 | A3:2 A3:2 | F3:2 C4:2 | C4:4 |"
+    },
+    {
+      "division": "pedal",
+      "notes": "F2:2 E2:2 | D2:2 A2:2 | Bb2:2 C3:2 | F2:2 C3:2 | F2:2 E2:2 | D2:2 A2:2 | Bb2:2 C3:2 | F2:2 C3:2 | F2:2 E2:2 | D2:2 A2:2 | Bb2:2 C3:2 | F2:4 |"
+    }
+  ]
+}

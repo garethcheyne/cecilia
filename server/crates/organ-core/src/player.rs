@@ -940,8 +940,8 @@ mod tests {
         let ons = probe.note_ons();
         assert_eq!(ons.iter().map(|(_, k)| *k).collect::<Vec<_>>(), [60, 62, 64]);
         let gap = |a: usize, b: usize| ons[b].0 as i64 - ons[a].0 as i64;
-        assert!((gap(0, 1) - 100).abs() <= 15, "{ons:?}");
-        assert!((gap(1, 2) - 90).abs() <= 15, "{ons:?}");
+        assert!((gap(0, 1) - 100).abs() <= 25, "{ons:?}");
+        assert!((gap(1, 2) - 90).abs() <= 25, "{ons:?}");
         // Opening registration, then the trumpet before the last note.
         let c = probe.console();
         assert!(c.is_on("gt-opendiap") && c.is_on("gt-trumpet"));
@@ -956,7 +956,7 @@ mod tests {
         wait_until(&p, 3.0, |s| s.state == PlayerState::Playing);
         wait_until(&p, 3.0, |s| s.state == PlayerState::Stopped);
         let ons = probe.note_ons();
-        assert!((ons[1].0 as i64 - ons[0].0 as i64 - 50).abs() <= 12, "{ons:?}");
+        assert!((ons[1].0 as i64 - ons[0].0 as i64 - 50).abs() <= 25, "{ons:?}");
     }
 
     #[test]

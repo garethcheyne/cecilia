@@ -1,0 +1,50 @@
+{
+  "id": "winchester-new",
+  "title": "On Jordan's Bank the Baptist's Cry",
+  "composer": "Musikalisches Handbuch, Hamburg, 1690; harm. William Henry Monk",
+  "melody": "WINCHESTER NEW",
+  "publication": "Registra sample arrangement",
+  "copyright": "Public domain",
+  "bpm": 92,
+  "time": "4/4",
+  "key": "Bb",
+  "pickup": 1,
+  "verses": 5,
+  "gap": 2,
+  "registration": [
+    "great principal 8",
+    "great flute 8",
+    "great principal 4",
+    "swell flute 8",
+    "swell principal 4",
+    "swell to great",
+    "pedal flute 16",
+    "pedal principal 8",
+    "great to pedal"
+  ],
+  "verse_registration": {
+    "2": ["+swell reed 8"],
+    "3": ["-swell reed 8", "-great principal 8", "-great principal 4", "-swell principal 4", "+swell string 8", "+swell celeste 8", "-pedal principal 8", "-great to pedal", "+swell to pedal"],
+    "4": ["+great principal 8", "+great principal 4", "+swell principal 4", "-swell string 8", "-swell celeste 8", "+pedal principal 8", "+great to pedal", "-swell to pedal"],
+    "5": ["+great principal 2", "+great mixture 1 1/3", "+swell reed 8", "+pedal principal 4"]
+  },
+  "expression": { "swell": 100 },
+  "parts": [
+    {
+      "division": "great",
+      "notes": "F4:1 | Bb4:1 F4:1 G4:1 G4:1 | F4:1 Eb4:1 D4:1 D4:1 | Eb4:1 D4:1 C4:1 F4:1 | F4:1 E4:1 F4:1 F4:1 | Bb4:1 C5:1 D5:1 Bb4:1 | Eb5:1 D5:1 C5:1 D5:1 | Bb4:1 G4:1 F4:1 Bb4:1 | Bb4:1 A4:1 Bb4:2 |"
+    },
+    {
+      "division": "great",
+      "notes": "D4:1 | F4:1 D4:1 Eb4:1 Eb4:0.5 D4:0.5 | C4:1 A3:1 Bb3:1 Bb3:1 | Bb3:1 Bb3:1 C4:1 D4:1 | D4:1 C4:1 C4:1 F4:1 | F4:1 Eb4:1 D4:1 G4:0.5 F4:0.5 | Eb4:1 F4:1 F4:1 F4:1 | F4:1 Eb4:1 F4:1 D4:1 | G4:1 F4:1 F4:2 |"
+    },
+    {
+      "division": "great",
+      "notes": "Bb3:1 | Bb3:1 Bb3:1 Bb3:1 Eb3:1 | F3:1 F3:1 F3:1 F3:1 | G3:1 F3:0.5 G3:0.5 A3:1 A3:1 | Bb3:0.5 A3:0.5 G3:1 A3:1 A3:1 | Bb3:1 G3:0.5 A3:0.5 Bb3:1 Bb3:1 | Bb3:0.5 A3:0.5 Bb3:1 A3:1 Bb3:1 | Bb3:1 Bb3:1 Bb3:1 Bb3:1 | C4:1 C4:1 D4:2 |"
+    },
+    {
+      "division": "pedal",
+      "notes": "Bb2:1 | D3:1 Bb2:1 Eb3:1 C3:0.5 Bb2:0.5 | A2:1 F2:1 Bb2:1 Bb2:1 | G2:1 Bb2:1 F2:1 D3:1 | Bb2:1 C3:1 F2:1 F3:0.5 Eb3:0.5 | D3:1 C3:1 Bb2:1 Eb3:0.5 D3:0.5 | C3:1 D3:0.5 Eb3:0.5 F3:1 Bb2:1 | D3:1 Eb3:1 D3:1 G3:1 | Eb3:1 F3:1 Bb2:2 |"
+    }
+  ]
+}
