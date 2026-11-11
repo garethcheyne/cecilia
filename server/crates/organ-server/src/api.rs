@@ -44,6 +44,8 @@ pub struct AppState {
     pub recorder: Recorder,
     pub player: Player,
     pub app_events: tokio::sync::broadcast::Sender<AppEvent>,
+    pub playlists: Arc<crate::playlists::PlaylistStore>,
+    pub service: crate::playlists::Service,
 }
 
 impl AppState {
@@ -97,7 +99,14 @@ pub fn router() -> Router<AppState> {
         crate::music::recorder_stop, crate::music::player_status, crate::music::player_load,
         crate::music::player_play, crate::music::player_pause, crate::music::player_stop,
         crate::music::player_seek, crate::music::player_tempo, crate::music::player_verses,
-        crate::music::player_fade
+        crate::music::player_fade,
+        crate::playlist_api::list_playlists, crate::playlist_api::create_playlist,
+        crate::playlist_api::get_playlist, crate::playlist_api::put_playlist,
+        crate::playlist_api::delete_playlist, crate::playlist_api::duplicate_playlist,
+        crate::playlist_api::verses_parse, crate::playlist_api::service_status,
+        crate::playlist_api::service_start, crate::playlist_api::service_next,
+        crate::playlist_api::service_previous, crate::playlist_api::service_select,
+        crate::playlist_api::service_end
     ),
     components(schemas(
         Health, ApiErrorBody, PortList, MidiConfig, MidiStatus, TestStatus, TestState,
@@ -112,7 +121,12 @@ pub fn router() -> Router<AppState> {
         organ_core::player::PlayOptions, organ_core::player::VersePlan,
         organ_core::player::PlayerEvent, crate::services::AppEvent,
         crate::music::LoadTrack, crate::music::TrackPatch, crate::music::Seek, crate::music::Tempo,
-        crate::music::VerseControl, crate::music::FadeRequest
+        crate::music::VerseControl, crate::music::FadeRequest,
+        organ_core::playlist::Playlist, organ_core::playlist::PlaylistRow,
+        organ_core::playlist::PlaylistSummary, organ_core::playlist::Delay,
+        crate::playlists::ServiceStatus, crate::playlists::ServiceState,
+        crate::playlist_api::NewPlaylist, crate::playlist_api::StartService,
+        crate::playlist_api::SelectRow, crate::playlist_api::VerseText, crate::playlist_api::ParsedVerses
     ))
 )]
 pub struct ApiDoc;
@@ -392,6 +406,10 @@ async fn stream_events(mut socket: WebSocket, state: AppState) {
     }
     let recorder = AppEvent::Recorder(state.recorder.status());
     if send_json(&mut socket, &recorder).await.is_err() {
+        return;
+    }
+    let service = AppEvent::Service(state.service.status());
+    if send_json(&mut socket, &service).await.is_err() {
         return;
     }
 

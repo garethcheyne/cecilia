@@ -27,6 +27,8 @@ pub enum AppEvent {
     Recorder(RecorderStatus),
     /// The library changed; `saved` is a newly recorded track, if any.
     Library { saved: Option<TrackSummary> },
+    /// The service runner moved on.
+    Service(crate::playlists::ServiceStatus),
 }
 
 pub fn recorder_config(r: &RecordingSettings) -> RecorderConfig {

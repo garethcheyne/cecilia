@@ -6,6 +6,8 @@ pub mod library;
 pub mod mcp;
 pub mod music;
 pub mod organs;
+pub mod playlist_api;
+pub mod playlists;
 pub mod services;
 pub mod settings;
 
@@ -115,6 +117,14 @@ pub async fn build(config: Config) -> anyhow::Result<App> {
         app_events.clone(),
     );
     let player = start_player(hub.clone(), live.clone(), sim_organ, player_settings(&current.playback));
+    let playlists = Arc::new(crate::playlists::PlaylistStore::load(&config.data_dir)?);
+    let service = crate::playlists::Service::start(
+        player.clone(),
+        Arc::clone(&library),
+        hub.clone(),
+        live.clone(),
+        app_events.clone(),
+    );
 
     let status = hub.configure(settings.get().midi).await?;
     if !status.missing.is_empty() {
@@ -133,9 +143,11 @@ pub async fn build(config: Config) -> anyhow::Result<App> {
         recorder,
         player,
         app_events,
+        playlists,
+        service,
     };
     let mut router = Router::new()
-        .nest("/api/v1", api::router().merge(music::router()))
+        .nest("/api/v1", api::router().merge(music::router()).merge(playlist_api::router()))
         .route("/mcp", post(mcp::post).get(mcp::get))
         .with_state(state.clone())
         .layer(cors_layer(config.allowed_origins))

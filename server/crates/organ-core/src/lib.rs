@@ -16,6 +16,7 @@ pub mod midi;
 pub mod organ;
 pub mod organist;
 pub mod player;
+pub mod playlist;
 pub mod recorder;
 pub mod sample;
 pub mod simulator;

@@ -387,7 +387,8 @@ impl Engine {
             Cmd::Load(track, options, play) => self.load(*track, options, play),
             Cmd::Play => match self.state {
                 PlayerState::Paused => self.resume(),
-                PlayerState::Stopped if self.track.is_some() => self.begin(self.span().map_or(0, |s| s.start)),
+                // From where it was loaded or cued (the verse start after a stop).
+                PlayerState::Stopped if self.track.is_some() => self.begin(self.anchor_pos as u32),
                 _ => {}
             },
             Cmd::Pause => match self.state {
