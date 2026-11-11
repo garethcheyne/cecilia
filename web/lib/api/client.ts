@@ -31,6 +31,29 @@ export type PlaylistSummary = Schemas["PlaylistSummary"]
 export type Delay = Schemas["Delay"]
 export type VersePlan = Schemas["VersePlan"]
 export type ServiceStatus = Schemas["ServiceStatus"]
+export type ImportAnalysis = Schemas["ImportAnalysis"]
+export type ImportOptions = Schemas["ImportOptions"]
+export type XmlImportOptions = Schemas["XmlImportOptions"]
+
+/** Absolute URL of an API path, for downloads and uploads. */
+export function apiUrl(path: string): string {
+  return `${API_URL}${path}`
+}
+
+/** POST a file's bytes to an import endpoint. */
+export async function uploadFile<T>(path: string, file: File, options?: unknown): Promise<T> {
+  const params = new URLSearchParams({ name: file.name })
+  if (options !== undefined) params.set("options", JSON.stringify(options))
+  let res: Response
+  try {
+    res = await fetch(apiUrl(`${path}?${params}`), { method: "POST", body: file })
+  } catch {
+    throw new ApiError("Can't reach the Registra server. Is it running?")
+  }
+  const body = await res.json().catch(() => null)
+  if (!res.ok) throw new ApiError(body?.error ?? `Request failed (${res.status})`)
+  return body as T
+}
 
 /** Empty string = same origin (production, served by organ-server). */
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? ""

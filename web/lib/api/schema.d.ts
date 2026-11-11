@@ -22,6 +22,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/export/library-midi.zip": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Every track as a MIDI file for the current organ, zipped: a backup that
+         *     any MIDI program can open.
+         */
+        get: operations["export_zip"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/export/library.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The library as a spreadsheet (CSV). */
+        get: operations["export_csv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/health": {
         parameters: {
             query?: never;
@@ -33,6 +70,43 @@ export interface paths {
         get: operations["health"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Import a file into the library. MIDI files may become several pieces. */
+        post: operations["import"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/import/analyse": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Look inside a file before importing it: channels or staves, length,
+         *     and whether it was recorded on the current organ.
+         */
+        post: operations["analyse"];
         delete?: never;
         options?: never;
         head?: never;
@@ -102,6 +176,23 @@ export interface paths {
         };
         /** How the track's stops map onto the current organ (the virtual organist's plan). */
         get: operations["track_mapping"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/library/{id}/midi": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download a track as a MIDI file. */
+        get: operations["export_midi"];
         put?: never;
         post?: never;
         delete?: never;
@@ -741,6 +832,30 @@ export interface components {
             /** @description What the assistant is called (and, with voice control, its wake word). */
             name: string;
         };
+        ChannelInfo: {
+            /**
+             * Format: int32
+             * @description 1-16.
+             */
+            channel: number;
+            /**
+             * Format: int32
+             * @description Same notes at the same times as an earlier channel (a doubled part).
+             */
+            duplicate_of?: number | null;
+            /** Format: int32 */
+            high: number;
+            /** Format: int32 */
+            low: number;
+            name?: string | null;
+            notes: number;
+            /**
+             * Format: float
+             * @description Average number of notes sounding together while any sound.
+             */
+            polyphony: number;
+            suggested?: null | components["schemas"]["DivisionRole"];
+        };
         /** @description How to cable the organ, in the words printed beside its sockets. */
         Connection: {
             /**
@@ -853,6 +968,8 @@ export interface components {
             /** @enum {string} */
             type: "unison_off";
         };
+        /** @enum {string} */
+        ExportFormat: "organ" | "general_midi";
         FadeRequest: {
             /** @description true starts a fade-out, false cancels it. */
             on: boolean;
@@ -862,9 +979,40 @@ export interface components {
          * @enum {string}
          */
         Family: "principal" | "flute" | "string" | "celeste" | "reed" | "mutation" | "mixture" | "percussion" | "other";
+        /** @enum {string} */
+        FileKind: "midi" | "musicxml";
         Health: {
             name: string;
             version: string;
+        };
+        ImportAnalysis: {
+            kind: components["schemas"]["FileKind"];
+            midi?: null | components["schemas"]["MidiAnalysis"];
+            musicxml?: null | components["schemas"]["XmlAnalysis"];
+            title: string;
+        };
+        ImportOptions: {
+            /**
+             * @description Channel (1-16) to division, for General MIDI files. Channels left out
+             *     are ignored. Default: the analysis's suggestions.
+             */
+            channels?: {
+                [key: string]: components["schemas"]["DivisionRole"];
+            };
+            /**
+             * @description Read the file as the current organ's own MIDI (stops and all).
+             *     Otherwise notes are mapped by channel.
+             */
+            organ_format?: boolean;
+            /** @description Pedal notes an octave up (MuseScore writes pedal parts at 16′ pitch). */
+            pedal_octave_up?: boolean;
+            /**
+             * Format: int32
+             * @description Split into separate pieces at silences this long (ms). None = one piece.
+             */
+            split_ms?: number | null;
+            /** @description Title for the piece (pieces get " (2)", " (3)"…). Default from the file. */
+            title?: string | null;
         };
         LoadOrgan: {
             organ_id: string;
@@ -905,6 +1053,22 @@ export interface components {
              * @description Track time of the first downbeat (after any pick-up).
              */
             offset_ms?: number;
+        };
+        MidiAnalysis: {
+            channels: components["schemas"]["ChannelInfo"][];
+            /** Format: int32 */
+            duration_ms: number;
+            /**
+             * @description Silences of 4 s or more (ms from the start), where the file could be
+             *     split into separate pieces.
+             */
+            gaps: number[];
+            /**
+             * Format: float
+             * @description Share (0-1) of the file's non-note messages that the current organ
+             *     understands. High means it was recorded on (or for) this organ.
+             */
+            organ_match: number;
         };
         /**
          * @description Which MIDI ports to use. Ports are identified by name, because OS-level port
@@ -1248,6 +1412,18 @@ export interface components {
             /** @description CSS colour of the label, e.g. "#1d4ed8". */
             text_color?: string | null;
         };
+        Stream: {
+            /** Format: int32 */
+            high: number;
+            /** @description "part:staff:voice", used to choose its division. */
+            id: string;
+            /** @description e.g. "Organ, lower staff, voice 2". */
+            label: string;
+            /** Format: int32 */
+            low: number;
+            notes: number;
+            suggested: components["schemas"]["DivisionRole"];
+        };
         Tempo: {
             /**
              * Format: int32
@@ -1408,6 +1584,44 @@ export interface components {
             /** @description What the organist typed, e.g. "4" or "12357". */
             text: string;
         };
+        XmlAnalysis: {
+            /** Format: int32 */
+            beat_unit: number;
+            /** Format: int32 */
+            beats: number;
+            /**
+             * Format: float
+             * @description Crotchets per minute (from the score, or 80 if it doesn't say).
+             */
+            bpm: number;
+            composer: string;
+            /** Format: int32 */
+            fifths: number;
+            measures: number;
+            streams: components["schemas"]["Stream"][];
+            title: string;
+        };
+        XmlImportOptions: {
+            /**
+             * Format: float
+             * @description Crotchets per minute (default: the score's tempo, or 80).
+             */
+            bpm?: number | null;
+            skip?: string[];
+            /**
+             * @description Stream id to division; streams left out use the suggestion. Map a
+             *     stream to nothing by leaving it out and listing it in `skip`.
+             */
+            streams?: {
+                [key: string]: components["schemas"]["DivisionRole"];
+            };
+            title?: string | null;
+            /**
+             * Format: int32
+             * @description Play it this many times as hymn verses (default 1).
+             */
+            verses?: number | null;
+        };
     };
     responses: never;
     parameters: never;
@@ -1467,6 +1681,44 @@ export interface operations {
             };
         };
     };
+    export_zip: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/zip": unknown;
+                };
+            };
+        };
+    };
+    export_csv: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv": unknown;
+                };
+            };
+        };
+    };
     health: {
         parameters: {
             query?: never;
@@ -1482,6 +1734,78 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Health"];
+                };
+            };
+        };
+    };
+    import: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The file's name, used to tell the format and as a default title. */
+                name: string;
+                /** @description JSON import options (`ImportOptions` for MIDI, `XmlImportOptions` for MusicXML). */
+                options: string | null;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/octet-stream": number[];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackSummary"][];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    analyse: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The file's name, used to tell the format and as a default title. */
+                name: string;
+                /** @description JSON import options (`ImportOptions` for MIDI, `XmlImportOptions` for MusicXML). */
+                options: string | null;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/octet-stream": number[];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportAnalysis"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
                 };
             };
         };
@@ -1687,6 +2011,38 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StopMapping"][];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    export_midi: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Track id */
+                id: string;
+                /** @description `organ` (default): the current organ's MIDI. `general_midi`: one channel per division. */
+                format: null | components["schemas"]["ExportFormat"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "audio/midi": unknown;
                 };
             };
             404: {

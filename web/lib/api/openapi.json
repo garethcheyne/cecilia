@@ -70,6 +70,40 @@
         }
       }
     },
+    "/api/v1/export/library-midi.zip": {
+      "get": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Every track as a MIDI file for the current organ, zipped: a backup that\nany MIDI program can open.",
+        "operationId": "export_zip",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/zip": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/export/library.csv": {
+      "get": {
+        "tags": [
+          "files"
+        ],
+        "summary": "The library as a spreadsheet (CSV).",
+        "operationId": "export_csv",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "text/csv": {}
+            }
+          }
+        }
+      }
+    },
     "/api/v1/health": {
       "get": {
         "tags": [
@@ -84,6 +118,147 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/import": {
+      "post": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Import a file into the library. MIDI files may become several pieces.",
+        "operationId": "import",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "The file's name, used to tell the format and as a default title.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "options",
+            "in": "path",
+            "description": "JSON import options (`ImportOptions` for MIDI, `XmlImportOptions` for MusicXML).",
+            "required": true,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrackSummary"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/import/analyse": {
+      "post": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Look inside a file before importing it: channels or staves, length,\nand whether it was recorded on the current organ.",
+        "operationId": "analyse",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "The file's name, used to tell the format and as a default title.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "options",
+            "in": "path",
+            "description": "JSON import options (`ImportOptions` for MIDI, `XmlImportOptions` for MusicXML).",
+            "required": true,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportAnalysis"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
                 }
               }
             }
@@ -372,6 +547,60 @@
                   }
                 }
               }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/library/{id}/midi": {
+      "get": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Download a track as a MIDI file.",
+        "operationId": "export_midi",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Track id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "path",
+            "description": "`organ` (default): the current organ's MIDI. `general_midi`: one channel per division.",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/components/schemas/ExportFormat"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "audio/midi": {}
             }
           },
           "404": {
@@ -1661,6 +1890,68 @@
           }
         }
       },
+      "ChannelInfo": {
+        "type": "object",
+        "required": [
+          "channel",
+          "notes",
+          "low",
+          "high",
+          "polyphony"
+        ],
+        "properties": {
+          "channel": {
+            "type": "integer",
+            "format": "int32",
+            "description": "1-16.",
+            "minimum": 0
+          },
+          "duplicate_of": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "description": "Same notes at the same times as an earlier channel (a doubled part).",
+            "minimum": 0
+          },
+          "high": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "low": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "notes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "polyphony": {
+            "type": "number",
+            "format": "float",
+            "description": "Average number of notes sounding together while any sound."
+          },
+          "suggested": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/DivisionRole"
+              }
+            ]
+          }
+        }
+      },
       "Connection": {
         "type": "object",
         "description": "How to cable the organ, in the words printed beside its sockets.",
@@ -2048,6 +2339,13 @@
         ],
         "description": "What a stop *is*, independent of what it's called on this organ.\nUnique per `(division, equivalent)` within an organ."
       },
+      "ExportFormat": {
+        "type": "string",
+        "enum": [
+          "organ",
+          "general_midi"
+        ]
+      },
       "FadeRequest": {
         "type": "object",
         "required": [
@@ -2075,6 +2373,13 @@
           "other"
         ]
       },
+      "FileKind": {
+        "type": "string",
+        "enum": [
+          "midi",
+          "musicxml"
+        ]
+      },
       "Health": {
         "type": "object",
         "required": [
@@ -2087,6 +2392,82 @@
           },
           "version": {
             "type": "string"
+          }
+        }
+      },
+      "ImportAnalysis": {
+        "type": "object",
+        "required": [
+          "kind",
+          "title"
+        ],
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/FileKind"
+          },
+          "midi": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/MidiAnalysis"
+              }
+            ]
+          },
+          "musicxml": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/XmlAnalysis"
+              }
+            ]
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      },
+      "ImportOptions": {
+        "type": "object",
+        "properties": {
+          "channels": {
+            "type": "object",
+            "description": "Channel (1-16) to division, for General MIDI files. Channels left out\nare ignored. Default: the analysis's suggestions.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DivisionRole"
+            },
+            "propertyNames": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          },
+          "organ_format": {
+            "type": "boolean",
+            "description": "Read the file as the current organ's own MIDI (stops and all).\nOtherwise notes are mapped by channel."
+          },
+          "pedal_octave_up": {
+            "type": "boolean",
+            "description": "Pedal notes an octave up (MuseScore writes pedal parts at 16′ pitch)."
+          },
+          "split_ms": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "description": "Split into separate pieces at silences this long (ms). None = one piece.",
+            "minimum": 0
+          },
+          "title": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Title for the piece (pieces get \" (2)\", \" (3)\"…). Default from the file."
           }
         }
       },
@@ -2178,6 +2559,42 @@
             "format": "int32",
             "description": "Track time of the first downbeat (after any pick-up).",
             "minimum": 0
+          }
+        }
+      },
+      "MidiAnalysis": {
+        "type": "object",
+        "required": [
+          "channels",
+          "duration_ms",
+          "organ_match",
+          "gaps"
+        ],
+        "properties": {
+          "channels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChannelInfo"
+            }
+          },
+          "duration_ms": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "gaps": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            },
+            "description": "Silences of 4 s or more (ms from the start), where the file could be\nsplit into separate pieces."
+          },
+          "organ_match": {
+            "type": "number",
+            "format": "float",
+            "description": "Share (0-1) of the file's non-note messages that the current organ\nunderstands. High means it was recorded on (or for) this organ."
           }
         }
       },
@@ -3301,6 +3718,44 @@
           }
         }
       },
+      "Stream": {
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "notes",
+          "low",
+          "high",
+          "suggested"
+        ],
+        "properties": {
+          "high": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "id": {
+            "type": "string",
+            "description": "\"part:staff:voice\", used to choose its division."
+          },
+          "label": {
+            "type": "string",
+            "description": "e.g. \"Organ, lower staff, voice 2\"."
+          },
+          "low": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "notes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "suggested": {
+            "$ref": "#/components/schemas/DivisionRole"
+          }
+        }
+      },
       "Tempo": {
         "type": "object",
         "required": [
@@ -3795,6 +4250,100 @@
           "text": {
             "type": "string",
             "description": "What the organist typed, e.g. \"4\" or \"12357\"."
+          }
+        }
+      },
+      "XmlAnalysis": {
+        "type": "object",
+        "required": [
+          "title",
+          "composer",
+          "streams",
+          "bpm",
+          "beats",
+          "beat_unit",
+          "fifths",
+          "measures"
+        ],
+        "properties": {
+          "beat_unit": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "beats": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "bpm": {
+            "type": "number",
+            "format": "float",
+            "description": "Crotchets per minute (from the score, or 80 if it doesn't say)."
+          },
+          "composer": {
+            "type": "string"
+          },
+          "fifths": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "measures": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "streams": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Stream"
+            }
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      },
+      "XmlImportOptions": {
+        "type": "object",
+        "properties": {
+          "bpm": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "float",
+            "description": "Crotchets per minute (default: the score's tempo, or 80)."
+          },
+          "skip": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "streams": {
+            "type": "object",
+            "description": "Stream id to division; streams left out use the suggestion. Map a\nstream to nothing by leaving it out and listing it in `skip`.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DivisionRole"
+            },
+            "propertyNames": {
+              "type": "string"
+            }
+          },
+          "title": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "verses": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "description": "Play it this many times as hymn verses (default 1).",
+            "minimum": 0
           }
         }
       }

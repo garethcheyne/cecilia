@@ -6,16 +6,20 @@ import {
   ArrowUpIcon,
   AudioLinesIcon,
   CopyIcon,
+  DownloadIcon,
   EllipsisVerticalIcon,
+  FileDownIcon,
   LibraryIcon,
   PencilIcon,
   PlayIcon,
   SearchIcon,
   Trash2Icon,
+  UploadIcon,
 } from "lucide-react"
 import { toast } from "sonner"
 
 import { useEngine } from "@/components/engine-provider"
+import { ImportDialog } from "@/components/library/import-dialog"
 import { TrackDetailsDialog } from "@/components/library/track-details-dialog"
 import {
   AlertDialog,
@@ -42,7 +46,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/in
 import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useTransport } from "@/hooks/use-transport"
-import { api, call, type TrackSummary } from "@/lib/api/client"
+import { api, apiUrl, call, type TrackSummary } from "@/lib/api/client"
 import { formatClock, formatDate } from "@/lib/time"
 import { cn } from "@/lib/utils"
 
@@ -133,6 +137,19 @@ function TrackMenu({
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
+          <DropdownMenuItem render={<a href={apiUrl(`/api/v1/library/${encodeURIComponent(track.id)}/midi`)} download />}>
+            <FileDownIcon />
+            MIDI for this organ
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            render={<a href={apiUrl(`/api/v1/library/${encodeURIComponent(track.id)}/midi?format=general_midi`)} download />}
+          >
+            <FileDownIcon />
+            General MIDI
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
           <DropdownMenuItem variant="destructive" onClick={onDelete}>
             <Trash2Icon />
             Delete
@@ -155,6 +172,7 @@ export function LibraryView() {
   const [sort, setSort] = React.useState<{ key: SortKey; asc: boolean }>({ key: "added", asc: false })
   const [editing, setEditing] = React.useState<TrackSummary | null>(null)
   const [deleting, setDeleting] = React.useState<TrackSummary | null>(null)
+  const [importing, setImporting] = React.useState(false)
 
   React.useEffect(() => {
     if (!connected) return
@@ -235,6 +253,34 @@ export function LibraryView() {
             {shown.length === tracks.length ? `${tracks.length} pieces` : `${shown.length} of ${tracks.length}`}
           </span>
         )}
+        <div className="ml-auto flex gap-2">
+          <Button variant="outline" onClick={() => setImporting(true)}>
+            <UploadIcon data-icon="inline-start" />
+            Import
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button variant="outline" aria-label="Export the library">
+                  <DownloadIcon data-icon="inline-start" />
+                  <span className="hidden sm:inline">Export</span>
+                </Button>
+              }
+            />
+            <DropdownMenuContent align="end">
+              <DropdownMenuGroup>
+                <DropdownMenuItem render={<a href={apiUrl("/api/v1/export/library.csv")} download />}>
+                  <FileDownIcon />
+                  List as a spreadsheet (CSV)
+                </DropdownMenuItem>
+                <DropdownMenuItem render={<a href={apiUrl("/api/v1/export/library-midi.zip")} download />}>
+                  <FileDownIcon />
+                  Back up every piece as MIDI
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       {tracks === null ? (
@@ -331,6 +377,7 @@ export function LibraryView() {
         </>
       )}
 
+      <ImportDialog open={importing} onOpenChange={setImporting} />
       <TrackDetailsDialog track={editing} open={!!editing} onOpenChange={(o) => !o && setEditing(null)} />
 
       <AlertDialog open={!!deleting} onOpenChange={(o) => !o && setDeleting(null)}>
