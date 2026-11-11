@@ -1,0 +1,16 @@
+# Rust
+/server/target/
+
+# Web
+/web/node_modules/
+/web/.next/
+/web/out/
+/web/next-env.d.ts
+*.tsbuildinfo
+
+# Third-party installer kept for reference only - never commit it
+*.msi
+
+# Local
+.env*.local
+*.log

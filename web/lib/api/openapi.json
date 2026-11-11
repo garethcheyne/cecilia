@@ -1,0 +1,1483 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Registra API",
+    "description": "Headless organ MIDI engine. Live events are streamed over a WebSocket at `/api/v1/events` as JSON `EngineEvent` messages.",
+    "license": {
+      "name": "MIT",
+      "identifier": "MIT"
+    },
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/assistant": {
+      "get": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "The assistant's name, used by the MCP server (`/mcp`).",
+        "operationId": "get_assistant",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Assistant"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "Rename the assistant (1-40 characters).",
+        "operationId": "put_assistant",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Assistant"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Assistant"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/health": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Server identity and version.",
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/midi/config": {
+      "get": {
+        "tags": [
+          "midi"
+        ],
+        "summary": "The saved port selection.",
+        "operationId": "get_config",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MidiConfig"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "midi"
+        ],
+        "summary": "Save a new port selection and reconnect. Ports that could not be opened\nare listed in `missing` in the response.",
+        "operationId": "put_config",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MidiConfig"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MidiStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/midi/panic": {
+      "post": {
+        "tags": [
+          "midi"
+        ],
+        "summary": "Send All Notes Off and All Sound Off on every channel.",
+        "operationId": "panic",
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/midi/ports": {
+      "get": {
+        "tags": [
+          "midi"
+        ],
+        "summary": "MIDI ports currently available on this machine.",
+        "operationId": "ports",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortList"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/midi/status": {
+      "get": {
+        "tags": [
+          "midi"
+        ],
+        "summary": "Open connections and test recorder state.",
+        "operationId": "status",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MidiStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/midi/test/play": {
+      "post": {
+        "tags": [
+          "test"
+        ],
+        "summary": "Play the test recording back, byte-for-byte, to the output port.",
+        "operationId": "test_play",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MidiStatus"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/midi/test/record": {
+      "post": {
+        "tags": [
+          "test"
+        ],
+        "summary": "Start the raw test recorder (discards the previous test recording).",
+        "operationId": "test_record",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MidiStatus"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/midi/test/stop": {
+      "post": {
+        "tags": [
+          "test"
+        ],
+        "summary": "Stop test recording or playback.",
+        "operationId": "test_stop",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MidiStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organs": {
+      "get": {
+        "tags": [
+          "organs"
+        ],
+        "summary": "Organ definitions available on this server.",
+        "operationId": "list_organs",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrganSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organs/{id}": {
+      "get": {
+        "tags": [
+          "organs"
+        ],
+        "summary": "A full organ definition.",
+        "operationId": "get_organ",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Organ id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganDefinition"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/simulator": {
+      "get": {
+        "tags": [
+          "simulator"
+        ],
+        "summary": "The simulator's organ, console state and audio device.",
+        "operationId": "sim_state",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimSnapshot"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/simulator/act": {
+      "post": {
+        "tags": [
+          "simulator"
+        ],
+        "summary": "Do something at the simulated console: press a key, draw a stop, move a\npedal. It sounds, and the organ's MIDI is sent to the engine as input.",
+        "operationId": "sim_act",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrganEvent"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/simulator/organ": {
+      "put": {
+        "tags": [
+          "simulator"
+        ],
+        "summary": "Choose which organ the simulator plays (saved).",
+        "operationId": "sim_load_organ",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoadOrgan"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimSnapshot"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/simulator/reset": {
+      "post": {
+        "tags": [
+          "simulator"
+        ],
+        "summary": "Release all keys and push in every stop.",
+        "operationId": "sim_reset",
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiErrorBody": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "Assistant": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "What the assistant is called (and, with voice control, its wake word)."
+          }
+        }
+      },
+      "Connection": {
+        "type": "object",
+        "description": "How to cable the organ, in the words printed beside its sockets.",
+        "properties": {
+          "notes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Anything else the organist should know before relying on this\ndefinition (unverified numbers, settings to change on the organ...)."
+          },
+          "play_to": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The organ's socket to play back into, e.g. \"MIDI IN\"."
+          },
+          "record_from": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The organ's socket to record from, e.g. \"MIDI SEQ\"."
+          }
+        }
+      },
+      "ConsoleState": {
+        "type": "object",
+        "required": [
+          "stops",
+          "notes",
+          "expression",
+          "master_volume"
+        ],
+        "properties": {
+          "expression": {
+            "type": "object",
+            "description": "Expression per division, 0-127 (only divisions that have a pedal).",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            },
+            "propertyNames": {
+              "type": "string",
+              "description": "The role of a keyboard, independent of its local name (Great, Hauptwerk,\nGrand Orgue...). Order follows the English convention.",
+              "enum": [
+                "pedal",
+                "great",
+                "swell",
+                "choir",
+                "solo",
+                "echo"
+              ]
+            }
+          },
+          "master_volume": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "notes": {
+            "type": "object",
+            "description": "Held keys per division.",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0
+              },
+              "uniqueItems": true
+            },
+            "propertyNames": {
+              "type": "string",
+              "description": "The role of a keyboard, independent of its local name (Great, Hauptwerk,\nGrand Orgue...). Order follows the English convention.",
+              "enum": [
+                "pedal",
+                "great",
+                "swell",
+                "choir",
+                "solo",
+                "echo"
+              ]
+            }
+          },
+          "stops": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Ids of stops that are on.",
+            "uniqueItems": true
+          }
+        }
+      },
+      "CouplerPitch": {
+        "type": "string",
+        "enum": [
+          "sub",
+          "unison",
+          "super"
+        ]
+      },
+      "Direction": {
+        "type": "string",
+        "enum": [
+          "in",
+          "out"
+        ]
+      },
+      "Division": {
+        "type": "object",
+        "required": [
+          "role",
+          "name",
+          "channel",
+          "low_key",
+          "high_key"
+        ],
+        "properties": {
+          "channel": {
+            "type": "integer",
+            "format": "int32",
+            "description": "MIDI channel 1-16 that carries this keyboard's notes.",
+            "minimum": 0
+          },
+          "expression": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ValueBinding"
+              }
+            ]
+          },
+          "high_key": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "low_key": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Lowest and highest MIDI note on the keyboard.",
+            "minimum": 0
+          },
+          "name": {
+            "type": "string",
+            "description": "Display name, e.g. \"Great\", \"Hauptwerk\", \"Grand Orgue\"."
+          },
+          "role": {
+            "$ref": "#/components/schemas/DivisionRole"
+          }
+        }
+      },
+      "DivisionRole": {
+        "type": "string",
+        "description": "The role of a keyboard, independent of its local name (Great, Hauptwerk,\nGrand Orgue...). Order follows the English convention.",
+        "enum": [
+          "pedal",
+          "great",
+          "swell",
+          "choir",
+          "solo",
+          "echo"
+        ]
+      },
+      "EngineEvent": {
+        "oneOf": [
+          {
+            "type": "object",
+            "description": "A raw MIDI message was received or sent.",
+            "required": [
+              "port",
+              "direction",
+              "t_us",
+              "bytes",
+              "type"
+            ],
+            "properties": {
+              "bytes": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0
+                }
+              },
+              "direction": {
+                "$ref": "#/components/schemas/Direction"
+              },
+              "port": {
+                "type": "string"
+              },
+              "t_us": {
+                "type": "integer",
+                "format": "int64",
+                "description": "Microseconds since the engine started.",
+                "minimum": 0
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "midi"
+                ]
+              }
+            }
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MidiStatus",
+                "description": "Connections or test recorder state changed."
+              },
+              {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "status"
+                    ]
+                  }
+                }
+              }
+            ],
+            "description": "Connections or test recorder state changed."
+          }
+        ],
+        "description": "Pushed to every subscriber (e.g. WebSocket clients)."
+      },
+      "Equivalent": {
+        "oneOf": [
+          {
+            "type": "object",
+            "description": "A speaking stop.",
+            "required": [
+              "family",
+              "footage",
+              "type"
+            ],
+            "properties": {
+              "family": {
+                "$ref": "#/components/schemas/Family"
+              },
+              "footage": {
+                "type": "string",
+                "description": "Footage such as \"16\", \"8\", \"4\", \"2 2/3\", \"1 3/5\"."
+              },
+              "ranks": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "format": "int32",
+                "description": "Number of ranks (mixtures, celestes).",
+                "minimum": 0
+              },
+              "tag": {
+                "type": "string",
+                "description": "Distinguishes similar stops, e.g. \"Open Diapason I\"."
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "voice"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Plays `source` division's stops from this stop's keyboard.",
+            "required": [
+              "source",
+              "pitch",
+              "type"
+            ],
+            "properties": {
+              "pitch": {
+                "$ref": "#/components/schemas/CouplerPitch"
+              },
+              "source": {
+                "$ref": "#/components/schemas/DivisionRole"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "coupler"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "tremulant"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Unison off for this division.",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "unison_off"
+                ]
+              }
+            }
+          }
+        ],
+        "description": "What a stop *is*, independent of what it's called on this organ.\nUnique per `(division, equivalent)` within an organ."
+      },
+      "Family": {
+        "type": "string",
+        "description": "Tonal family, used to find a similar stop on another organ.",
+        "enum": [
+          "principal",
+          "flute",
+          "string",
+          "celeste",
+          "reed",
+          "mutation",
+          "mixture",
+          "percussion",
+          "other"
+        ]
+      },
+      "Health": {
+        "type": "object",
+        "required": [
+          "name",
+          "version"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          }
+        }
+      },
+      "LoadOrgan": {
+        "type": "object",
+        "required": [
+          "organ_id"
+        ],
+        "properties": {
+          "organ_id": {
+            "type": "string"
+          }
+        }
+      },
+      "Manufacturer": {
+        "type": "string",
+        "enum": [
+          "generic",
+          "hauptwerk",
+          "allen",
+          "classic_organ_works",
+          "content",
+          "johannus",
+          "johannus_programmable",
+          "makin",
+          "peterson",
+          "rodgers",
+          "rodgers_phase2",
+          "solid_state1",
+          "solid_state2",
+          "viscount",
+          "walker",
+          "wyvern"
+        ]
+      },
+      "MidiConfig": {
+        "type": "object",
+        "description": "Which MIDI ports to use. Ports are identified by name, because OS-level port\nids are not stable across restarts or replugging.",
+        "properties": {
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Input ports to listen to (the organ console, or Hauptwerk's output)."
+          },
+          "output": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The single output port to drive (the organ, or Hauptwerk's input)."
+          }
+        }
+      },
+      "MidiStatus": {
+        "type": "object",
+        "required": [
+          "inputs",
+          "missing",
+          "test"
+        ],
+        "properties": {
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Input ports that are currently open."
+          },
+          "missing": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Configured ports that could not be opened (unplugged, in use, renamed)."
+          },
+          "output": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Output port that is currently open."
+          },
+          "test": {
+            "$ref": "#/components/schemas/TestStatus"
+          }
+        }
+      },
+      "OrganDefaults": {
+        "type": "object",
+        "properties": {
+          "margin_end_ms": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Silence after the last note.",
+            "minimum": 0
+          },
+          "margin_start_ms": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Silence before the first note of a new recording.",
+            "minimum": 0
+          }
+        }
+      },
+      "OrganDefinition": {
+        "type": "object",
+        "required": [
+          "schema",
+          "id",
+          "name",
+          "manufacturer",
+          "divisions",
+          "stops"
+        ],
+        "properties": {
+          "all_stops_off": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Pattern",
+                "description": "A single message that pushes in every stop (the organ's general\ncancel), e.g. Johannus/Makin `F0 00 4A 4F 48 41 53 7F F7`. Organs whose\nstops only *toggle* need it so playback can start from a known state."
+              }
+            ]
+          },
+          "connection": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Connection"
+              }
+            ]
+          },
+          "defaults": {
+            "$ref": "#/components/schemas/OrganDefaults"
+          },
+          "divisions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Division"
+            },
+            "description": "Keyboards, in the order they appear (bottom to top is up to the UI)."
+          },
+          "id": {
+            "type": "string",
+            "description": "File-safe identifier, e.g. \"demo\"."
+          },
+          "manufacturer": {
+            "$ref": "#/components/schemas/Manufacturer"
+          },
+          "master_volume": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ValueBinding"
+              }
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "schema": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "stops": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Stop"
+            }
+          }
+        }
+      },
+      "OrganEvent": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "division",
+              "key",
+              "velocity",
+              "type"
+            ],
+            "properties": {
+              "division": {
+                "$ref": "#/components/schemas/DivisionRole"
+              },
+              "key": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "note"
+                ]
+              },
+              "velocity": {
+                "type": "integer",
+                "format": "int32",
+                "description": "0 = note off.",
+                "minimum": 0
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "stop",
+              "on",
+              "type"
+            ],
+            "properties": {
+              "on": {
+                "type": "boolean"
+              },
+              "stop": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "stop"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "A toggle message: the receiver flips the stop's current state.",
+            "required": [
+              "stop",
+              "type"
+            ],
+            "properties": {
+              "stop": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "stop_toggle"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "division",
+              "value",
+              "type"
+            ],
+            "properties": {
+              "division": {
+                "$ref": "#/components/schemas/DivisionRole"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "expression"
+                ]
+              },
+              "value": {
+                "type": "integer",
+                "format": "int32",
+                "description": "Normalised 0-127.",
+                "minimum": 0
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "value",
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "master_volume"
+                ]
+              },
+              "value": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "General cancel: every stop pushed in.",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "all_stops_off"
+                ]
+              }
+            }
+          }
+        ],
+        "description": "Something that happened on (or should happen to) an organ console."
+      },
+      "OrganSummary": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "manufacturer",
+          "divisions",
+          "stops",
+          "builtin"
+        ],
+        "properties": {
+          "builtin": {
+            "type": "boolean",
+            "description": "Shipped with Registra (read-only) rather than user-created."
+          },
+          "divisions": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "id": {
+            "type": "string"
+          },
+          "manufacturer": {
+            "$ref": "#/components/schemas/Manufacturer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "stops": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "Pattern": {
+        "type": "string",
+        "description": "MIDI message as hex bytes, optionally with one `vv` value slot, e.g. \"B1 0B vv\""
+      },
+      "PortList": {
+        "type": "object",
+        "required": [
+          "inputs",
+          "outputs"
+        ],
+        "properties": {
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "outputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "SimSnapshot": {
+        "type": "object",
+        "required": [
+          "organ_id",
+          "console"
+        ],
+        "properties": {
+          "audio": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Name of the audio device, if sound is available."
+          },
+          "console": {
+            "$ref": "#/components/schemas/ConsoleState"
+          },
+          "organ_id": {
+            "type": "string"
+          }
+        }
+      },
+      "Stop": {
+        "type": "object",
+        "required": [
+          "id",
+          "division",
+          "equivalent",
+          "names"
+        ],
+        "properties": {
+          "delay_ms": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Pause after changing this stop before continuing playback.",
+            "minimum": 0
+          },
+          "division": {
+            "$ref": "#/components/schemas/DivisionRole"
+          },
+          "equivalent": {
+            "$ref": "#/components/schemas/Equivalent"
+          },
+          "full_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Tooltip; defaults to the label lines joined."
+          },
+          "id": {
+            "type": "string",
+            "description": "Unique within the organ; stable across edits."
+          },
+          "midi": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StopBinding"
+            },
+            "description": "Up to five ways the organ can switch this stop (jamb, crescendo, pistons...)."
+          },
+          "names": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Up to three label lines shown on the stop, e.g. [\"Open\", \"Diapason\", \"8\"]."
+          },
+          "repeat_ms": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Minimum gap between conflicting on/off messages (moving drawstops).",
+            "minimum": 0
+          },
+          "style": {
+            "$ref": "#/components/schemas/StopStyle"
+          }
+        }
+      },
+      "StopBinding": {
+        "oneOf": [
+          {
+            "type": "object",
+            "description": "Distinct messages for on and off.",
+            "required": [
+              "on",
+              "off",
+              "type"
+            ],
+            "properties": {
+              "off": {
+                "$ref": "#/components/schemas/Pattern"
+              },
+              "on": {
+                "$ref": "#/components/schemas/Pattern"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "on_off"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "The same message flips the stop.",
+            "required": [
+              "msg",
+              "type"
+            ],
+            "properties": {
+              "msg": {
+                "$ref": "#/components/schemas/Pattern"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "toggle"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "One message with a value slot carrying `on` or `off`.",
+            "required": [
+              "pattern",
+              "on",
+              "off",
+              "type"
+            ],
+            "properties": {
+              "off": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0
+              },
+              "on": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0
+              },
+              "pattern": {
+                "$ref": "#/components/schemas/Pattern"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "switch"
+                ]
+              }
+            }
+          }
+        ],
+        "description": "How a stop is switched over MIDI."
+      },
+      "StopShape": {
+        "type": "string",
+        "enum": [
+          "round",
+          "rectangle"
+        ]
+      },
+      "StopStyle": {
+        "type": "object",
+        "properties": {
+          "background": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "invert": {
+            "type": "boolean",
+            "description": "Swap text and background colours when the stop is on."
+          },
+          "shape": {
+            "$ref": "#/components/schemas/StopShape"
+          },
+          "text_color": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "CSS colour of the label, e.g. \"#1d4ed8\"."
+          }
+        }
+      },
+      "TestState": {
+        "type": "string",
+        "enum": [
+          "idle",
+          "recording",
+          "playing"
+        ]
+      },
+      "TestStatus": {
+        "type": "object",
+        "required": [
+          "state",
+          "events",
+          "duration_ms",
+          "position_ms"
+        ],
+        "properties": {
+          "duration_ms": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Length of the test recording (grows live while recording).",
+            "minimum": 0
+          },
+          "events": {
+            "type": "integer",
+            "description": "Number of MIDI messages captured by the test recorder.",
+            "minimum": 0
+          },
+          "position_ms": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Playback position while playing, otherwise 0.",
+            "minimum": 0
+          },
+          "state": {
+            "$ref": "#/components/schemas/TestState"
+          }
+        }
+      },
+      "ValueBinding": {
+        "type": "object",
+        "description": "A value-carrying control such as an expression pedal or master volume.",
+        "required": [
+          "pattern"
+        ],
+        "properties": {
+          "max": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "min": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "pattern": {
+            "$ref": "#/components/schemas/Pattern",
+            "description": "Must contain a `vv` slot."
+          }
+        }
+      }
+    }
+  }
+}

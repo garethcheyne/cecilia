@@ -1,0 +1,588 @@
+{
+  "schema": 1,
+  "id": "makin-2m",
+  "name": "Makin 2-manual (template)",
+  "manufacturer": "makin",
+  "divisions": [
+    {
+      "role": "pedal",
+      "name": "Pedal",
+      "channel": 3,
+      "low_key": 36,
+      "high_key": 67
+    },
+    {
+      "role": "great",
+      "name": "Great",
+      "channel": 1,
+      "low_key": 36,
+      "high_key": 96
+    },
+    {
+      "role": "swell",
+      "name": "Swell",
+      "channel": 2,
+      "low_key": 36,
+      "high_key": 96,
+      "expression": {
+        "pattern": "B1 0B vv",
+        "min": 55,
+        "max": 127
+      }
+    }
+  ],
+  "stops": [
+    {
+      "id": "ped-subbass",
+      "division": "pedal",
+      "equivalent": {
+        "type": "voice",
+        "family": "flute",
+        "footage": "16"
+      },
+      "names": [
+        "Sub Bass",
+        "16"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 00"
+        }
+      ]
+    },
+    {
+      "id": "ped-bourdon",
+      "division": "pedal",
+      "equivalent": {
+        "type": "voice",
+        "family": "flute",
+        "footage": "16",
+        "tag": "soft"
+      },
+      "names": [
+        "Bourdon",
+        "16"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 01"
+        }
+      ]
+    },
+    {
+      "id": "ped-principal",
+      "division": "pedal",
+      "equivalent": {
+        "type": "voice",
+        "family": "principal",
+        "footage": "8"
+      },
+      "names": [
+        "Principal",
+        "8"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 02"
+        }
+      ]
+    },
+    {
+      "id": "ped-bassflute",
+      "division": "pedal",
+      "equivalent": {
+        "type": "voice",
+        "family": "flute",
+        "footage": "8"
+      },
+      "names": [
+        "Bass Flute",
+        "8"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 03"
+        }
+      ]
+    },
+    {
+      "id": "ped-choralbass",
+      "division": "pedal",
+      "equivalent": {
+        "type": "voice",
+        "family": "principal",
+        "footage": "4"
+      },
+      "names": [
+        "Choral Bass",
+        "4"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 04"
+        }
+      ]
+    },
+    {
+      "id": "ped-trombone",
+      "division": "pedal",
+      "equivalent": {
+        "type": "voice",
+        "family": "reed",
+        "footage": "16"
+      },
+      "names": [
+        "Trombone",
+        "16"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 05"
+        }
+      ],
+      "style": {
+        "shape": "round",
+        "text_color": "#b91c1c"
+      }
+    },
+    {
+      "id": "ped-sw",
+      "division": "pedal",
+      "equivalent": {
+        "type": "coupler",
+        "source": "swell",
+        "pitch": "unison"
+      },
+      "names": [
+        "Swell",
+        "to Pedal"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 06"
+        }
+      ],
+      "style": {
+        "shape": "rectangle"
+      }
+    },
+    {
+      "id": "ped-gt",
+      "division": "pedal",
+      "equivalent": {
+        "type": "coupler",
+        "source": "great",
+        "pitch": "unison"
+      },
+      "names": [
+        "Great",
+        "to Pedal"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 07"
+        }
+      ],
+      "style": {
+        "shape": "rectangle"
+      }
+    },
+    {
+      "id": "sw-gedackt",
+      "division": "swell",
+      "equivalent": {
+        "type": "voice",
+        "family": "flute",
+        "footage": "8"
+      },
+      "names": [
+        "Gedackt",
+        "8"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 08"
+        }
+      ]
+    },
+    {
+      "id": "sw-salicional",
+      "division": "swell",
+      "equivalent": {
+        "type": "voice",
+        "family": "string",
+        "footage": "8"
+      },
+      "names": [
+        "Salicional",
+        "8"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 09"
+        }
+      ]
+    },
+    {
+      "id": "sw-celeste",
+      "division": "swell",
+      "equivalent": {
+        "type": "voice",
+        "family": "celeste",
+        "footage": "8",
+        "ranks": 2
+      },
+      "names": [
+        "Voix Celeste",
+        "8"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 0A"
+        }
+      ]
+    },
+    {
+      "id": "sw-gemshorn",
+      "division": "swell",
+      "equivalent": {
+        "type": "voice",
+        "family": "principal",
+        "footage": "4"
+      },
+      "names": [
+        "Gemshorn",
+        "4"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 0B"
+        }
+      ]
+    },
+    {
+      "id": "sw-nazard",
+      "division": "swell",
+      "equivalent": {
+        "type": "voice",
+        "family": "mutation",
+        "footage": "2 2/3"
+      },
+      "names": [
+        "Nazard",
+        "2 2/3"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 0C"
+        }
+      ]
+    },
+    {
+      "id": "sw-piccolo",
+      "division": "swell",
+      "equivalent": {
+        "type": "voice",
+        "family": "flute",
+        "footage": "2"
+      },
+      "names": [
+        "Piccolo",
+        "2"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 0D"
+        }
+      ]
+    },
+    {
+      "id": "sw-tierce",
+      "division": "swell",
+      "equivalent": {
+        "type": "voice",
+        "family": "mutation",
+        "footage": "1 3/5"
+      },
+      "names": [
+        "Tierce",
+        "1 3/5"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 0E"
+        }
+      ]
+    },
+    {
+      "id": "sw-oboe",
+      "division": "swell",
+      "equivalent": {
+        "type": "voice",
+        "family": "reed",
+        "footage": "8"
+      },
+      "names": [
+        "Oboe",
+        "8"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 0F"
+        }
+      ],
+      "style": {
+        "shape": "round",
+        "text_color": "#b91c1c"
+      }
+    },
+    {
+      "id": "sw-tremulant",
+      "division": "swell",
+      "equivalent": {
+        "type": "tremulant"
+      },
+      "names": [
+        "Tremulant"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 10"
+        }
+      ]
+    },
+    {
+      "id": "gt-bourdon",
+      "division": "great",
+      "equivalent": {
+        "type": "voice",
+        "family": "flute",
+        "footage": "16"
+      },
+      "names": [
+        "Bourdon",
+        "16"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 11"
+        }
+      ]
+    },
+    {
+      "id": "gt-opendiap",
+      "division": "great",
+      "equivalent": {
+        "type": "voice",
+        "family": "principal",
+        "footage": "8"
+      },
+      "names": [
+        "Open",
+        "Diapason",
+        "8"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 12"
+        }
+      ]
+    },
+    {
+      "id": "gt-stoppeddiap",
+      "division": "great",
+      "equivalent": {
+        "type": "voice",
+        "family": "flute",
+        "footage": "8"
+      },
+      "names": [
+        "Stopped",
+        "Diapason",
+        "8"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 13"
+        }
+      ]
+    },
+    {
+      "id": "gt-principal",
+      "division": "great",
+      "equivalent": {
+        "type": "voice",
+        "family": "principal",
+        "footage": "4"
+      },
+      "names": [
+        "Principal",
+        "4"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 14"
+        }
+      ]
+    },
+    {
+      "id": "gt-flute",
+      "division": "great",
+      "equivalent": {
+        "type": "voice",
+        "family": "flute",
+        "footage": "4"
+      },
+      "names": [
+        "Flute",
+        "4"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 15"
+        }
+      ]
+    },
+    {
+      "id": "gt-twelfth",
+      "division": "great",
+      "equivalent": {
+        "type": "voice",
+        "family": "mutation",
+        "footage": "2 2/3"
+      },
+      "names": [
+        "Twelfth",
+        "2 2/3"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 16"
+        }
+      ]
+    },
+    {
+      "id": "gt-fifteenth",
+      "division": "great",
+      "equivalent": {
+        "type": "voice",
+        "family": "principal",
+        "footage": "2"
+      },
+      "names": [
+        "Fifteenth",
+        "2"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 17"
+        }
+      ]
+    },
+    {
+      "id": "gt-mixture",
+      "division": "great",
+      "equivalent": {
+        "type": "voice",
+        "family": "mixture",
+        "footage": "1 1/3",
+        "ranks": 4
+      },
+      "names": [
+        "Mixture",
+        "IV"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 18"
+        }
+      ]
+    },
+    {
+      "id": "gt-trumpet",
+      "division": "great",
+      "equivalent": {
+        "type": "voice",
+        "family": "reed",
+        "footage": "8"
+      },
+      "names": [
+        "Trumpet",
+        "8"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 19"
+        }
+      ],
+      "style": {
+        "shape": "round",
+        "text_color": "#b91c1c"
+      }
+    },
+    {
+      "id": "gt-sw",
+      "division": "great",
+      "equivalent": {
+        "type": "coupler",
+        "source": "swell",
+        "pitch": "unison"
+      },
+      "names": [
+        "Swell",
+        "to Great"
+      ],
+      "midi": [
+        {
+          "type": "toggle",
+          "msg": "CB 1A"
+        }
+      ],
+      "style": {
+        "shape": "rectangle"
+      }
+    }
+  ],
+  "master_volume": {
+    "pattern": "B0 07 vv",
+    "min": 40,
+    "max": 127
+  },
+  "all_stops_off": "F0 00 4A 4F 48 41 53 7F F7",
+  "connection": {
+    "record_from": "MIDI SEQ",
+    "play_to": "MIDI IN",
+    "notes": [
+      "Channels follow Makin's manual for the Rydal and Thirlmere: Great 1, Swell 2, Pedal 3, stops 12.",
+      "The stop list and Program Change numbers are placeholders. Makin numbers stops in the order they sit on each model, so learn the numbers from your organ before relying on playback.",
+      "Makin stops toggle, so press Cancel (0) on the organ before you record. That tells Registra every stop starts pushed in.",
+      "The manual doesn't say which channel carries the swell pedal and general volume. Check them on the MIDI monitor."
+    ]
+  }
+}
