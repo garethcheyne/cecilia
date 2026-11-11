@@ -201,6 +201,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/live": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** What the connected organ (the Organ out) is doing, as tracked from MIDI. */
+        get: operations["live_state"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/live/act": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Operate the connected organ: draw a stop, press a key, move a pedal.
+         *     Toggle-only stops are sent only when they need to change.
+         */
+        post: operations["live_act"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/midi/config": {
         parameters: {
             query?: never;
@@ -1013,6 +1050,12 @@ export interface components {
             split_ms?: number | null;
             /** @description Title for the piece (pieces get " (2)", " (3)"…). Default from the file. */
             title?: string | null;
+        };
+        LiveSnapshot: {
+            console: components["schemas"]["ConsoleState"];
+            organ_id: string;
+            /** @description Where the organ's MIDI goes, if anywhere. */
+            output?: string | null;
         };
         LoadOrgan: {
             organ_id: string;
@@ -2046,6 +2089,54 @@ export interface operations {
                 };
             };
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    live_state: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LiveSnapshot"];
+                };
+            };
+        };
+    };
+    live_act: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrganEvent"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

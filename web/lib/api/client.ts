@@ -32,6 +32,7 @@ export type Delay = Schemas["Delay"]
 export type VersePlan = Schemas["VersePlan"]
 export type ServiceStatus = Schemas["ServiceStatus"]
 export type ImportAnalysis = Schemas["ImportAnalysis"]
+export type LiveSnapshot = Schemas["LiveSnapshot"]
 export type ImportOptions = Schemas["ImportOptions"]
 export type XmlImportOptions = Schemas["XmlImportOptions"]
 

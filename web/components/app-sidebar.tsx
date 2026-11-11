@@ -44,7 +44,7 @@ interface NavItem {
 const PERFORM: NavItem[] = [
   { title: "Overview", href: "/", icon: LayoutDashboardIcon },
   { title: "Simulator", href: "/simulator", icon: PianoIcon },
-  { title: "Console", href: "/console", icon: GaugeIcon, soon: true },
+  { title: "Console", href: "/console", icon: GaugeIcon },
   { title: "Library", href: "/library", icon: LibraryIcon },
   { title: "Playlists", href: "/playlists", icon: ListMusicIcon },
   { title: "Service", href: "/service", icon: MonitorPlayIcon },

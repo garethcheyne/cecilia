@@ -102,3 +102,23 @@ async fn foreign_websocket_origins_are_refused() {
         .unwrap();
     assert_eq!(r.status(), 403);
 }
+
+#[tokio::test]
+async fn the_console_page_operates_the_connected_organ() {
+    let s = TestServer::start().await;
+    let (code, _) = s
+        .request(Method::POST, "/live/act", Some(json!({ "type": "stop", "stop": "gt-opendiap", "on": true })))
+        .await;
+    assert_eq!(code, 409, "no Organ out yet");
+
+    s.route_simulator().await;
+    s.put("/simulator/organ", json!({ "organ_id": "makin-2m" })).await;
+    s.post("/live/act", json!({ "type": "stop", "stop": "gt-opendiap", "on": true })).await;
+    s.post("/live/act", json!({ "type": "stop", "stop": "gt-opendiap", "on": true })).await;
+    sleep_ms(50).await;
+    // Drawn once on the (toggle-only) organ, and the live view agrees.
+    assert_eq!(stops(&s.sim().await), ["gt-opendiap"]);
+    let live = s.get("/live").await;
+    assert_eq!(live["output"], "Registra Simulator");
+    assert_eq!(live["console"]["stops"], json!(["gt-opendiap"]));
+}

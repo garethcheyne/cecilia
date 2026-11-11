@@ -8,6 +8,7 @@
 
 use std::sync::{Arc, Mutex, MutexGuard};
 
+use tokio::sync::broadcast;
 use tokio::sync::broadcast::error::RecvError;
 
 use crate::console::ConsoleState;
@@ -23,6 +24,7 @@ struct Inner {
 #[derive(Clone)]
 pub struct LiveOrgan {
     inner: Arc<Mutex<Inner>>,
+    changes: broadcast::Sender<ConsoleState>,
 }
 
 impl LiveOrgan {
@@ -32,6 +34,7 @@ impl LiveOrgan {
                 console: ConsoleState::new(&organ),
                 driver: Driver::new(organ),
             })),
+            changes: broadcast::channel(256).0,
         };
         let mut rx = hub.subscribe();
         let worker = live.clone();
@@ -57,9 +60,18 @@ impl LiveOrgan {
 
     fn observe(&self, msg: &[u8]) {
         let mut inner = self.lock();
+        let mut changed = false;
         for e in inner.driver.decode(msg) {
-            inner.console.apply(&e);
+            changed |= inner.console.apply(&e);
         }
+        if changed {
+            let _ = self.changes.send(inner.console.clone());
+        }
+    }
+
+    /// The console state after every change.
+    pub fn subscribe(&self) -> broadcast::Receiver<ConsoleState> {
+        self.changes.subscribe()
     }
 
     /// Switch to another organ definition; its state starts fresh.
@@ -67,6 +79,7 @@ impl LiveOrgan {
         let mut inner = self.lock();
         inner.console = ConsoleState::new(&organ);
         inner.driver = Driver::new(organ);
+        let _ = self.changes.send(inner.console.clone());
     }
 
     pub fn organ(&self) -> OrganDefinition {

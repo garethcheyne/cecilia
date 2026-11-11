@@ -616,6 +616,61 @@
         }
       }
     },
+    "/api/v1/live": {
+      "get": {
+        "tags": [
+          "live"
+        ],
+        "summary": "What the connected organ (the Organ out) is doing, as tracked from MIDI.",
+        "operationId": "live_state",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveSnapshot"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/live/act": {
+      "post": {
+        "tags": [
+          "live"
+        ],
+        "summary": "Operate the connected organ: draw a stop, press a key, move a pedal.\nToggle-only stops are sent only when they need to change.",
+        "operationId": "live_act",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrganEvent"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/midi/config": {
       "get": {
         "tags": [
@@ -2468,6 +2523,28 @@
               "null"
             ],
             "description": "Title for the piece (pieces get \" (2)\", \" (3)\"…). Default from the file."
+          }
+        }
+      },
+      "LiveSnapshot": {
+        "type": "object",
+        "required": [
+          "organ_id",
+          "console"
+        ],
+        "properties": {
+          "console": {
+            "$ref": "#/components/schemas/ConsoleState"
+          },
+          "organ_id": {
+            "type": "string"
+          },
+          "output": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Where the organ's MIDI goes, if anywhere."
           }
         }
       },

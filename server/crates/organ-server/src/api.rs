@@ -80,6 +80,8 @@ pub fn router() -> Router<AppState> {
         .route("/simulator/act", post(sim_act))
         .route("/simulator/reset", post(sim_reset))
         .route("/assistant", get(get_assistant).put(put_assistant))
+        .route("/live", get(live_state))
+        .route("/live/act", post(live_act))
 }
 
 #[derive(OpenApi)]
@@ -92,7 +94,7 @@ pub fn router() -> Router<AppState> {
     paths(
         health, ports, get_config, put_config, status, panic, test_record, test_stop, test_play,
         list_organs, get_organ, sim_state, sim_load_organ, sim_act, sim_reset, get_assistant,
-        put_assistant,
+        put_assistant, live_state, live_act,
         crate::music::list_tracks, crate::music::get_track, crate::music::put_track,
         crate::music::patch_track, crate::music::delete_track, crate::music::duplicate_track,
         crate::music::track_mapping, crate::music::recorder_status, crate::music::recorder_start,
@@ -113,7 +115,7 @@ pub fn router() -> Router<AppState> {
     components(schemas(
         Health, ApiErrorBody, PortList, MidiConfig, MidiStatus, TestStatus, TestState,
         EngineEvent, Direction, OrganSummary, OrganDefinition, OrganEvent, SimSnapshot,
-        ConsoleState, LoadOrgan, Assistant,
+        ConsoleState, LoadOrgan, Assistant, LiveSnapshot,
         organ_core::track::Track, organ_core::track::TrackSummary, organ_core::track::TrackInfo,
         organ_core::track::TrackEvent, organ_core::track::TimedEvent, organ_core::track::StopRef,
         organ_core::track::Registration, organ_core::track::Meter, organ_core::track::Mode,
@@ -319,6 +321,33 @@ async fn sim_reset(State(s): State<AppState>) -> StatusCode {
     StatusCode::NO_CONTENT
 }
 
+#[derive(Serialize, ToSchema)]
+pub struct LiveSnapshot {
+    pub organ_id: String,
+    /// Where the organ's MIDI goes, if anywhere.
+    pub output: Option<String>,
+    pub console: ConsoleState,
+}
+
+/// What the connected organ (the Organ out) is doing, as tracked from MIDI.
+#[utoipa::path(get, path = "/api/v1/live", tag = "live",
+    responses((status = 200, body = LiveSnapshot)))]
+async fn live_state(State(s): State<AppState>) -> ApiResult<LiveSnapshot> {
+    let status = s.hub.status().await?;
+    Ok(Json(LiveSnapshot { organ_id: s.live.organ().id, output: status.output, console: s.live.console() }))
+}
+
+/// Operate the connected organ: draw a stop, press a key, move a pedal.
+/// Toggle-only stops are sent only when they need to change.
+#[utoipa::path(post, path = "/api/v1/live/act", tag = "live", request_body = OrganEvent,
+    responses((status = 204), (status = 409, body = ApiErrorBody)))]
+async fn live_act(State(s): State<AppState>, Json(event): Json<OrganEvent>) -> Result<StatusCode, ApiError> {
+    for m in s.live.encode(&event) {
+        s.hub.send(m).await?;
+    }
+    Ok(StatusCode::NO_CONTENT)
+}
+
 #[derive(Serialize, Deserialize, ToSchema)]
 pub struct Assistant {
     /// What the assistant is called (and, with voice control, its wake word).
@@ -394,6 +423,7 @@ async fn stream_events(mut socket: WebSocket, state: AppState) {
     let mut rx = hub.subscribe();
     let mut sim_rx = simulator.subscribe();
     let mut player_rx = state.player.subscribe();
+    let mut live_rx = state.live.subscribe();
     let mut app_rx = state.app_events.subscribe();
 
     // Start every client with full snapshots.
@@ -453,6 +483,16 @@ async fn stream_events(mut socket: WebSocket, state: AppState) {
                 }
                 Ok(PlayerEvent::Finished { track_id }) => {
                     let msg = serde_json::json!({ "type": "player_finished", "track_id": track_id });
+                    if send_json(&mut socket, &msg).await.is_err() {
+                        break;
+                    }
+                }
+                Err(RecvError::Lagged(_)) => {}
+                Err(RecvError::Closed) => break,
+            },
+            console = live_rx.recv() => match console {
+                Ok(console) => {
+                    let msg = serde_json::json!({ "type": "live", "organ_id": state.live.organ().id, "console": console });
                     if send_json(&mut socket, &msg).await.is_err() {
                         break;
                     }
