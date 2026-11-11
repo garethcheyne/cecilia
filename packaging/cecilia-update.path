@@ -1,0 +1,9 @@
+[Unit]
+Description=Watch for Cecilia asking to be updated
+
+[Path]
+PathExists=/var/lib/cecilia/update/request
+Unit=cecilia-update.service
+
+[Install]
+WantedBy=multi-user.target

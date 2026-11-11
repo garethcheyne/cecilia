@@ -8,6 +8,7 @@ import { EngineProvider } from "@/components/engine-provider"
 import { ThemeProvider } from "@/components/theme-provider"
 import { TextSizeEffect } from "@/components/text-size"
 import { Toaster } from "@/components/ui/sonner"
+import { UpdateWatcher } from "@/components/update-watcher"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 
@@ -50,6 +51,7 @@ export default function RootLayout({
               <EngineProvider>
                 <AppChrome>{children}</AppChrome>
                 <Toaster />
+                <UpdateWatcher />
               </EngineProvider>
             </TooltipProvider>
           </AuthGate>

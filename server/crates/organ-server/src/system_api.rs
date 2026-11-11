@@ -104,7 +104,7 @@ pub async fn backup(State(s): State<AppState>) -> Response {
     }
 }
 
-fn make_backup(dir: &FsPath) -> anyhow::Result<Vec<u8>> {
+pub(crate) fn make_backup(dir: &FsPath) -> anyhow::Result<Vec<u8>> {
     let mut buf = std::io::Cursor::new(Vec::new());
     {
         let mut zip = zip::ZipWriter::new(&mut buf);

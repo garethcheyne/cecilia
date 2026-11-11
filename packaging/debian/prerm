@@ -3,5 +3,6 @@ set -e
 if [ -d /run/systemd/system ] && [ "$1" = "remove" ]; then
     systemctl stop cecilia.service || true
     systemctl disable cecilia.service >/dev/null || true
+    systemctl disable --now cecilia-update.path >/dev/null 2>&1 || true
 fi
 exit 0

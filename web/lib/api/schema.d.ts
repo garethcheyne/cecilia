@@ -220,7 +220,7 @@ export interface paths {
       cookie?: never
     }
     /** A shared organ setup in full, to look at before adding it. */
-    get: operations["get_organ"]
+    get: operations["get_shared_organ"]
     put?: never
     post?: never
     delete?: never
@@ -1275,6 +1275,91 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/updates": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** The version running, what's available, and how updating is set up. */
+    get: operations["update_status"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/updates/check": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Look for a new version now. */
+    post: operations["update_check"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/updates/install": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Install the newest version now (after a backup). Cecilia restarts. */
+    post: operations["update_install"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/updates/rollback": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Go back to the version that was running before the last update. */
+    post: operations["update_rollback"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/updates/settings": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Channel (stable or preview) and whether to install overnight by itself. */
+    put: operations["update_settings"]
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/verses/parse": {
     parameters: {
       query?: never
@@ -1322,6 +1407,13 @@ export interface components {
       /** @description A password is set. */
       required: boolean
       signed_in: boolean
+    }
+    BackupInfo: {
+      /** Format: int64 */
+      bytes: number
+      /** Format: int64 */
+      created: number
+      file: string
     }
     Catalogue: {
       music: components["schemas"]["MusicEntry"][]
@@ -1551,6 +1643,8 @@ export interface components {
       /** @description Title for the piece (pieces get " (2)", " (3)"…). Default from the file. */
       title?: string | null
     }
+    /** @enum {string} */
+    InstallKind: "deb" | "windows_zip" | "development"
     LiveSnapshot: {
       console: components["schemas"]["ConsoleState"]
       organ_id: string
@@ -1984,6 +2078,14 @@ export interface components {
       master_volume?: number | null
       stops?: components["schemas"]["StopRef"][]
     }
+    ReleaseInfo: {
+      name: string
+      /** @description What's new, as written in the release (Markdown). */
+      notes: string
+      published?: string | null
+      url?: string | null
+      version: string
+    }
     RestoreResult: {
       organs: number
       playlists: number
@@ -2305,6 +2407,48 @@ export interface components {
       organ_name: string
       source: components["schemas"]["TrackSource"]
       verses: number
+    }
+    /** @enum {string} */
+    UpdateChannel: "stable" | "preview"
+    /** @enum {string} */
+    UpdatePhase:
+      | "idle"
+      | "checking"
+      | "downloading"
+      | "installing"
+      | "restarting"
+      | "failed"
+    /** @description Which releases to follow, and whether to install them by itself. */
+    UpdateSettings: {
+      /**
+       * @description Install new versions overnight (2-5 am) when nothing is playing.
+       * @default true
+       */
+      auto_install: boolean
+      /** @default stable */
+      channel: components["schemas"]["UpdateChannel"]
+    }
+    UpdateStatus: {
+      /** @description A newer version is available on this channel. */
+      available: boolean
+      backups: components["schemas"]["BackupInfo"][]
+      /** @description Why an update can't be installed right now, if it can't. */
+      blocked?: string | null
+      current: string
+      error?: string | null
+      kind: components["schemas"]["InstallKind"]
+      /**
+       * Format: int64
+       * @description Unix ms of the last successful check.
+       */
+      last_checked?: number | null
+      /** @description What the last update did ("Updated from 0.1.0 to 0.2.0"), once. */
+      last_result?: string | null
+      latest?: null | components["schemas"]["ReleaseInfo"]
+      phase: components["schemas"]["UpdatePhase"]
+      /** @description The version Cecilia would go back to. */
+      previous?: string | null
+      settings: components["schemas"]["UpdateSettings"]
     }
     /** @description A value-carrying control such as an expression pedal or master volume. */
     ValueBinding: {
@@ -2720,7 +2864,7 @@ export interface operations {
       }
     }
   }
-  get_organ: {
+  get_shared_organ: {
     parameters: {
       query?: never
       header?: never
@@ -4599,6 +4743,137 @@ export interface operations {
           [name: string]: unknown
         }
         content?: never
+      }
+    }
+  }
+  update_status: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["UpdateStatus"]
+        }
+      }
+    }
+  }
+  update_check: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["UpdateStatus"]
+        }
+      }
+      503: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ApiErrorBody"]
+        }
+      }
+    }
+  }
+  update_install: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["UpdateStatus"]
+        }
+      }
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ApiErrorBody"]
+        }
+      }
+      502: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ApiErrorBody"]
+        }
+      }
+    }
+  }
+  update_rollback: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["UpdateStatus"]
+        }
+      }
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ApiErrorBody"]
+        }
+      }
+    }
+  }
+  update_settings: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateSettings"]
+      }
+    }
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["UpdateStatus"]
+        }
       }
     }
   }

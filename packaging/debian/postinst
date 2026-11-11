@@ -8,11 +8,16 @@ if [ "$1" = "configure" ]; then
     adduser cecilia audio >/dev/null 2>&1 || true
     # Load the ALSA sequencer now (and at every boot, via modules-load.d).
     modprobe snd-seq 2>/dev/null || true
-    mkdir -p /var/lib/cecilia
-    chown cecilia:cecilia /var/lib/cecilia
+    mkdir -p /var/lib/cecilia /var/lib/cecilia/update
+    chown cecilia:cecilia /var/lib/cecilia /var/lib/cecilia/update
+    # Packages kept for going back to an earlier version (root only).
+    mkdir -p /var/lib/cecilia-updater
+    chmod 700 /var/lib/cecilia-updater
     if [ -d /run/systemd/system ]; then
         systemctl daemon-reload
         systemctl enable cecilia.service >/dev/null
+        # Cecilia updates itself: this starts the installer when it asks.
+        systemctl enable --now cecilia-update.path >/dev/null 2>&1 || true
         systemctl restart cecilia.service
     fi
 fi

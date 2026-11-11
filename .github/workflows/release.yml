@@ -38,9 +38,15 @@ jobs:
       - name: Package
         working-directory: server
         run: cargo deb -p organ-server --no-build --target ${{ matrix.target }}
+      - name: Checksum
+        working-directory: server/target/${{ matrix.target }}/debian
+        # Cecilia checks every download against this before installing it.
+        run: for f in *.deb; do sha256sum "$f" > "$f.sha256"; done
       - uses: softprops/action-gh-release@v2
         with:
-          files: server/target/${{ matrix.target }}/debian/*.deb
+          files: |
+            server/target/${{ matrix.target }}/debian/*.deb
+            server/target/${{ matrix.target }}/debian/*.deb.sha256
       - uses: actions/upload-artifact@v4
         with:
           name: deb-${{ matrix.target }}
@@ -95,5 +101,10 @@ jobs:
           Copy-Item server/target/release/cecilia.exe dist/cecilia/
           Copy-Item -Recurse web/out dist/cecilia/web
           Compress-Archive dist/cecilia cecilia-windows-x64.zip
+          $hash = (Get-FileHash cecilia-windows-x64.zip -Algorithm SHA256).Hash.ToLower()
+          "$hash  cecilia-windows-x64.zip" | Out-File -Encoding ascii -NoNewline cecilia-windows-x64.zip.sha256
       - uses: softprops/action-gh-release@v2
-        with: { files: cecilia-windows-x64.zip }
+        with:
+          files: |
+            cecilia-windows-x64.zip
+            cecilia-windows-x64.zip.sha256

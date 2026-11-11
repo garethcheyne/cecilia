@@ -65,9 +65,37 @@ pub struct Settings {
     /// Who's playing now: new recordings are credited to them.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub current_organist: Option<String>,
+    /// How Cecilia keeps itself up to date.
+    #[serde(default)]
+    pub updates: UpdateSettings,
     /// Sign-in to the Cecilia Community (the token is never sent to browsers).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub community: Option<CommunityAccount>,
+}
+
+/// Which releases to follow, and whether to install them by itself.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ToSchema)]
+#[serde(default)]
+pub struct UpdateSettings {
+    pub channel: UpdateChannel,
+    /// Install new versions overnight (2-5 am) when nothing is playing.
+    pub auto_install: bool,
+}
+
+impl Default for UpdateSettings {
+    fn default() -> Self {
+        Self { channel: UpdateChannel::Stable, auto_install: true }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize, ToSchema)]
+#[serde(rename_all = "snake_case")]
+pub enum UpdateChannel {
+    /// Tested releases.
+    #[default]
+    Stable,
+    /// Early versions, for people happy to try things first.
+    Preview,
 }
 
 /// Someone who plays the organ here, and whether a shared recording may name them.

@@ -15,7 +15,7 @@ copyright = "Cecilia contributors, MIT licence"
 extended-description = "Records, edits and plays back organ performances over MIDI, with a web interface for phones and tablets."
 section = "sound"
 priority = "optional"
-depends = "$auto, adduser, libasound2"
+depends = "$auto, adduser, libasound2, curl, ca-certificates"
 maintainer-scripts = "../../../packaging/debian/"
 conf-files = ["/etc/default/cecilia"]
 assets = [
@@ -24,6 +24,9 @@ assets = [
     ["../../../packaging/cecilia.service", "lib/systemd/system/cecilia.service", "644"],
     ["../../../packaging/cecilia.default", "etc/default/cecilia", "644"],
     ["../../../packaging/cecilia-modules.conf", "usr/lib/modules-load.d/cecilia.conf", "644"],
+    ["../../../packaging/cecilia-update", "usr/lib/cecilia/cecilia-update", "755"],
+    ["../../../packaging/cecilia-update.path", "lib/systemd/system/cecilia-update.path", "644"],
+    ["../../../packaging/cecilia-update.service", "lib/systemd/system/cecilia-update.service", "644"],
 ]
 
 [lib]
@@ -47,6 +50,7 @@ tracing-subscriber.workspace = true
 utoipa.workspace = true
 sha2 = "0.10"
 getrandom = "0.2"
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
 zip = { version = "2", default-features = false, features = ["deflate"] }
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json"] }
 

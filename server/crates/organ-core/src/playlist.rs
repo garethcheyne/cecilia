@@ -93,6 +93,9 @@ impl Playlist {
     }
 
     pub fn validate(&self) -> Result<(), String> {
+        if self.schema > PLAYLIST_SCHEMA {
+            return Err("this playlist was saved by a newer version of Cecilia; update Cecilia to open it".into());
+        }
         if self.schema != PLAYLIST_SCHEMA {
             return Err(format!("unsupported playlist schema {}", self.schema));
         }

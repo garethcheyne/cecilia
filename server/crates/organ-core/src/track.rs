@@ -321,6 +321,9 @@ impl Track {
 
     /// Check the invariants the player and editor rely on.
     pub fn validate(&self) -> Result<(), String> {
+        if self.schema > TRACK_SCHEMA {
+            return Err("this piece was saved by a newer version of Cecilia; update Cecilia to open it".into());
+        }
         if self.schema != TRACK_SCHEMA {
             return Err(format!("unsupported track schema {}", self.schema));
         }

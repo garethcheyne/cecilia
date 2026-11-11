@@ -1,0 +1,83 @@
+#!/bin/sh
+# Install a Cecilia release that Cecilia itself asked for.
+#
+# Cecilia runs as the unprivileged "cecilia" user, so it can't install
+# packages. When someone presses Update (or it updates overnight), it writes
+# one line to /var/lib/cecilia/update/request:
+#
+#   install 0.2.0     download v0.2.0 from GitHub, check it, install it
+#   rollback          reinstall the version that was running before
+#
+# systemd (cecilia-update.path) then starts this script as root. The request
+# can only name a version: the package always comes from the project's GitHub
+# releases and must match its published SHA-256. The result is left in
+# /var/lib/cecilia/update/result for Cecilia to show.
+set -eu
+
+REQ_DIR=/var/lib/cecilia/update
+STORE=/var/lib/cecilia-updater
+REPO=garethcheyne/cecilia
+# /etc/default/cecilia may point at another repository (for testing).
+[ -f /etc/default/cecilia ] && . /etc/default/cecilia
+REPO="${CECILIA_UPDATE_REPO:-$REPO}"
+
+result() {
+    printf '%s\n' "$1" >"$REQ_DIR/result.tmp"
+    chown cecilia:cecilia "$REQ_DIR/result.tmp" 2>/dev/null || true
+    mv "$REQ_DIR/result.tmp" "$REQ_DIR/result"
+}
+fail() {
+    result "failed $1"
+    systemctl restart cecilia.service || true
+    exit 0
+}
+is_version() { printf '%s' "$1" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$'; }
+
+[ -f "$REQ_DIR/request" ] || exit 0
+REQUEST=$(head -c 64 "$REQ_DIR/request" | tr -d '\r\n')
+rm -f "$REQ_DIR/request"
+
+mkdir -p "$STORE"
+chmod 700 "$STORE"
+ARCH=$(dpkg --print-architecture)
+CURRENT=$(dpkg-query -W -f='${Version}' cecilia 2>/dev/null | sed 's/-[0-9]*$//' || true)
+
+case "$REQUEST" in
+install\ *)
+    VERSION=${REQUEST#install }
+    is_version "$VERSION" || fail "that isn't a version number"
+    JSON=$(curl -fsSL "https://api.github.com/repos/$REPO/releases/tags/v$VERSION") || fail "couldn't reach GitHub"
+    URL=$(printf '%s' "$JSON" | grep -o "https://[^\"]*_${ARCH}\.deb\"" | tr -d '"' | head -n 1)
+    SUM_URL=$(printf '%s' "$JSON" | grep -o "https://[^\"]*_${ARCH}\.deb\.sha256" | head -n 1)
+    [ -n "$URL" ] || fail "version $VERSION has no package for this computer ($ARCH)"
+    [ -n "$SUM_URL" ] || fail "version $VERSION has no checksum, so it wasn't installed"
+    TMP=$(mktemp -d)
+    trap 'rm -rf "$TMP"' EXIT
+    curl -fsSL -o "$TMP/cecilia.deb" "$URL" || fail "the download failed"
+    WANT=$(curl -fsSL "$SUM_URL" | awk '{print tolower($1)}') || fail "the checksum download failed"
+    GOT=$(sha256sum "$TMP/cecilia.deb" | awk '{print $1}')
+    [ -n "$WANT" ] && [ "$WANT" = "$GOT" ] || fail "the download didn't match its checksum, so it wasn't installed"
+    # Keep this package for going back later, and note what it replaces.
+    cp "$TMP/cecilia.deb" "$STORE/cecilia_${VERSION}.deb"
+    if [ -n "$CURRENT" ]; then printf '%s\n' "$CURRENT" >"$REQ_DIR/previous-version"; fi
+    chown cecilia:cecilia "$REQ_DIR/previous-version" 2>/dev/null || true
+    apt-get install -y -qq --allow-downgrades "$TMP/cecilia.deb" >/dev/null 2>&1 || fail "installing the package failed"
+    # Keep the newest three packages.
+    ls -1t "$STORE"/cecilia_*.deb 2>/dev/null | tail -n +4 | xargs -r rm -f
+    result "Updated from ${CURRENT:-an earlier version} to $VERSION"
+    ;;
+rollback)
+    PREVIOUS=$(cat "$REQ_DIR/previous-version" 2>/dev/null || true)
+    is_version "$PREVIOUS" || fail "there's no previous version to go back to"
+    [ -f "$STORE/cecilia_${PREVIOUS}.deb" ] || fail "the package for $PREVIOUS is no longer kept"
+    apt-get install -y -qq --allow-downgrades "$STORE/cecilia_${PREVIOUS}.deb" >/dev/null 2>&1 || fail "going back failed"
+    rm -f "$REQ_DIR/previous-version"
+    result "Went back from $CURRENT to $PREVIOUS"
+    ;;
+*)
+    fail "Cecilia asked for something it shouldn't"
+    ;;
+esac
+
+# Restart so Cecilia picks up the result straight away.
+systemctl restart cecilia.service || true

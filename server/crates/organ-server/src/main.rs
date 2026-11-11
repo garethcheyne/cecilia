@@ -74,11 +74,23 @@ async fn main() -> anyhow::Result<()> {
         .unwrap_or_else(|| "127.0.0.1:7070".into())
         .parse()
         .context("CECILIA_ADDR must look like 127.0.0.1:7070")?;
-    let listener = tokio::net::TcpListener::bind(addr).await.with_context(|| format!("could not listen on {addr}"))?;
+    // Right after an update, the old Cecilia may still be letting go of the
+    // port; give it a few seconds.
+    let mut tries = 0;
+    let listener = loop {
+        match tokio::net::TcpListener::bind(addr).await {
+            Ok(l) => break l,
+            Err(_) if tries < 20 => {
+                tries += 1;
+                tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+            }
+            Err(e) => return Err(e).with_context(|| format!("could not listen on {addr}")),
+        }
+    };
     tracing::info!("listening on http://{addr} (MCP at /mcp)");
     if mcp_open && !addr.ip().is_loopback() {
         tracing::warn!(
-            "the organ can be controlled by anyone on the network through /mcp;              set CECILIA_MCP_TOKEN to require a token"
+            "the organ can be controlled by anyone on the network through /mcp; set CECILIA_MCP_TOKEN to require a token"
         );
     }
 

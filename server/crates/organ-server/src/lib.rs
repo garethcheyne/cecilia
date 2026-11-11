@@ -21,6 +21,7 @@ pub mod services;
 pub mod settings;
 pub mod sharing_api;
 pub mod system_api;
+pub mod updates;
 
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -59,6 +60,8 @@ pub struct Config {
     pub omr_command: Option<String>,
     /// The shared library: a web address (ending in /) or a local folder.
     pub library_url: String,
+    /// Look for new versions in the background (off in tests).
+    pub check_updates: bool,
 }
 
 /// Where the shared Cecilia Library is published.
@@ -81,6 +84,7 @@ impl Config {
             mcp_token: env("MCP_TOKEN").filter(|t| !t.is_empty()),
             omr_command: env("OMR").filter(|c| !c.trim().is_empty()).or_else(find_audiveris),
             library_url: env("LIBRARY_URL").unwrap_or_else(|| DEFAULT_LIBRARY_URL.into()),
+            check_updates: env("CHECK_UPDATES").as_deref() != Some("0"),
         })
     }
 
@@ -94,6 +98,7 @@ impl Config {
             mcp_token: None,
             omr_command: None,
             library_url: DEFAULT_LIBRARY_URL.into(),
+            check_updates: false,
         }
     }
 }
@@ -172,7 +177,12 @@ pub async fn build(config: Config) -> anyhow::Result<App> {
         sessions: Default::default(),
         omr_command: config.omr_command.clone(),
         community: crate::community_api::Community::new(config.library_url.clone()),
+        updater: crate::updates::Updater::new(config.data_dir.clone()),
     };
+    // Look for new versions, and install them overnight if that's allowed.
+    if config.check_updates {
+        crate::updates::start_schedule(state.clone());
+    }
     let mut router = Router::new()
         .nest(
             "/api/v1",
@@ -183,6 +193,7 @@ pub async fn build(config: Config) -> anyhow::Result<App> {
                 .merge(community_api::router())
                 .merge(sharing_api::router())
                 .merge(organists_api::router())
+                .merge(updates::router())
                 .merge(system_api::router().layer(axum::extract::DefaultBodyLimit::max(200 * 1024 * 1024)))
                 .merge(files_api::router().layer(axum::extract::DefaultBodyLimit::max(files_api::MAX_IMPORT_BYTES))),
         )

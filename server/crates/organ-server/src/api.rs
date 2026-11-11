@@ -47,6 +47,7 @@ pub struct AppState {
     pub sessions: crate::system_api::Sessions,
     pub omr_command: Option<String>,
     pub community: crate::community_api::Community,
+    pub updater: crate::updates::Updater,
 }
 
 impl AppState {
@@ -164,7 +165,7 @@ pub fn router() -> Router<AppState> {
         crate::community_api::catalogue,
         crate::community_api::refresh,
         crate::community_api::add_music,
-        crate::community_api::get_organ,
+        crate::community_api::get_shared_organ,
         crate::community_api::add_organ,
         crate::sharing_api::account,
         crate::sharing_api::start,
@@ -175,7 +176,12 @@ pub fn router() -> Router<AppState> {
         crate::sharing_api::share_organ,
         crate::sharing_api::share_music,
         crate::organists_api::get_organists,
-        crate::organists_api::put_organists
+        crate::organists_api::put_organists,
+        crate::updates::update_status,
+        crate::updates::update_check,
+        crate::updates::update_install,
+        crate::updates::update_rollback,
+        crate::updates::update_settings
     ),
     components(schemas(
         Health,
@@ -204,6 +210,13 @@ pub fn router() -> Router<AppState> {
         crate::sharing_api::ShareMusic,
         crate::sharing_api::ShareResult,
         crate::organists_api::OrganistsBody,
+        crate::updates::UpdateStatus,
+        crate::updates::ReleaseInfo,
+        crate::updates::UpdatePhase,
+        crate::updates::InstallKind,
+        crate::updates::BackupInfo,
+        crate::settings::UpdateSettings,
+        crate::settings::UpdateChannel,
         crate::settings::Organist,
         organ_core::track::Track,
         organ_core::track::TrackSummary,

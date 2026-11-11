@@ -23,6 +23,7 @@ import {
 import { PageBody } from "@/components/page-body"
 import { CommunityAccountCard } from "@/components/settings/community-account-card"
 import { OrganistsCard } from "@/components/settings/organists-card"
+import { UpdatesCard } from "@/components/settings/updates-card"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -389,6 +390,8 @@ export function SettingsView() {
       <OrganistsCard />
 
       <CommunityAccountCard />
+
+      <UpdatesCard />
 
       <AlertDialog
         open={!!restoreFile}

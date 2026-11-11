@@ -93,3 +93,20 @@ async fn scanned_music_goes_through_the_omr_engine() {
     let (code, _) = s.request(Method::POST, "/omr?name=hymn.docx", None).await;
     assert_eq!(code, 400);
 }
+
+#[test]
+fn every_api_operation_has_its_own_name() {
+    // The web app's types are keyed by these names: two the same and one
+    // endpoint's types silently replace the other's.
+    use utoipa::OpenApi;
+    let doc = serde_json::to_value(organ_server::api::ApiDoc::openapi()).unwrap();
+    let mut seen = std::collections::HashSet::new();
+    for item in doc["paths"].as_object().unwrap().values() {
+        for op in item.as_object().unwrap().values() {
+            if let Some(id) = op["operationId"].as_str() {
+                assert!(seen.insert(id.to_string()), "two API operations are both called {id}");
+            }
+        }
+    }
+    assert!(seen.len() > 50);
+}

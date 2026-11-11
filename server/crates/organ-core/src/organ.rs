@@ -461,6 +461,9 @@ impl OrganDefinition {
 
     pub fn validate(&self) -> Result<(), OrganError> {
         let bad = |m: String| Err(OrganError::Invalid(m));
+        if self.schema > SCHEMA_VERSION {
+            return bad("this organ was saved by a newer version of Cecilia; update Cecilia to open it".into());
+        }
         if self.schema != SCHEMA_VERSION {
             return bad(format!("unsupported schema version {}", self.schema));
         }

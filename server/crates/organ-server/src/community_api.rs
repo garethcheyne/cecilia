@@ -136,7 +136,7 @@ pub fn router() -> Router<AppState> {
         .route("/community", get(catalogue))
         .route("/community/refresh", post(refresh))
         .route("/community/music/{id}/add", post(add_music))
-        .route("/community/organs/{id}", get(get_organ))
+        .route("/community/organs/{id}", get(get_shared_organ))
         .route("/community/organs/{id}/add", post(add_organ))
 }
 
@@ -197,7 +197,10 @@ pub async fn add_music(State(s): State<AppState>, Path(id): Path<String>) -> Res
 #[utoipa::path(get, path = "/api/v1/community/organs/{id}", tag = "community",
     params(("id" = String, Path, description = "Organ id in the shared library")),
     responses((status = 200, body = OrganDefinition), (status = 404, body = ApiErrorBody), (status = 503, body = ApiErrorBody)))]
-pub async fn get_organ(State(s): State<AppState>, Path(id): Path<String>) -> Result<Json<OrganDefinition>, Response> {
+pub async fn get_shared_organ(
+    State(s): State<AppState>,
+    Path(id): Path<String>,
+) -> Result<Json<OrganDefinition>, Response> {
     let cat = s.community.catalogue(false).await.map_err(|e| error(StatusCode::SERVICE_UNAVAILABLE, e))?;
     let entry = cat
         .organs

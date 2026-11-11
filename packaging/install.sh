@@ -38,6 +38,10 @@ curl -fsSL -o "$TMP/cecilia.deb" "$URL"
 
 say "Installing…"
 apt-get install -y -qq "$TMP/cecilia.deb" >/dev/null
+# Keep the package, so Cecilia can go back to it after a later update.
+VERSION=$(dpkg-deb -f "$TMP/cecilia.deb" Version | sed 's/-[0-9]*$//')
+mkdir -p /var/lib/cecilia-updater && chmod 700 /var/lib/cecilia-updater
+cp "$TMP/cecilia.deb" "/var/lib/cecilia-updater/cecilia_${VERSION}.deb"
 
 if [ "${CECILIA_KEEP_HOSTNAME:-0}" != "1" ] && [ "$(hostname)" != "cecilia" ]; then
     say "Naming this computer \"cecilia\" on the network…"
@@ -55,3 +59,4 @@ echo "  Open http://cecilia.local:7070 on a phone or computer on the same networ
 echo "  (Or http://$(hostname -I | awk '{print $1}'):7070)"
 echo
 echo "  Next: set a password in Settings, then choose your MIDI interface in MIDI Setup."
+echo "  Cecilia keeps itself up to date: see Settings, Updates."

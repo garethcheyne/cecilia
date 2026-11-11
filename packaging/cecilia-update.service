@@ -1,0 +1,10 @@
+[Unit]
+Description=Install the Cecilia update that Cecilia asked for
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/cecilia/cecilia-update
+# Downloading and installing can take a few minutes on a Pi.
+TimeoutStartSec=15min
