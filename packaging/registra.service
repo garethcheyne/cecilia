@@ -1,0 +1,24 @@
+[Unit]
+Description=Registra organ recorder and player
+Documentation=https://github.com/registra-organ/registra
+After=network-online.target sound.target
+Wants=network-online.target
+
+[Service]
+User=registra
+Group=registra
+SupplementaryGroups=audio
+EnvironmentFile=-/etc/default/registra
+Environment=REGISTRA_DATA_DIR=/var/lib/registra
+Environment=REGISTRA_WEB_DIR=/usr/share/registra/web
+ExecStart=/usr/bin/organ-server
+Restart=always
+RestartSec=2
+# MIDI timing: a little priority helps on a busy Pi.
+Nice=-5
+# Keep logs in the journal (RAM), not on the SD card.
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,17 @@
+#!/bin/sh
+set -e
+if [ "$1" = "configure" ]; then
+    if ! getent passwd registra >/dev/null; then
+        adduser --system --group --home /var/lib/registra --no-create-home registra
+    fi
+    # MIDI (ALSA sequencer and USB MIDI) and the sound card.
+    adduser registra audio >/dev/null 2>&1 || true
+    mkdir -p /var/lib/registra
+    chown registra:registra /var/lib/registra
+    if [ -d /run/systemd/system ]; then
+        systemctl daemon-reload
+        systemctl enable registra.service >/dev/null
+        systemctl restart registra.service
+    fi
+fi
+exit 0

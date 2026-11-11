@@ -1,0 +1,15 @@
+# Settings for the Registra service. Restart after changing:
+#   sudo systemctl restart registra
+
+# Listen on the network so tablets and phones on the church Wi-Fi can connect.
+# Set a password on the Settings page before doing this.
+REGISTRA_ADDR=0.0.0.0:7070
+
+# 0 = no sound from the Pi itself (when the real organ makes the sound).
+#REGISTRA_AUDIO=0
+
+# Reading scanned music needs Audiveris; normally found automatically.
+#REGISTRA_OMR="/opt/audiveris/bin/Audiveris -batch -export -output {output} {input}"
+
+# Require this token for the assistant (MCP) endpoint.
+#REGISTRA_MCP_TOKEN=

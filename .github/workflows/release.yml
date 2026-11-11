@@ -1,0 +1,63 @@
+name: Release
+
+# Push a tag like v0.2.0 to build packages for the Raspberry Pi (64- and
+# 32-bit Pi OS), Linux PCs and Windows, and attach them to a GitHub release.
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: web/package-lock.json }
+      - run: npm ci && npm run build
+        working-directory: web
+      - uses: actions/upload-artifact@v4
+        with: { name: web, path: web/out }
+
+  linux:
+    needs: web
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [aarch64-unknown-linux-gnu, armv7-unknown-linux-gnueabihf, x86_64-unknown-linux-gnu]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { name: web, path: web/out }
+      - uses: dtolnay/rust-toolchain@stable
+        with: { targets: "${{ matrix.target }}" }
+      - name: Tools
+        run: cargo install cross cargo-deb --locked
+      - name: Build
+        working-directory: server
+        run: cross build --release --target ${{ matrix.target }} -p organ-server
+      - name: Package
+        working-directory: server
+        run: cargo deb -p organ-server --no-build --target ${{ matrix.target }}
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: server/target/${{ matrix.target }}/debian/*.deb
+
+  windows:
+    needs: web
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { name: web, path: web/out }
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo build --release -p organ-server
+        working-directory: server
+      - name: Zip
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory dist/registra | Out-Null
+          Copy-Item server/target/release/organ-server.exe dist/registra/
+          Copy-Item -Recurse web/out dist/registra/web
+          Compress-Archive dist/registra registra-windows-x64.zip
+      - uses: softprops/action-gh-release@v2
+        with: { files: registra-windows-x64.zip }

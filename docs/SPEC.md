@@ -431,13 +431,13 @@ All are versioned with a `schema` number and migrated on load.
 | --- | --- | --- |
 | P1 | MIDI ports, monitor, raw test record/play | ✅ |
 | P2 | Organ model + API, demo organs, **simulator** (virtual port + console UI + server-side synth), live console. Makin/Johannus toggle stops + general cancel, built-in Makin template | ✅ |
-| P3 | Auto-recorder → neutral tracks in the library | |
-| P4 | Playback engine: live generation, virtual organist, transport, tempo, verses, fade, volume. On organs with toggle-only stops (Makin), send `all_stops_off` and wait for it to settle before setting the opening registration | |
-| P5 | Library UI, playlists, MIDI import/export (GM, MuseScore, current organ, split), CSV | |
-| P6 | Track editor (piano roll) with undo, sections, verses, tempo bake, mute/solo, overdub | |
-| P7 | Organ designer + MIDI learn wizard (**Makin first**: the target church has one), combinations, Hauptwerk extras; drivers beyond Generic/Hauptwerk/Makin; translation mode | |
-| P8 | Settings UI, i18n, backups/history, profiles, auth, installers for all six targets | |
-| P9 | Scanned music: OMR (Audiveris) → MusicXML → review → track | |
+| P3 | Auto-recorder → neutral tracks in the library; 11 bundled sample pieces | ✅ |
+| P4 | Playback engine: live generation, virtual organist, transport, tempo, verses, fade, volume. On organs with toggle-only stops (Makin), send `all_stops_off` and wait for it to settle before setting the opening registration | ✅ |
+| P5 | Library UI, playlists, MIDI import/export (GM, MuseScore, current organ, split), CSV; MusicXML import | ✅ |
+| P6 | Track editor (piano roll) with undo, sections, verses; score view. Still to come: tempo bake, mute/solo, overdub | ✅ (core) |
+| P7 | Organ designer + MIDI learn wizard (**Makin first**: the target church has one), combinations, Hauptwerk extras; drivers beyond Generic/Hauptwerk/Makin; translation mode | ✅ designer + MIDI learn (combinations, extra drivers, translation mode still to come) |
+| P8 | Settings UI, i18n, backups/history, profiles, auth, installers for all six targets | ✅ settings, backups, history, password, Pi .deb + release builds (i18n, profiles, roles still to come) |
+| P9 | Scanned music: OMR (Audiveris) → MusicXML → review → track | ✅ |
 | A1 | **Assistant (MCP server)** at `/mcp`: stops by spoken name, swell, cancel, silence, organ select, record/stop/play; assistant name setting | ✅ |
 | A2 | Assistant music tools with P4/P5: `find_music`, `play_music` (title, verses, tempo), `pause`/`resume`/`next` in a playlist | |
 | A3 | **Voice control** on the Pi: local wake word (the assistant's name, default **Cecilia**; built after P4 so "play …" works from day one) + local speech-to-text, an LLM calling the A1/A2 tools, spoken or on-screen confirmation; push-to-talk option for services | |

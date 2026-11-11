@@ -21,6 +21,29 @@ Its feature set is modelled on the *publicly documented behaviour* of OrganAssis
 * **`web/`** – Next.js 16 static export with shadcn/ui. Talks to the server only
   through the API; TypeScript types are generated from the server's OpenAPI.
 
+## What it does
+
+- **Records a whole service with one press.** Each piece is saved to the
+  library by itself, with the stops that were drawn when it started.
+- **Plays any recording on any organ.** The virtual organist maps
+  registrations onto the stops the connected organ has (never louder).
+  Tempo, verse control ("stop at the end of this verse", "skip to the last
+  verse"), latching pause, seek and fade-out.
+- **Runs services** from playlists: each piece waits for Play, starts by
+  itself after a pause, or is cued at its first note. A large-text Service
+  screen is meant for whoever runs the music on the day.
+- **Edits recordings** in a piano roll (notes, stop changes, swell pedal,
+  verse markers, sections, undo) and shows them as **staff notation**.
+- **Imports and exports** MIDI (including OrganAssist's "Backup Entire Library
+  as MIDI"), MusicXML from notation programs, and **scanned printed music**
+  through Audiveris (see [docs/OMR.md](docs/OMR.md)).
+- **Learns your organ**: copy a template (Makin, demo), then MIDI-learn
+  every stop, keyboard, swell pedal and the general cancel at the console.
+- Ships with **eleven sample pieces**: public-domain hymn tunes (Old
+  Hundredth, Eventide, St Anne, Crimond…) and an original prelude.
+- A built-in **simulator** with sound, so all of this works without an
+  organ.
+
 ## Running (development)
 
 ```sh
@@ -41,6 +64,25 @@ cd ../server && cargo run --release
 # open http://127.0.0.1:7070 – API and UI on one port
 ```
 
+On a Raspberry Pi, install the `.deb` instead: see
+[docs/RASPBERRY-PI.md](docs/RASPBERRY-PI.md).
+
+## Tests
+
+```sh
+node scripts/test-all.mjs            # everything: Rust, web unit, browser tests
+node scripts/test-all.mjs --skip-e2e # without the browser tests
+```
+
+- **Rust**: unit tests in `organ-core` (drivers, recorder, player timing,
+  virtual organist, MIDI/MusicXML files, samples) and integration tests in
+  `organ-server/tests` that start a real server on a spare port and drive
+  the simulator over HTTP.
+- **Web**: Vitest for the editing, notation, MIDI-learn and parsing logic
+  (`web/lib/*.test.ts`); Playwright browser tests (`web/e2e`) on desktop and
+  phone sizes using the installed Edge or Chrome.
+- CI runs the lot on every push (`.github/workflows/ci.yml`).
+
 ## Changing the API
 
 The Rust types are the source of truth. After changing them:
@@ -53,53 +95,69 @@ cd web && npm run gen:api        # regenerates lib/api/openapi.json + schema.d.t
 
 | Variable            | Default                                         | Purpose                                   |
 | ------------------- | ----------------------------------------------- | ----------------------------------------- |
-| `REGISTRA_ADDR`     | `127.0.0.1:7070`                                | Listen address. Use `0.0.0.0:7070` for LAN access (no auth yet!) |
-| `REGISTRA_DATA_DIR` | OS data dir + `/Registra`                       | `settings.json`, later the music library  |
+| `REGISTRA_ADDR`     | `127.0.0.1:7070`                                | Listen address. Use `0.0.0.0:7070` for LAN access, after setting a password |
+| `REGISTRA_DATA_DIR` | OS data dir + `/Registra`                       | Settings, library, playlists, organs, history |
 | `REGISTRA_WEB_DIR`  | `./web` beside the binary, else `../web/out`    | Static UI to serve                        |
 | `REGISTRA_CORS`     | `http://localhost:3000,http://127.0.0.1:3000`   | Browser origins allowed to call the API   |
-| `REGISTRA_MCP_TOKEN`| unset                                           | If set, `/mcp` requires `Authorization: Bearer <token>`. Set it before exposing the server on a network |
+| `REGISTRA_AUDIO`    | on                                              | `0` keeps the simulator silent            |
+| `REGISTRA_OMR`      | Audiveris on the PATH                           | OMR command with `{input}` and `{output}` |
+| `REGISTRA_MCP_TOKEN`| unset                                           | If set, `/mcp` requires `Authorization: Bearer <token>` |
 | `RUST_LOG`          | `info`                                          | Log filter                                |
+
+## Data folder
+
+```
+settings.json                  MIDI ports, recording/playback settings, password hash
+library/<id>.track.json        recordings, samples and imports (organ-neutral)
+playlists/<id>.playlist.json   orders of service
+organs/<id>.organ.json         your organ definitions
+history/<id>/…                 the last 20 versions of each track
+```
+
+All JSON, documented by the OpenAPI schema at `/api/v1/openapi.json`.
+Settings → Backup downloads all of it as one zip, and restores it.
 
 ## API (v1)
 
-| Method | Path                        | Description                                   |
-| ------ | --------------------------- | --------------------------------------------- |
-| GET    | `/api/v1/health`            | Name + version                                |
-| GET    | `/api/v1/openapi.json`      | OpenAPI 3.1 document                          |
-| GET    | `/api/v1/events`            | WebSocket: `status` snapshots + `midi` traffic |
-| GET    | `/api/v1/midi/ports`        | Available MIDI inputs/outputs                 |
-| GET/PUT| `/api/v1/midi/config`       | Saved port selection (PUT reconnects)         |
-| GET    | `/api/v1/midi/status`       | Open ports, missing ports, test recorder      |
-| POST   | `/api/v1/midi/panic`        | All Notes Off / All Sound Off, all channels   |
-| POST   | `/api/v1/midi/test/record`  | Start raw test recording                      |
-| POST   | `/api/v1/midi/test/stop`    | Stop recording/playback                       |
-| POST   | `/api/v1/midi/test/play`    | Replay the raw recording to the output        |
-| GET/PUT| `/api/v1/assistant`         | The assistant's name (MCP / voice wake word)  |
-| POST   | `/mcp`                      | MCP server (Streamable HTTP), see below       |
+The full, typed list is the OpenAPI document (`/api/v1/openapi.json`). In
+outline:
+
+| Area | Paths |
+| --- | --- |
+| MIDI | `/midi/ports`, `/midi/config`, `/midi/status`, `/midi/panic`, `/midi/test/*` |
+| Organs | `/organs`, `/organs/{id}`, `/organs/copy`, `/organs/{id}/save`, `/organs/{id}/delete` |
+| Simulator | `/simulator`, `/simulator/organ`, `/simulator/act`, `/simulator/reset` |
+| Live organ | `/live`, `/live/act` |
+| Library | `/library`, `/library/{id}` (GET/PUT/PATCH/DELETE), `/library/{id}/duplicate`, `/library/{id}/mapping`, `/library/{id}/midi` |
+| Recorder | `/recorder`, `/recorder/start`, `/recorder/stop` |
+| Player | `/player`, `/player/load`, `/player/play`, `/player/pause`, `/player/stop`, `/player/seek`, `/player/tempo`, `/player/verses`, `/player/fade` |
+| Playlists | `/playlists`, `/playlists/{id}`, `/playlists/{id}/duplicate`, `/verses/parse` |
+| Service | `/service`, `/service/start`, `/service/next`, `/service/previous`, `/service/select`, `/service/end` |
+| Files | `/import/analyse`, `/import`, `/omr`, `/export/library.csv`, `/export/library-midi.zip`, `/export/backup.zip`, `/import/backup` |
+| System | `/health`, `/settings`, `/auth`, `/auth/login`, `/auth/logout`, `/auth/password`, `/assistant` |
+| Events | `/events` (WebSocket: `status`, `midi`, `simulator`, `live`, `player`, `recorder`, `service`, `library`) |
+| Assistant | `/mcp` (outside `/api/v1`) |
 
 ## Targets
 
 `organ-core` uses `midir` (WinMM on Windows, CoreMIDI on macOS, ALSA on Linux),
-so the server builds for x64 and ARM64 on Windows, macOS and Linux:
-
-```sh
-rustup target add aarch64-pc-windows-msvc   # needs the MSVC ARM64 build tools
-cargo build --release --target aarch64-pc-windows-msvc
-```
+so the server builds for x64 and ARM64 on Windows, macOS and Linux. Tagged
+releases build Raspberry Pi packages (`.github/workflows/release.yml`).
 
 ## Roadmap
 
 The full feature spec is in [docs/SPEC.md](docs/SPEC.md).
 
 1. ✅ MIDI devices, live monitor, raw test record/playback
-2. ✅ Organ definitions (JSON) + generic driver, built-in **simulator** (virtual MIDI port, server-side synth, playable console UI), Makin/Johannus toggle stops and general cancel
-3. Auto-recorder → neutral tracks in the library; bundled sample church music
-4. Playback engine: live MIDI generation, virtual organist, tempo, verses, fade
-5. Library, playlists, MIDI/MusicXML import & export
-6. Track editor (piano roll) and score view (staff notation)
-7. Organ designer + MIDI learn, combinations, more manufacturer drivers
-8. Settings, i18n, backups, auth, Raspberry Pi packaging
-9. Scanned music (OMR)
+2. ✅ Organ definitions, simulator, live console, Makin support
+3. ✅ Auto-recorder, library, sample music
+4. ✅ Playback engine and virtual organist
+5. ✅ Library UI, playlists and services, MIDI/MusicXML import and export
+6. ✅ Track editor and score view
+7. ✅ Organ designer and MIDI learn (combination pistons and more drivers still to come)
+8. ✅ Settings, backups, password, Raspberry Pi packaging (translations still to come)
+9. ✅ Scanned music (OMR) through Audiveris
+10. Assistant: music tools and voice control (paused)
 
 ## Simulator
 
