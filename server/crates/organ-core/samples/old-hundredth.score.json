@@ -3,14 +3,14 @@
   "title": "All People That on Earth Do Dwell",
   "composer": "Louis Bourgeois (attr.), Genevan Psalter 1551",
   "melody": "OLD 100TH",
-  "publication": "Registra sample arrangement",
+  "publication": "Cecilia sample arrangement",
   "copyright": "Tune public domain; arrangement CC0",
   "bpm": 92,
   "time": "4/4",
   "key": "G",
   "verses": 4,
   "gap": 2,
-  "registration": [
+  "ceciliation": [
     "great principal 8",
     "great flute 8",
     "great principal 4",
@@ -21,7 +21,7 @@
     "pedal principal 8",
     "great to pedal"
   ],
-  "verse_registration": {
+  "verse_ceciliation": {
     "3": ["-great principal 4", "-swell principal 4"],
     "4": ["+great principal 4", "+swell principal 4", "+great principal 2", "+great mixture 1 1/3", "+pedal principal 4"]
   },

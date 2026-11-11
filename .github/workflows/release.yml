@@ -55,9 +55,9 @@ jobs:
       - name: Zip
         shell: pwsh
         run: |
-          New-Item -ItemType Directory dist/registra | Out-Null
-          Copy-Item server/target/release/organ-server.exe dist/registra/
-          Copy-Item -Recurse web/out dist/registra/web
-          Compress-Archive dist/registra registra-windows-x64.zip
+          New-Item -ItemType Directory dist/cecilia | Out-Null
+          Copy-Item server/target/release/cecilia.exe dist/cecilia/
+          Copy-Item -Recurse web/out dist/cecilia/web
+          Compress-Archive dist/cecilia cecilia-windows-x64.zip
       - uses: softprops/action-gh-release@v2
-        with: { files: registra-windows-x64.zip }
+        with: { files: cecilia-windows-x64.zip }

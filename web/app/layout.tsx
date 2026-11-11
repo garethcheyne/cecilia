@@ -23,7 +23,7 @@ const display = Instrument_Sans({
 })
 
 export const metadata: Metadata = {
-  title: { default: "Registra", template: "%s · Registra" },
+  title: { default: "Cecilia", template: "%s · Cecilia" },
   description: "Record, edit and play back organ performances over MIDI.",
 }
 

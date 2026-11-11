@@ -3,7 +3,7 @@
   "title": "The Lord's My Shepherd, I'll Not Want",
   "composer": "Jessie Seymour Irvine, 1872",
   "melody": "CRIMOND",
-  "publication": "Registra sample arrangement",
+  "publication": "Cecilia sample arrangement",
   "copyright": "Tune public domain; arrangement CC0",
   "bpm": 88,
   "time": "3/4",
@@ -11,7 +11,7 @@
   "pickup": 1,
   "verses": 5,
   "gap": 2,
-  "registration": [
+  "ceciliation": [
     "great principal 8",
     "great flute 8",
     "swell flute 8",
@@ -21,7 +21,7 @@
     "pedal principal 8",
     "great to pedal"
   ],
-  "verse_registration": {
+  "verse_ceciliation": {
     "2": ["+great principal 4"],
     "3": ["-great principal 4", "-great principal 8", "-swell principal 4", "+swell string 8", "+swell celeste 8", "-pedal principal 8", "-great to pedal", "+swell to pedal"],
     "4": ["+great principal 8", "+swell principal 4", "-swell celeste 8", "-swell string 8", "+pedal principal 8", "+great to pedal", "-swell to pedal"],

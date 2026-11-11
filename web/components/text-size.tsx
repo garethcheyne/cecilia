@@ -10,7 +10,7 @@ export const TEXT_SIZES = [
 
 export type TextSize = (typeof TEXT_SIZES)[number]["value"]
 
-const KEY = "registra-text-size"
+const KEY = "cecilia-text-size"
 
 export function readTextSize(): TextSize {
   try {

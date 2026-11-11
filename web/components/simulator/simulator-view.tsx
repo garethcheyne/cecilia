@@ -33,7 +33,7 @@ import {
 } from "@/lib/api/client"
 import { noteName } from "@/lib/midi"
 
-const SIM_PORT = "Registra Simulator"
+const SIM_PORT = "Cecilia Simulator"
 
 function act(event: OrganEvent) {
   call(api.POST("/api/v1/simulator/act", { body: event })).catch((e: Error) => toast.error(e.message))

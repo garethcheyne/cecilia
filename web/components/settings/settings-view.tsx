@@ -177,7 +177,7 @@ export function SettingsView() {
                   onValueChange={(v) => change({ ...settings, playback: { ...settings.playback, settle_ms: v as number } })}
                 />
                 <FieldDescription>
-                  On organs like the Makin, the stops need a moment to clear before the opening registration is set.
+                  On organs like the Makin, the stops need a moment to clear before the opening ceciliation is set.
                 </FieldDescription>
               </Field>
             </FieldGroup>
@@ -217,8 +217,8 @@ export function SettingsView() {
           <CardTitle>Password</CardTitle>
           <CardDescription>
             {auth?.required
-              ? "A password is needed to use Registra from other devices."
-              : "Anyone on the network can use Registra. Set a password before connecting it to the church Wi-Fi."}
+              ? "A password is needed to use Cecilia from other devices."
+              : "Anyone on the network can use Cecilia. Set a password before connecting it to the church Wi-Fi."}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -272,7 +272,7 @@ export function SettingsView() {
           <CardTitle>Backup</CardTitle>
           <CardDescription>
             Everything (music, playlists, organs and settings) in one file. Keep a copy somewhere other than the
-            Registra box.
+            Cecilia box.
           </CardDescription>
         </CardHeader>
         <CardFooter className="flex-wrap gap-2">

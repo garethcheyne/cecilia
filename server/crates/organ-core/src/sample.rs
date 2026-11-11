@@ -9,8 +9,8 @@
 //!   "melody": "OLD 100TH", "copyright": "Public domain",
 //!   "bpm": 72, "time": "4/4", "key": "G", "pickup": 0,
 //!   "verses": 4, "gap": 2,
-//!   "registration": ["great principal 8", "great principal 4", "pedal flute 16", "great to pedal"],
-//!   "verse_registration": { "4": ["+great mixture", "+swell to great"] },
+//!   "ceciliation": ["great principal 8", "great principal 4", "pedal flute 16", "great to pedal"],
+//!   "verse_ceciliation": { "4": ["+great mixture", "+swell to great"] },
 //!   "expression": { "swell": 90 },
 //!   "parts": [
 //!     { "division": "great", "notes": "G4:1 | G4:1 F#4:1 E4:1 D4:1 | …" },
@@ -35,7 +35,7 @@ use serde::Deserialize;
 
 use crate::organ::{CouplerPitch, DivisionRole, Equivalent, Family};
 use crate::track::{
-    Meter, Mode, Registration, StopRef, TimedEvent, Track, TrackEvent, TrackInfo, TrackSource, TRACK_SCHEMA,
+    Meter, Mode, Ceciliation, StopRef, TimedEvent, Track, TrackEvent, TrackInfo, TrackSource, TRACK_SCHEMA,
 };
 
 const START_MARGIN_MS: f64 = 1000.0;
@@ -71,10 +71,10 @@ pub struct Score {
     /// Crotchets of silence between verses.
     #[serde(default = "two")]
     pub gap: f64,
-    pub registration: Vec<String>,
+    pub ceciliation: Vec<String>,
     /// Changes at the start of verse N: "+stop" draws, "-stop" pushes in.
     #[serde(default)]
-    pub verse_registration: BTreeMap<u32, Vec<String>>,
+    pub verse_ceciliation: BTreeMap<u32, Vec<String>>,
     #[serde(default)]
     pub expression: BTreeMap<DivisionRole, u8>,
     pub parts: Vec<Part>,
@@ -314,8 +314,8 @@ impl Score {
         let stops = |list: &[String]| -> Result<BTreeSet<StopRef>, String> {
             list.iter().map(|s| parse_stop(s)).collect()
         };
-        let initial = Registration {
-            stops: stops(&self.registration)?,
+        let initial = Ceciliation {
+            stops: stops(&self.ceciliation)?,
             expression: self.expression.clone(),
             master_volume: None,
         };
@@ -329,7 +329,7 @@ impl Score {
                 // Marker in the middle of the silence between verses.
                 verses.push(ms(verse_start - self.gap / 2.0));
             }
-            for change in self.verse_registration.get(&(v + 1)).into_iter().flatten() {
+            for change in self.verse_ceciliation.get(&(v + 1)).into_iter().flatten() {
                 let (on, name) = match change.split_at(1) {
                     ("+", rest) => (true, rest),
                     ("-", rest) => (false, rest),
@@ -365,7 +365,7 @@ impl Score {
             },
             source: TrackSource::Sample,
             organ_id: String::new(),
-            organ_name: "Registra samples".into(),
+            organ_name: "Cecilia samples".into(),
             created: 0,
             modified: 0,
             initial,

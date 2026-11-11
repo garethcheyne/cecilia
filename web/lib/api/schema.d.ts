@@ -675,7 +675,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Jump to a position; the registration there is re-created. */
+        /** Jump to a position; the ceciliation there is re-created. */
         post: operations["player_seek"];
         delete?: never;
         options?: never;
@@ -1078,6 +1078,16 @@ export interface components {
             required: boolean;
             signed_in: boolean;
         };
+        /** @description Stops drawn plus pedal positions at one moment. */
+        Ceciliation: {
+            /** @description Expression per division, 0-127. */
+            expression?: {
+                [key: string]: number;
+            };
+            /** Format: int32 */
+            master_volume?: number | null;
+            stops?: components["schemas"]["StopRef"][];
+        };
         ChannelInfo: {
             /**
              * Format: int32
@@ -1425,7 +1435,7 @@ export interface components {
             type: "all_stops_off";
         };
         OrganSummary: {
-            /** @description Shipped with Registra (read-only) rather than user-created. */
+            /** @description Shipped with Cecilia (read-only) rather than user-created. */
             builtin: boolean;
             divisions: number;
             id: string;
@@ -1597,16 +1607,6 @@ export interface components {
              */
             silence_ms: number;
         };
-        /** @description Stops drawn plus pedal positions at one moment. */
-        Registration: {
-            /** @description Expression per division, 0-127. */
-            expression?: {
-                [key: string]: number;
-            };
-            /** Format: int32 */
-            master_volume?: number | null;
-            stops?: components["schemas"]["StopRef"][];
-        };
         RestoreResult: {
             organs: number;
             playlists: number;
@@ -1777,8 +1777,8 @@ export interface components {
             events: components["schemas"]["TimedEvent"][];
             id: string;
             info: components["schemas"]["TrackInfo"];
-            /** @description Registration and pedals when the track starts. */
-            initial: components["schemas"]["Registration"];
+            /** @description Ceciliation and pedals when the track starts. */
+            initial: components["schemas"]["Ceciliation"];
             meter?: null | components["schemas"]["Meter"];
             /** Format: int64 */
             modified: number;

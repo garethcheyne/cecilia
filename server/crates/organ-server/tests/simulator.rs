@@ -9,7 +9,7 @@ use serde_json::json;
 #[tokio::test]
 async fn health_and_organs() {
     let s = TestServer::start().await;
-    assert_eq!(s.get("/health").await["name"], "registra");
+    assert_eq!(s.get("/health").await["name"], "cecilia");
     let organs = s.get("/organs").await;
     let ids: Vec<_> = organs.as_array().unwrap().iter().map(|o| o["id"].as_str().unwrap()).collect();
     assert!(ids.contains(&"demo") && ids.contains(&"makin-2m"), "{ids:?}");
@@ -20,11 +20,11 @@ async fn health_and_organs() {
 async fn simulator_ports_are_listed_and_selectable() {
     let s = TestServer::with_simulator().await;
     let ports = s.get("/midi/ports").await;
-    assert!(ports["inputs"].as_array().unwrap().iter().any(|p| p == "Registra Simulator"));
+    assert!(ports["inputs"].as_array().unwrap().iter().any(|p| p == "Cecilia Simulator"));
     let status = s.get("/midi/status").await;
-    assert_eq!(status["output"], "Registra Simulator");
-    assert_eq!(status["inputs"], json!(["Registra Simulator"]));
-    assert_eq!(s.get("/midi/config").await["output"], "Registra Simulator", "selection is saved");
+    assert_eq!(status["output"], "Cecilia Simulator");
+    assert_eq!(status["inputs"], json!(["Cecilia Simulator"]));
+    assert_eq!(s.get("/midi/config").await["output"], "Cecilia Simulator", "selection is saved");
 }
 
 #[tokio::test]
@@ -119,6 +119,20 @@ async fn the_console_page_operates_the_connected_organ() {
     // Drawn once on the (toggle-only) organ, and the live view agrees.
     assert_eq!(stops(&s.sim().await), ["gt-opendiap"]);
     let live = s.get("/live").await;
-    assert_eq!(live["output"], "Registra Simulator");
+    assert_eq!(live["output"], "Cecilia Simulator");
     assert_eq!(live["console"]["stops"], json!(["gt-opendiap"]));
+}
+
+#[tokio::test]
+async fn ports_saved_under_the_old_name_still_work() {
+    let data = tempfile::tempdir().unwrap();
+    std::fs::write(
+        data.path().join("settings.json"),
+        r#"{ "midi": { "inputs": ["Registra Simulator"], "output": "Registra Simulator" } }"#,
+    )
+    .unwrap();
+    let s = TestServer::start_in(data).await;
+    let status = s.get("/midi/status").await;
+    assert_eq!(status["output"], "Cecilia Simulator");
+    assert_eq!(status["inputs"], json!(["Cecilia Simulator"]));
 }

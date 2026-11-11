@@ -99,7 +99,7 @@ export function OrgansIndex() {
   return (
     <div className="mx-auto flex w-full min-w-0 max-w-5xl flex-col gap-4 p-3 sm:p-4">
       <p className="text-sm text-muted-foreground">
-        The organ in use decides how Registra talks MIDI. To set up your own instrument, copy the closest template (the
+        The organ in use decides how Cecilia talks MIDI. To set up your own instrument, copy the closest template (the
         Makin one for a Makin) and teach it your stops with MIDI learn.
       </p>
       {organs === null ? (

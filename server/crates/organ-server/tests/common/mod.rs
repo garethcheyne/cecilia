@@ -54,7 +54,7 @@ impl TestServer {
     pub async fn route_simulator(&self) {
         self.put(
             "/midi/config",
-            json!({ "inputs": ["Registra Simulator"], "output": "Registra Simulator" }),
+            json!({ "inputs": ["Cecilia Simulator"], "output": "Cecilia Simulator" }),
         )
         .await;
     }

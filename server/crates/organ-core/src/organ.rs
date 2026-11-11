@@ -432,7 +432,7 @@ pub struct OrganSummary {
     pub manufacturer: Manufacturer,
     pub divisions: usize,
     pub stops: usize,
-    /// Shipped with Registra (read-only) rather than user-created.
+    /// Shipped with Cecilia (read-only) rather than user-created.
     pub builtin: bool,
 }
 

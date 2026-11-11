@@ -13,8 +13,8 @@ const HALF = 2.5 // pipe half-width
 const MOUTH_Y = 21
 const FOOT_Y = 27
 
-/** Registra's mark: a flat of five organ pipes. Colours follow `currentColor`. */
-export function RegistraMark({ className, title }: { className?: string; title?: string }) {
+/** Cecilia's mark: a flat of five organ pipes. Colours follow `currentColor`. */
+export function CeciliaMark({ className, title }: { className?: string; title?: string }) {
   return (
     <svg
       viewBox="0 0 32 32"

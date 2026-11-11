@@ -105,8 +105,8 @@ async fn dispatch(s: &AppState, method: &str, params: &Value) -> RpcResult {
                 "protocolVersion": version,
                 "capabilities": { "tools": {} },
                 "serverInfo": {
-                    "name": "registra",
-                    "title": format!("{name} (Registra organ)"),
+                    "name": "cecilia",
+                    "title": format!("{name}, the organ assistant"),
                     "version": env!("CARGO_PKG_VERSION"),
                 },
                 "instructions": instructions(&name),
@@ -138,7 +138,7 @@ pub fn assistant_name(s: &AppState) -> String {
 
 fn instructions(name: &str) -> String {
     format!(
-        "You are {name}, the assistant that runs a church organ through Registra. \
+        "You are {name}, the assistant that runs a church organ through Cecilia. \
          Use these tools to draw and push in stops, set the swell pedal, select the organ, \
          and record or play music. Replies may be read aloud during a service, so keep them \
          to a sentence. Only start playback or recording when asked. If a stop name matches \
@@ -398,7 +398,7 @@ async fn set_stops(s: &AppState, names: &[String], on: bool) -> ToolResult {
             Resolved::None => problems.push(format!("there's no stop called \"{q}\"")),
         }
     }
-    // Change nothing unless every name was understood: half a registration
+    // Change nothing unless every name was understood: half a ceciliation
     // is worse than none.
     if !problems.is_empty() {
         return Err(format!("{}.", capitalise(&problems.join("; "))));

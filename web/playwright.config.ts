@@ -11,9 +11,9 @@ const here = path.dirname(fileURLToPath(import.meta.url))
 // Browser tests run against the real organ-server serving the static build
 // (`npm run build` first). Each run gets an empty data folder and no sound.
 const PORT = Number(process.env.E2E_PORT ?? 7090)
-const exe = process.platform === "win32" ? "organ-server.exe" : "organ-server"
-const bin = process.env.REGISTRA_BIN ?? path.resolve(here, "../server/target/debug", exe)
-const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), "registra-e2e-"))
+const exe = process.platform === "win32" ? "cecilia.exe" : "cecilia"
+const bin = process.env.CECILIA_BIN ?? path.resolve(here, "../server/target/debug", exe)
+const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), "cecilia-e2e-"))
 
 export default defineConfig({
   testDir: "e2e",
@@ -36,10 +36,10 @@ export default defineConfig({
     url: `http://127.0.0.1:${PORT}/api/v1/health`,
     reuseExistingServer: false,
     env: {
-      REGISTRA_ADDR: `127.0.0.1:${PORT}`,
-      REGISTRA_DATA_DIR: dataDir,
-      REGISTRA_WEB_DIR: path.resolve(here, "out"),
-      REGISTRA_AUDIO: "0",
+      CECILIA_ADDR: `127.0.0.1:${PORT}`,
+      CECILIA_DATA_DIR: dataDir,
+      CECILIA_WEB_DIR: path.resolve(here, "out"),
+      CECILIA_AUDIO: "0",
     },
   },
 })

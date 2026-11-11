@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 if [ -d /run/systemd/system ] && [ "$1" = "remove" ]; then
-    systemctl stop registra.service || true
-    systemctl disable registra.service >/dev/null || true
+    systemctl stop cecilia.service || true
+    systemctl disable cecilia.service >/dev/null || true
 fi
 exit 0

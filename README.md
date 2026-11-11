@@ -1,4 +1,4 @@
-# Registra (working name)
+# Cecilia
 
 A modern, cross-platform organ MIDI recorder and player, written from scratch.
 Its feature set is modelled on the *publicly documented behaviour* of OrganAssist
@@ -26,7 +26,7 @@ Its feature set is modelled on the *publicly documented behaviour* of OrganAssis
 - **Records a whole service with one press.** Each piece is saved to the
   library by itself, with the stops that were drawn when it started.
 - **Plays any recording on any organ.** The virtual organist maps
-  registrations onto the stops the connected organ has (never louder).
+  ceciliations onto the stops the connected organ has (never louder).
   Tempo, verse control ("stop at the end of this verse", "skip to the last
   verse"), latching pause, seek and fade-out.
 - **Runs services** from playlists: each piece waits for Play, starts by
@@ -95,13 +95,13 @@ cd web && npm run gen:api        # regenerates lib/api/openapi.json + schema.d.t
 
 | Variable            | Default                                         | Purpose                                   |
 | ------------------- | ----------------------------------------------- | ----------------------------------------- |
-| `REGISTRA_ADDR`     | `127.0.0.1:7070`                                | Listen address. Use `0.0.0.0:7070` for LAN access, after setting a password |
-| `REGISTRA_DATA_DIR` | OS data dir + `/Registra`                       | Settings, library, playlists, organs, history |
-| `REGISTRA_WEB_DIR`  | `./web` beside the binary, else `../web/out`    | Static UI to serve                        |
-| `REGISTRA_CORS`     | `http://localhost:3000,http://127.0.0.1:3000`   | Browser origins allowed to call the API   |
-| `REGISTRA_AUDIO`    | on                                              | `0` keeps the simulator silent            |
-| `REGISTRA_OMR`      | Audiveris on the PATH                           | OMR command with `{input}` and `{output}` |
-| `REGISTRA_MCP_TOKEN`| unset                                           | If set, `/mcp` requires `Authorization: Bearer <token>` |
+| `CECILIA_ADDR`     | `127.0.0.1:7070`                                | Listen address. Use `0.0.0.0:7070` for LAN access, after setting a password |
+| `CECILIA_DATA_DIR` | OS data dir + `/Cecilia`                       | Settings, library, playlists, organs, history |
+| `CECILIA_WEB_DIR`  | `./web` beside the binary, else `../web/out`    | Static UI to serve                        |
+| `CECILIA_CORS`     | `http://localhost:3000,http://127.0.0.1:3000`   | Browser origins allowed to call the API   |
+| `CECILIA_AUDIO`    | on                                              | `0` keeps the simulator silent            |
+| `CECILIA_OMR`      | Audiveris on the PATH                           | OMR command with `{input}` and `{output}` |
+| `CECILIA_MCP_TOKEN`| unset                                           | If set, `/mcp` requires `Authorization: Bearer <token>` |
 | `RUST_LOG`          | `info`                                          | Log filter                                |
 
 ## Data folder
@@ -161,13 +161,13 @@ The full feature spec is in [docs/SPEC.md](docs/SPEC.md).
 
 ## Simulator
 
-`organ-server` exposes a virtual MIDI device called **Registra Simulator**. Choose it as
+`organ-server` exposes a virtual MIDI device called **Cecilia Simulator**. Choose it as
 Organ in/out on MIDI Setup and everything (recording, playback, monitoring) works
 with no instrument attached. The simulator's sound is rendered by the server
 itself (WASAPI / CoreAudio / ALSA), so a Raspberry Pi can drive speakers
-directly. Set `REGISTRA_AUDIO=0` to run silent.
+directly. Set `CECILIA_AUDIO=0` to run silent.
 
-Built-in organs: **Registra Demo Organ** (on/off stops) and **Makin 2-manual
+Built-in organs: **Cecilia Demo Organ** (on/off stops) and **Makin 2-manual
 (template)**. The Makin one behaves like a Makin/Johannus console: each stop is a
 toggling Program Change on channel 12, and General cancel sends
 `F0 00 4A 4F 48 41 53 7F F7`. Its channels come from Makin's manual. Its stop
@@ -181,7 +181,7 @@ run the organ. The assistant is called **Cecilia** by default (renamable on Setu
 the same tools will back offline voice control with "Cecilia" as the wake word.
 
 ```sh
-claude mcp add --transport http registra http://127.0.0.1:7070/mcp
+claude mcp add --transport http cecilia http://127.0.0.1:7070/mcp
 ```
 
 | Tool | Does |
@@ -199,4 +199,4 @@ Tools act on the organ selected as **Organ out** (or the simulator) using its dr
 read its state from MIDI traffic in both directions (`organ-core::live`), so toggle-only
 stops (Makin/Johannus) are never flipped the wrong way. Replies are one short sentence,
 suitable for reading aloud. Requests from other web pages are rejected (origin check);
-set `REGISTRA_MCP_TOKEN` before listening on anything but localhost.
+set `CECILIA_MCP_TOKEN` before listening on anything but localhost.

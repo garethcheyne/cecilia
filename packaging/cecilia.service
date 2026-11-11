@@ -1,17 +1,17 @@
 [Unit]
-Description=Registra organ recorder and player
-Documentation=https://github.com/registra-organ/registra
+Description=Cecilia organ recorder and player
+Documentation=https://github.com/cecilia-organ/cecilia
 After=network-online.target sound.target
 Wants=network-online.target
 
 [Service]
-User=registra
-Group=registra
+User=cecilia
+Group=cecilia
 SupplementaryGroups=audio
-EnvironmentFile=-/etc/default/registra
-Environment=REGISTRA_DATA_DIR=/var/lib/registra
-Environment=REGISTRA_WEB_DIR=/usr/share/registra/web
-ExecStart=/usr/bin/organ-server
+EnvironmentFile=-/etc/default/cecilia
+Environment=CECILIA_DATA_DIR=/var/lib/cecilia
+Environment=CECILIA_WEB_DIR=/usr/share/cecilia/web
+ExecStart=/usr/bin/cecilia
 Restart=always
 RestartSec=2
 # MIDI timing: a little priority helps on a busy Pi.

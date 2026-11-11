@@ -90,7 +90,7 @@ pub fn router() -> Router<AppState> {
 #[derive(OpenApi)]
 #[openapi(
     info(
-        title = "Registra API",
+        title = "Cecilia API",
         description = "Headless organ MIDI engine. Live events are streamed over a WebSocket at \
                        `/api/v1/events` as JSON `EngineEvent` messages."
     ),
@@ -125,7 +125,7 @@ pub fn router() -> Router<AppState> {
         ConsoleState, LoadOrgan, Assistant, LiveSnapshot,
         organ_core::track::Track, organ_core::track::TrackSummary, organ_core::track::TrackInfo,
         organ_core::track::TrackEvent, organ_core::track::TimedEvent, organ_core::track::StopRef,
-        organ_core::track::Registration, organ_core::track::Meter, organ_core::track::Mode,
+        organ_core::track::Ceciliation, organ_core::track::Meter, organ_core::track::Mode,
         organ_core::track::TrackSource, organ_core::organist::StopMapping,
         organ_core::recorder::RecorderStatus, organ_core::recorder::RecorderState,
         organ_core::player::PlayerStatus, organ_core::player::PlayerState,
@@ -206,7 +206,7 @@ pub struct Health {
     responses((status = 200, body = Health)))]
 async fn health() -> Json<Health> {
     Json(Health {
-        name: "registra",
+        name: "cecilia",
         version: env!("CARGO_PKG_VERSION"),
     })
 }

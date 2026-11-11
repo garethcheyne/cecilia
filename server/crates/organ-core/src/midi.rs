@@ -10,10 +10,10 @@ use serde::{Deserialize, Serialize};
 use tokio::sync::{broadcast, oneshot};
 use utoipa::ToSchema;
 
-const CLIENT_NAME: &str = "Registra";
+const CLIENT_NAME: &str = "Cecilia";
 
 /// Name of the built-in virtual organ's port pair (input and output).
-pub const SIMULATOR_PORT: &str = "Registra Simulator";
+pub const SIMULATOR_PORT: &str = "Cecilia Simulator";
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -446,7 +446,7 @@ impl Engine {
         midi_in
             .connect(
                 &port,
-                "registra-in",
+                "cecilia-in",
                 move |_driver_ts, bytes, _| {
                     handle_input(&recorder, &events, epoch, &port_name, bytes);
                 },
@@ -645,7 +645,7 @@ fn open_output(name: &str) -> Result<MidiOutputConnection, String> {
         .find(|p| midi_out.port_name(p).ok().as_deref() == Some(name))
         .ok_or_else(|| "port not found".to_string())?;
     midi_out
-        .connect(&port, "registra-out")
+        .connect(&port, "cecilia-out")
         .map_err(|e| e.to_string())
 }
 

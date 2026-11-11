@@ -184,7 +184,7 @@ pub async fn export_csv(State(s): State<AppState>) -> Response {
         out.push_str(&row.join(","));
         out.push_str("\r\n");
     }
-    download(out.into_bytes(), "text/csv; charset=utf-8", "registra-library.csv")
+    download(out.into_bytes(), "text/csv; charset=utf-8", "cecilia-library.csv")
 }
 
 /// Every track as a MIDI file for the current organ, zipped: a backup that
@@ -195,5 +195,5 @@ pub async fn export_zip(State(s): State<AppState>) -> Response {
     let tracks: Vec<Track> = s.library.list().iter().filter_map(|t| s.library.get(&t.id)).collect();
     let organ = s.live.organ();
     let bytes = tokio::task::spawn_blocking(move || smf::library_zip(&tracks, &organ)).await.unwrap_or_default();
-    download(bytes, "application/zip", "registra-library-midi.zip")
+    download(bytes, "application/zip", "cecilia-library-midi.zip")
 }

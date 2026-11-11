@@ -1,4 +1,4 @@
-//! Registra server library: builds the HTTP/WebSocket app around the organ
+//! Cecilia server library: builds the HTTP/WebSocket app around the organ
 //! engine. `main.rs` runs it; integration tests start it on a spare port.
 
 pub mod api;
@@ -52,22 +52,21 @@ pub struct Config {
 }
 
 impl Config {
-    /// Read the `REGISTRA_*` environment variables (see `main.rs`).
+    /// Read the `CECILIA_*` environment variables (see `main.rs`).
     pub fn from_env() -> anyhow::Result<Self> {
-        let data_dir = std::env::var_os("REGISTRA_DATA_DIR")
-            .map(PathBuf::from)
-            .or_else(|| dirs::data_dir().map(|d| d.join("Registra")))
-            .context("could not determine a data directory; set REGISTRA_DATA_DIR")?;
+        let data_dir = match env("DATA_DIR") {
+            Some(d) => PathBuf::from(d),
+            None => default_data_dir().context("could not determine a data directory; set CECILIA_DATA_DIR")?,
+        };
         Ok(Self {
             data_dir,
             web_dir: web_dir(),
             allowed_origins: parse_origins(
-                &std::env::var("REGISTRA_CORS")
-                    .unwrap_or_else(|_| "http://localhost:3000,http://127.0.0.1:3000".into()),
+                &env("CORS").unwrap_or_else(|| "http://localhost:3000,http://127.0.0.1:3000".into()),
             ),
-            audio: std::env::var("REGISTRA_AUDIO").as_deref() != Ok("0"),
-            mcp_token: std::env::var("REGISTRA_MCP_TOKEN").ok().filter(|t| !t.is_empty()),
-            omr_command: std::env::var("REGISTRA_OMR").ok().filter(|c| !c.trim().is_empty()).or_else(find_audiveris),
+            audio: env("AUDIO").as_deref() != Some("0"),
+            mcp_token: env("MCP_TOKEN").filter(|t| !t.is_empty()),
+            omr_command: env("OMR").filter(|c| !c.trim().is_empty()).or_else(find_audiveris),
         })
     }
 
@@ -209,6 +208,32 @@ fn cors_layer(origins: Vec<HeaderValue>) -> CorsLayer {
         .allow_credentials(true)
 }
 
+/// A setting from `CECILIA_<name>`, or the older `REGISTRA_<name>` (the
+/// project's working name), so existing setups keep working.
+pub fn env(name: &str) -> Option<String> {
+    std::env::var(format!("CECILIA_{name}"))
+        .or_else(|_| std::env::var(format!("REGISTRA_{name}")))
+        .ok()
+}
+
+/// `<OS data dir>/Cecilia`. A folder left by an older build under the
+/// working name "Registra" is moved across the first time.
+fn default_data_dir() -> Option<PathBuf> {
+    let base = dirs::data_dir()?;
+    let dir = base.join("Cecilia");
+    let old = base.join("Registra");
+    if !dir.exists() && old.is_dir() {
+        match std::fs::rename(&old, &dir) {
+            Ok(()) => tracing::info!(from = %old.display(), to = %dir.display(), "moved the data folder"),
+            Err(err) => {
+                tracing::warn!(%err, "could not move the old data folder; using it where it is");
+                return Some(old);
+            }
+        }
+    }
+    Some(dir)
+}
+
 /// Audiveris on the PATH, if installed.
 fn find_audiveris() -> Option<String> {
     let path = std::env::var_os("PATH")?;
@@ -220,7 +245,7 @@ fn find_audiveris() -> Option<String> {
 }
 
 fn web_dir() -> Option<PathBuf> {
-    if let Some(dir) = std::env::var_os("REGISTRA_WEB_DIR") {
+    if let Some(dir) = env("WEB_DIR") {
         return Some(PathBuf::from(dir));
     }
     let beside_exe = std::env::current_exe()

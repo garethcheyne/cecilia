@@ -6,30 +6,30 @@ edition.workspace = true
 license.workspace = true
 
 # `cargo deb -p organ-server` (after `npm run build` in web/) makes the
-# Raspberry Pi package. Data lives in /var/lib/registra; your music is kept
+# Raspberry Pi package. Data lives in /var/lib/cecilia; your music is kept
 # when the package is upgraded or removed.
 [package.metadata.deb]
-name = "registra"
-maintainer = "Registra contributors"
-copyright = "Registra contributors, MIT licence"
+name = "cecilia"
+maintainer = "Cecilia contributors"
+copyright = "Cecilia contributors, MIT licence"
 extended-description = "Records, edits and plays back organ performances over MIDI, with a web interface for phones and tablets."
 section = "sound"
 priority = "optional"
 depends = "$auto, adduser, libasound2"
 maintainer-scripts = "../../../packaging/debian/"
-conf-files = ["/etc/default/registra"]
+conf-files = ["/etc/default/cecilia"]
 assets = [
-    ["target/release/organ-server", "usr/bin/", "755"],
-    ["../../../web/out/**/*", "usr/share/registra/web/", "644"],
-    ["../../../packaging/registra.service", "lib/systemd/system/registra.service", "644"],
-    ["../../../packaging/registra.default", "etc/default/registra", "644"],
+    ["target/release/cecilia", "usr/bin/", "755"],
+    ["../../../web/out/**/*", "usr/share/cecilia/web/", "644"],
+    ["../../../packaging/cecilia.service", "lib/systemd/system/cecilia.service", "644"],
+    ["../../../packaging/cecilia.default", "etc/default/cecilia", "644"],
 ]
 
 [lib]
 path = "src/lib.rs"
 
 [[bin]]
-name = "organ-server"
+name = "cecilia"
 path = "src/main.rs"
 
 [dependencies]

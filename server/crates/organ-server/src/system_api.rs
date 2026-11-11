@@ -91,7 +91,7 @@ pub async fn backup(State(s): State<AppState>) -> Response {
         Ok(Ok(b)) => (
             [
                 (header::CONTENT_TYPE, HeaderValue::from_static("application/zip")),
-                (header::CONTENT_DISPOSITION, HeaderValue::from_static("attachment; filename=\"registra-backup.zip\"")),
+                (header::CONTENT_DISPOSITION, HeaderValue::from_static("attachment; filename=\"cecilia-backup.zip\"")),
             ],
             b,
         )
@@ -151,7 +151,7 @@ pub async fn restore(State(s): State<AppState>, body: Bytes) -> Result<Json<Rest
 }
 
 fn apply_backup(dir: &FsPath, bytes: &[u8]) -> anyhow::Result<RestoreResult> {
-    let mut zip = zip::ZipArchive::new(std::io::Cursor::new(bytes)).map_err(|_| anyhow::anyhow!("that isn't a Registra backup (.zip)"))?;
+    let mut zip = zip::ZipArchive::new(std::io::Cursor::new(bytes)).map_err(|_| anyhow::anyhow!("that isn't a Cecilia backup (.zip)"))?;
     // Read and check everything before writing anything.
     let mut files: Vec<(String, Vec<u8>)> = Vec::new();
     let mut counts = RestoreResult { tracks: 0, organs: 0, playlists: 0 };
@@ -220,7 +220,7 @@ fn apply_backup(dir: &FsPath, bytes: &[u8]) -> anyhow::Result<RestoreResult> {
 #[derive(Clone, Default)]
 pub struct Sessions(Arc<Mutex<HashSet<String>>>);
 
-const COOKIE: &str = "registra_session";
+const COOKIE: &str = "cecilia_session";
 
 fn random_hex(n: usize) -> String {
     let mut b = vec![0u8; n];
@@ -271,7 +271,7 @@ pub async fn require_session(State(s): State<AppState>, req: Request, next: Next
     if open || signed_in(&s, req.headers()) {
         next.run(req).await
     } else {
-        error(StatusCode::UNAUTHORIZED, "Sign in to use Registra.")
+        error(StatusCode::UNAUTHORIZED, "Sign in to use Cecilia.")
     }
 }
 
@@ -383,7 +383,7 @@ pub async fn omr(State(s): State<AppState>, Query(q): Query<OmrQuery>, body: Byt
     let Some(command) = s.omr_command.clone() else {
         return error(
             StatusCode::NOT_IMPLEMENTED,
-            "Reading scanned music needs Audiveris (free) installed on the Registra computer. See docs/OMR.md.",
+            "Reading scanned music needs Audiveris (free) installed on the Cecilia computer. See docs/OMR.md.",
         );
     };
     let ext = q.name.rsplit_once('.').map(|(_, e)| e.to_lowercase()).unwrap_or_default();
@@ -405,7 +405,7 @@ pub async fn omr(State(s): State<AppState>, Query(q): Query<OmrQuery>, body: Byt
 /// Run the engine: `command` is a template whose `{input}` and `{output}`
 /// are replaced with the scan's path and an empty folder for the result.
 fn run_omr(command: &str, ext: &str, scan: &[u8]) -> anyhow::Result<Vec<u8>> {
-    let work = std::env::temp_dir().join(format!("registra-omr-{}", random_hex(8)));
+    let work = std::env::temp_dir().join(format!("cecilia-omr-{}", random_hex(8)));
     let out = work.join("out");
     std::fs::create_dir_all(&out)?;
     let input = work.join(format!("scan.{ext}"));

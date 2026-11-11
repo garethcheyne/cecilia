@@ -5,7 +5,7 @@
 //! matched to the closest thing it has, by division, pitch and tonal family,
 //! with one firm rule: **never substitute something louder** (no Tuba for a
 //! missing Salicional). Missing keyboards are redirected, ultimately to the
-//! Great. And it works on whole registrations: if a division would fall
+//! Great. And it works on whole ceciliations: if a division would fall
 //! silent because none of its stops exist here, its quietest 8′ flute or
 //! principal is drawn instead.
 
@@ -15,7 +15,7 @@ use serde::Serialize;
 use utoipa::ToSchema;
 
 use crate::organ::{footage_feet, DivisionRole, Equivalent, Family, OrganDefinition};
-use crate::track::{Registration, StopRef};
+use crate::track::{Ceciliation, StopRef};
 
 /// Where each recorded division's notes, stops and pedal go on this organ.
 pub fn division_map(organ: &OrganDefinition) -> BTreeMap<DivisionRole, DivisionRole> {
@@ -150,8 +150,8 @@ impl Organist {
         }
     }
 
-    /// The stops to draw on this organ for a whole recorded registration.
-    pub fn stops_for(&self, reg: &Registration) -> BTreeSet<String> {
+    /// The stops to draw on this organ for a whole recorded ceciliation.
+    pub fn stops_for(&self, reg: &Ceciliation) -> BTreeSet<String> {
         let mut out: BTreeSet<String> = reg.stops.iter().filter_map(|r| self.stop(r)).collect();
         // Any division that had speaking stops but would now be silent gets
         // its quietest 8' flute or principal.
@@ -201,7 +201,7 @@ impl Organist {
         self.organ.division(to)?.expression.as_ref().map(|_| to)
     }
 
-    /// How every stop used in a set of registrations maps onto this organ.
+    /// How every stop used in a set of ceciliations maps onto this organ.
     pub fn report<'a>(&self, stops: impl IntoIterator<Item = &'a StopRef>) -> Vec<StopMapping> {
         let unique: BTreeSet<&StopRef> = stops.into_iter().collect();
         unique
@@ -275,7 +275,7 @@ mod tests {
     #[test]
     fn a_division_never_falls_silent() {
         let vo = Organist::new(organ("demo"));
-        let mut reg = Registration::default();
+        let mut reg = Ceciliation::default();
         // A Great 32' reed nobody has.
         reg.stops.insert(voice(DivisionRole::Great, Family::Reed, "32", ""));
         let stops = vo.stops_for(&reg);

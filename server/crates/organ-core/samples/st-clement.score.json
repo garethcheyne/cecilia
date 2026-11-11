@@ -3,7 +3,7 @@
   "title": "The Day Thou Gavest, Lord, Is Ended",
   "composer": "Clement Cotterill Scholefield, 1874",
   "melody": "ST CLEMENT",
-  "publication": "Registra sample arrangement",
+  "publication": "Cecilia sample arrangement",
   "copyright": "Public domain",
   "bpm": 100,
   "time": "3/4",
@@ -11,7 +11,7 @@
   "pickup": 1,
   "verses": 5,
   "gap": 2,
-  "registration": [
+  "ceciliation": [
     "great principal 8",
     "great flute 8",
     "swell flute 8",
@@ -20,7 +20,7 @@
     "pedal flute 16",
     "great to pedal"
   ],
-  "verse_registration": {
+  "verse_ceciliation": {
     "2": ["-great principal 8", "-swell principal 4", "+swell string 8", "+swell celeste 8", "-great to pedal", "+swell to pedal"],
     "3": ["+great principal 8", "+swell principal 4", "-swell celeste 8", "+great to pedal", "-swell to pedal", "+pedal principal 8"],
     "4": ["-great principal 8", "-swell principal 4", "+swell celeste 8", "+swell tremulant", "-pedal principal 8"],

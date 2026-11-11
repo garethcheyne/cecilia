@@ -1,22 +1,22 @@
 {
   "id": "prelude-on-a-ground",
   "title": "Prelude on a Ground in F",
-  "composer": "Registra contributors",
-  "publication": "Registra original",
+  "composer": "Cecilia contributors",
+  "publication": "Cecilia original",
   "copyright": "CC0",
   "bpm": 84,
   "time": "4/4",
   "key": "F",
   "verses": 3,
   "gap": 2,
-  "registration": [
+  "ceciliation": [
     "great flute 8",
     "swell string 8",
     "swell celeste 8",
     "pedal flute 16",
     "swell to pedal"
   ],
-  "verse_registration": {
+  "verse_ceciliation": {
     "2": ["+great principal 4", "+swell flute 8", "-swell celeste 8", "+pedal principal 8"],
     "3": ["-great principal 4", "-swell flute 8", "+swell celeste 8", "+swell tremulant", "-pedal principal 8"]
   },

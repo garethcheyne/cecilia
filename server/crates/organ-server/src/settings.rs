@@ -79,6 +79,13 @@ impl SettingsStore {
             }),
             Err(_) => Settings::default(),
         };
+        let mut current = current;
+        // Ports saved under the project's working name.
+        for name in current.midi.inputs.iter_mut().chain(current.midi.output.iter_mut()) {
+            if name == "Registra Simulator" {
+                *name = organ_core::SIMULATOR_PORT.to_string();
+            }
+        }
         Ok(Self {
             path,
             current: Mutex::new(current),

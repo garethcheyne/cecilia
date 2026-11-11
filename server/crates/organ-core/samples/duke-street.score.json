@@ -3,14 +3,14 @@
   "title": "Jesus Shall Reign Where'er the Sun",
   "composer": "John Hatton, 1793",
   "melody": "DUKE STREET",
-  "publication": "Registra sample arrangement",
+  "publication": "Cecilia sample arrangement",
   "copyright": "Tune public domain; arrangement CC0",
   "bpm": 100,
   "time": "4/4",
   "key": "D",
   "verses": 5,
   "gap": 2,
-  "registration": [
+  "ceciliation": [
     "great principal 8",
     "great flute 8",
     "great principal 4",
@@ -22,7 +22,7 @@
     "great to pedal",
     "great principal 2"
   ],
-  "verse_registration": {
+  "verse_ceciliation": {
     "2": ["-great principal 2"],
     "3": ["-great principal 8", "-great principal 4", "-swell principal 4", "+swell string 8", "+swell celeste 8", "-pedal principal 8", "-great to pedal", "+swell to pedal"],
     "4": ["+great principal 8", "+great principal 4", "+swell principal 4", "-swell string 8", "-swell celeste 8", "+pedal principal 8", "+great to pedal", "-swell to pedal"],

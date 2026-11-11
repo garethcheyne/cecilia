@@ -1,17 +1,17 @@
 #!/bin/sh
 set -e
 if [ "$1" = "configure" ]; then
-    if ! getent passwd registra >/dev/null; then
-        adduser --system --group --home /var/lib/registra --no-create-home registra
+    if ! getent passwd cecilia >/dev/null; then
+        adduser --system --group --home /var/lib/cecilia --no-create-home cecilia
     fi
     # MIDI (ALSA sequencer and USB MIDI) and the sound card.
-    adduser registra audio >/dev/null 2>&1 || true
-    mkdir -p /var/lib/registra
-    chown registra:registra /var/lib/registra
+    adduser cecilia audio >/dev/null 2>&1 || true
+    mkdir -p /var/lib/cecilia
+    chown cecilia:cecilia /var/lib/cecilia
     if [ -d /run/systemd/system ]; then
         systemctl daemon-reload
-        systemctl enable registra.service >/dev/null
-        systemctl restart registra.service
+        systemctl enable cecilia.service >/dev/null
+        systemctl restart cecilia.service
     fi
 fi
 exit 0

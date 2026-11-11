@@ -3,7 +3,7 @@
 import * as React from "react"
 import { LockIcon } from "lucide-react"
 
-import { RegistraMark } from "@/components/brand/registra-mark"
+import { CeciliaMark } from "@/components/brand/cecilia-mark"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
@@ -43,9 +43,9 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
         <form onSubmit={signIn} className="flex flex-col gap-6">
           <CardHeader className="items-center text-center">
             <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground [--mark-cutout:var(--primary)]">
-              <RegistraMark className="size-8" />
+              <CeciliaMark className="size-8" />
             </div>
-            <CardTitle className="text-xl">Registra</CardTitle>
+            <CardTitle className="text-xl">Cecilia</CardTitle>
             <CardDescription>Enter the password to use the organ.</CardDescription>
           </CardHeader>
           <CardContent>

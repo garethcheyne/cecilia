@@ -51,7 +51,7 @@ export async function uploadFile<T>(path: string, file: File, options?: unknown)
   try {
     res = await fetch(apiUrl(`${path}?${params}`), { method: "POST", body: file, credentials: "include" })
   } catch {
-    throw new ApiError("Can't reach the Registra server. Is it running?")
+    throw new ApiError("Can't reach the Cecilia server. Is it running?")
   }
   const body = await res.json().catch(() => null)
   if (!res.ok) throw new ApiError(body?.error ?? `Request failed (${res.status})`)
@@ -78,7 +78,7 @@ export async function call<T>(
   try {
     result = await request
   } catch {
-    throw new ApiError("Can't reach the Registra server. Is it running?")
+    throw new ApiError("Can't reach the Cecilia server. Is it running?")
   }
   if (result.error !== undefined) {
     const message =

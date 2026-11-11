@@ -299,7 +299,7 @@ pub struct Seek {
     pub ms: u32,
 }
 
-/// Jump to a position; the registration there is re-created.
+/// Jump to a position; the ceciliation there is re-created.
 #[utoipa::path(post, path = "/api/v1/player/seek", tag = "player", request_body = Seek,
     responses((status = 200, body = PlayerStatus)))]
 pub async fn player_seek(State(s): State<AppState>, Json(req): Json<Seek>) -> Json<PlayerStatus> {

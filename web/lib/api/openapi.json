@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Registra API",
+    "title": "Cecilia API",
     "description": "Headless organ MIDI engine. Live events are streamed over a WebSocket at `/api/v1/events` as JSON `EngineEvent` messages.",
     "license": {
       "name": "MIT",
@@ -1483,7 +1483,7 @@
         "tags": [
           "player"
         ],
-        "summary": "Jump to a position; the registration there is re-created.",
+        "summary": "Jump to a position; the ceciliation there is re-created.",
         "operationId": "player_seek",
         "requestBody": {
           "content": {
@@ -2405,6 +2405,48 @@
           },
           "signed_in": {
             "type": "boolean"
+          }
+        }
+      },
+      "Ceciliation": {
+        "type": "object",
+        "description": "Stops drawn plus pedal positions at one moment.",
+        "properties": {
+          "expression": {
+            "type": "object",
+            "description": "Expression per division, 0-127.",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            },
+            "propertyNames": {
+              "type": "string",
+              "description": "The role of a keyboard, independent of its local name (Great, Hauptwerk,\nGrand Orgue...). Order follows the English convention.",
+              "enum": [
+                "pedal",
+                "great",
+                "swell",
+                "choir",
+                "solo",
+                "echo"
+              ]
+            }
+          },
+          "master_volume": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "minimum": 0
+          },
+          "stops": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StopRef"
+            },
+            "uniqueItems": true
           }
         }
       },
@@ -3491,7 +3533,7 @@
         "properties": {
           "builtin": {
             "type": "boolean",
-            "description": "Shipped with Registra (read-only) rather than user-created."
+            "description": "Shipped with Cecilia (read-only) rather than user-created."
           },
           "divisions": {
             "type": "integer",
@@ -3962,48 +4004,6 @@
             "description": "Silence (after the last key is released) that ends a piece. 2-60 s.",
             "default": 8000,
             "minimum": 0
-          }
-        }
-      },
-      "Registration": {
-        "type": "object",
-        "description": "Stops drawn plus pedal positions at one moment.",
-        "properties": {
-          "expression": {
-            "type": "object",
-            "description": "Expression per division, 0-127.",
-            "additionalProperties": {
-              "type": "integer",
-              "format": "int32",
-              "minimum": 0
-            },
-            "propertyNames": {
-              "type": "string",
-              "description": "The role of a keyboard, independent of its local name (Great, Hauptwerk,\nGrand Orgue...). Order follows the English convention.",
-              "enum": [
-                "pedal",
-                "great",
-                "swell",
-                "choir",
-                "solo",
-                "echo"
-              ]
-            }
-          },
-          "master_volume": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int32",
-            "minimum": 0
-          },
-          "stops": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/StopRef"
-            },
-            "uniqueItems": true
           }
         }
       },
@@ -4531,8 +4531,8 @@
             "$ref": "#/components/schemas/TrackInfo"
           },
           "initial": {
-            "$ref": "#/components/schemas/Registration",
-            "description": "Registration and pedals when the track starts."
+            "$ref": "#/components/schemas/Ceciliation",
+            "description": "Ceciliation and pedals when the track starts."
           },
           "meter": {
             "oneOf": [

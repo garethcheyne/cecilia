@@ -3,14 +3,14 @@
   "title": "Praise to the Lord, the Almighty, the King of Creation",
   "composer": "Stralsund Gesangbuch, 1665; harm. William Sterndale Bennett, 1864",
   "melody": "LOBE DEN HERREN",
-  "publication": "Registra sample arrangement",
+  "publication": "Cecilia sample arrangement",
   "copyright": "Public domain",
   "bpm": 120,
   "time": "3/4",
   "key": "F",
   "verses": 4,
   "gap": 2,
-  "registration": [
+  "ceciliation": [
     "great principal 8",
     "great flute 8",
     "great principal 4",
@@ -22,7 +22,7 @@
     "great to pedal",
     "great principal 2"
   ],
-  "verse_registration": {
+  "verse_ceciliation": {
     "2": ["-great principal 2", "+swell reed 8"],
     "3": ["-swell reed 8", "-great principal 8", "-great principal 4", "-swell principal 4", "+swell string 8", "+swell celeste 8", "-pedal principal 8", "-great to pedal", "+swell to pedal"],
     "4": ["+great principal 8", "+great principal 4", "+swell principal 4", "-swell string 8", "-swell celeste 8", "+pedal principal 8", "+great to pedal", "-swell to pedal", "+great principal 2", "+great mixture 1 1/3", "+swell reed 8", "+great reed 8", "+pedal principal 4", "+pedal reed 16"]

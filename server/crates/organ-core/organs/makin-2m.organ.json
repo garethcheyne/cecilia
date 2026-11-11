@@ -581,7 +581,7 @@
     "notes": [
       "Channels follow Makin's manual for the Rydal and Thirlmere: Great 1, Swell 2, Pedal 3, stops 12.",
       "The stop list and Program Change numbers are placeholders. Makin numbers stops in the order they sit on each model, so learn the numbers from your organ before relying on playback.",
-      "Makin stops toggle, so press Cancel (0) on the organ before you record. That tells Registra every stop starts pushed in.",
+      "Makin stops toggle, so press Cancel (0) on the organ before you record. That tells Cecilia every stop starts pushed in.",
       "The manual doesn't say which channel carries the swell pedal and general volume. Check them on the MIDI monitor."
     ]
   }

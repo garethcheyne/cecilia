@@ -106,7 +106,7 @@ export function LearnDialog({
           <DialogDescription>
             {many
               ? `Stop ${index + 1} of ${stopIds.length}. Work along the stop jambs at the console.`
-              : "Registra listens to the organ's Organ in port."}
+              : "Cecilia listens to the organ's Organ in port."}
           </DialogDescription>
         </DialogHeader>
         {many && <Progress value={(index / stopIds.length) * 100} aria-label="Progress" />}

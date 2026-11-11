@@ -542,7 +542,7 @@ export function OrganEditor() {
               <CardDescription>
                 {organ.all_stops_off
                   ? `Sends ${organ.all_stops_off}`
-                  : "None set: Registra pushes stops in one by one. Organs whose stops only toggle need this."}
+                  : "None set: Cecilia pushes stops in one by one. Organs whose stops only toggle need this."}
               </CardDescription>
             </CardHeader>
             {!builtin && (

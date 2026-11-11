@@ -74,7 +74,7 @@ pub struct TimedEvent {
 
 /// Stops drawn plus pedal positions at one moment.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, ToSchema)]
-pub struct Registration {
+pub struct Ceciliation {
     #[serde(default)]
     pub stops: BTreeSet<StopRef>,
     /// Expression per division, 0-127.
@@ -84,8 +84,8 @@ pub struct Registration {
     pub master_volume: Option<u8>,
 }
 
-impl Registration {
-    /// The registration showing on `console` of `organ`.
+impl Ceciliation {
+    /// The ceciliation showing on `console` of `organ`.
     pub fn from_console(organ: &OrganDefinition, console: &ConsoleState) -> Self {
         Self {
             stops: console.stops.iter().filter_map(|id| StopRef::of(organ, id)).collect(),
@@ -204,8 +204,8 @@ pub struct Track {
     /// Unix time in ms.
     pub created: u64,
     pub modified: u64,
-    /// Registration and pedals when the track starts.
-    pub initial: Registration,
+    /// Ceciliation and pedals when the track starts.
+    pub initial: Ceciliation,
     /// Where the track ends (the last note plus the end margin).
     pub duration_ms: u32,
     /// Boundaries between hymn verses, in ms. Empty = a single verse.
@@ -272,7 +272,7 @@ impl Track {
     }
 
     /// Sort events by time, settings before notes at the same instant so a
-    /// chord sounds with the new registration, and note-offs before note-ons.
+    /// chord sounds with the new ceciliation, and note-offs before note-ons.
     pub fn sort(&mut self) {
         fn rank(e: &TrackEvent) -> u8 {
             match e {
@@ -295,9 +295,9 @@ impl Track {
         bounds.windows(2).map(|w| Span { start: w[0], end: w[1] }).collect()
     }
 
-    /// Registration and held keys just before time `t` (events at exactly `t`
+    /// Ceciliation and held keys just before time `t` (events at exactly `t`
     /// are not applied).
-    pub fn state_at(&self, t: u32) -> (Registration, BTreeSet<(DivisionRole, u8)>) {
+    pub fn state_at(&self, t: u32) -> (Ceciliation, BTreeSet<(DivisionRole, u8)>) {
         let mut reg = self.initial.clone();
         let mut held = BTreeSet::new();
         for e in self.events.iter().take_while(|e| e.t < t) {
@@ -399,7 +399,7 @@ mod tests {
             organ_name: "Demo".into(),
             created: 0,
             modified: 0,
-            initial: Registration::default(),
+            initial: Ceciliation::default(),
             duration_ms: 10_000,
             verses: vec![4000, 8000],
             meter: None,
@@ -422,7 +422,7 @@ mod tests {
     }
 
     #[test]
-    fn state_at_replays_registration_and_held_keys() {
+    fn state_at_replays_ceciliation_and_held_keys() {
         let note = |t, v| at(t, TrackEvent::Note { division: DivisionRole::Great, key: 60, velocity: v });
         let t = track(vec![
             at(100, TrackEvent::Stop { stop: open_diapason(), on: true }),
@@ -451,7 +451,7 @@ mod tests {
     }
 
     #[test]
-    fn sort_puts_registration_before_the_chord_it_colours() {
+    fn sort_puts_ceciliation_before_the_chord_it_colours() {
         let mut t = track(vec![
             at(100, TrackEvent::Note { division: DivisionRole::Great, key: 60, velocity: 80 }),
             at(100, TrackEvent::Stop { stop: open_diapason(), on: true }),

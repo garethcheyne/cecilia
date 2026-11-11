@@ -1,4 +1,4 @@
-# Registra – Functional Specification
+# Cecilia – Functional Specification
 
 **Sources:** the OrganAssist 3.3 user manual (bundled in the installer) and
 organassist.com (Home, Features, Release Notes, FAQ, Allen, Videos, History pages,
@@ -11,7 +11,7 @@ An organ-specific MIDI sequencer for classical/church organists who don't want t
 know about MIDI. It:
 
 1. **Records a whole service with one click.** Each piece becomes its own track,
-   and the registration in use is captured at the start of every track.
+   and the ceciliation in use is captured at the start of every track.
 2. **Plays any recording on any organ.** Tracks are stored in a neutral form
    (notes, stop changes, expression), and MIDI is generated live for whichever
    organ is connected, substituting stops where needed ("virtual organist").
@@ -22,7 +22,7 @@ know about MIDI. It:
 
 ### Modernisation goals (gaps in the original)
 
-| Original limitation | Registra |
+| Original limitation | Cecilia |
 | --- | --- |
 | Windows x86 only. "Not ARM", macOS dropped | Windows, macOS and Linux on x64 and ARM64. Raspberry Pi as a console box |
 | VB6 desktop UI, "dated" (author's word) | Web UI, usable from a laptop, tablet or phone on the LAN |
@@ -74,7 +74,7 @@ Pi 4/5, Zero 2 W, or a similar SBC) living at the organ:
   thing a track stores about a stop, which makes tracks portable.
 
 - **Track.** A neutral recording. Header: metadata, organ recorded on, initial
-  registration and expression, margins, verse markers, tempo map. Events: note
+  ceciliation and expression, margins, verse markers, tempo map. Events: note
   on/off (division, key, velocity), stop change (equivalent, on/off),
   expression (division, 0–127), master volume.
 
@@ -143,7 +143,7 @@ Phase numbers refer to §5.
     clear a level), "divisionals include couplers", "force combinations onto
     organ".
 
-- **Multi-screen layouts.** Several layouts share one organ. In Registra that's
+- **Multi-screen layouts.** Several layouts share one organ. In Cecilia that's
   just several browser windows or devices, each with its own view.
 
 - **Drivers:** Generic, Hauptwerk 4.2+, Johannus/Makin (pre-2000 and
@@ -169,7 +169,7 @@ Phase numbers refer to §5.
 
 A virtual organ built into the server, so everything works with no hardware:
 
-- It appears as a normal MIDI port pair ("Registra Simulator"). It drives an
+- It appears as a normal MIDI port pair ("Cecilia Simulator"). It drives an
   organ definition: messages sent to it update its stop, note and expression
   state; clicks and keys on the web console are encoded with that organ's real
   bindings and arrive as input. This exercises the whole pipeline honestly.
@@ -185,7 +185,7 @@ A virtual organ built into the server, so everything works with no hardware:
 ### 3.5 Recording (P3)
 
 - Record button: the recorder waits for the first note and then starts a track
-  with the current registration and expression. After N seconds of silence
+  with the current ceciliation and expression. After N seconds of silence
   ("recording delay", user option) it saves the track and keeps monitoring.
   Tracks are named by date and time.
 
@@ -206,8 +206,8 @@ A virtual organ built into the server, so everything works with no hardware:
   regeneration when rewinding**, and coping with manual stop changes during
   playback.
 
-- **Virtual organist:** maps each recorded registration onto the stops this
-  organ has, as a whole registration and not stop by stop. It never substitutes
+- **Virtual organist:** maps each recorded ceciliation onto the stops this
+  organ has, as a whole ceciliation and not stop by stop. It never substitutes
   something wildly louder ("never replace your Salicional with a Tuba"). Notes
   for missing manuals are redirected (ultimately to the Great).
 
@@ -244,7 +244,7 @@ A virtual organ built into the server, so everything works with no hardware:
 
 - Export the library as CSV.
 - **MIDI import:**
-  - For the current organ: keeps registration and expression, imports several
+  - For the current organ: keeps ceciliation and expression, imports several
     files at once, scans for gaps, offers to split into pieces (with margins),
     re-export them, and delete temporary files.
 
@@ -281,7 +281,7 @@ A virtual organ built into the server, so everything works with no hardware:
 
 ### 3.9 Track editor (P6)
 
-- Layout: registration and expression lane on top, piano roll below, margins and
+- Layout: ceciliation and expression lane on top, piano roll below, margins and
   verse markers under the divider. Transport at the bottom. Fixed division
   colours. Solid or hatched notes. Zoom (window width in minutes and seconds).
   Smooth or paged scrolling. Stop tooltips optionally in the stop's own colours.
@@ -319,7 +319,7 @@ A virtual organ built into the server, so everything works with no hardware:
     you can splice pieces from different recordings.
 
   - Delete notes, stops or expression, or delete all events.
-  - Delete but keep the registration and expression state.
+  - Delete but keep the ceciliation and expression state.
   - Insert blank time.
   - Transpose.
   - Select the entire track, start→cursor, or cursor→end.
@@ -334,10 +334,10 @@ A virtual organ built into the server, so everything works with no hardware:
   silence between verses.
 
 - **Mute/solo per division** during playback. Overdub notes, expression and
-  registration during playback.
+  ceciliation during playback.
 
 - Double-click to start playback at a point. Pause positions you on the first
-  note to change the initial registration.
+  note to change the initial ceciliation.
 
 - Autosave every 30 s with crash recovery. A version saved on each save.
 
@@ -358,7 +358,7 @@ A virtual organ built into the server, so everything works with no hardware:
 
 - A bundled library of original organ pieces and arrangements of
   public-domain hymn tunes (e.g. Old Hundredth, Bach-style chorales), with
-  registration changes, expression and verse markers.
+  ceciliation changes, expression and verse markers.
 
 - Authored in a small symbolic format (notes with beat durations, parts →
   divisions, tempo, key and metre) that compiles to a normal track. They act as
@@ -432,7 +432,7 @@ All are versioned with a `schema` number and migrated on load.
 | P1 | MIDI ports, monitor, raw test record/play | ✅ |
 | P2 | Organ model + API, demo organs, **simulator** (virtual port + console UI + server-side synth), live console. Makin/Johannus toggle stops + general cancel, built-in Makin template | ✅ |
 | P3 | Auto-recorder → neutral tracks in the library; 11 bundled sample pieces | ✅ |
-| P4 | Playback engine: live generation, virtual organist, transport, tempo, verses, fade, volume. On organs with toggle-only stops (Makin), send `all_stops_off` and wait for it to settle before setting the opening registration | ✅ |
+| P4 | Playback engine: live generation, virtual organist, transport, tempo, verses, fade, volume. On organs with toggle-only stops (Makin), send `all_stops_off` and wait for it to settle before setting the opening ceciliation | ✅ |
 | P5 | Library UI, playlists, MIDI import/export (GM, MuseScore, current organ, split), CSV; MusicXML import | ✅ |
 | P6 | Track editor (piano roll) with undo, sections, verses; score view. Still to come: tempo bake, mute/solo, overdub | ✅ (core) |
 | P7 | Organ designer + MIDI learn wizard (**Makin first**: the target church has one), combinations, Hauptwerk extras; drivers beyond Generic/Hauptwerk/Makin; translation mode | ✅ designer + MIDI learn (combinations, extra drivers, translation mode still to come) |

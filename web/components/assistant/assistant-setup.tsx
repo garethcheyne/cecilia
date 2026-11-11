@@ -144,7 +144,7 @@ export function AssistantSetup() {
         <CardHeader>
           <CardTitle>Connect an AI assistant</CardTitle>
           <CardDescription>
-            Registra is an MCP server, so any assistant that supports MCP can run the organ.
+            Cecilia is an MCP server, so any assistant that supports MCP can run the organ.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -158,7 +158,7 @@ export function AssistantSetup() {
               {mcpUrl ? (
                 <CopyField
                   id="mcp-claude"
-                  value={`claude mcp add --transport http registra ${mcpUrl}`}
+                  value={`claude mcp add --transport http cecilia ${mcpUrl}`}
                   label="Claude Code command"
                 />
               ) : (

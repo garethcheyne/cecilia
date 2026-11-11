@@ -17,7 +17,7 @@ import {
   type LucideIcon,
 } from "lucide-react"
 
-import { RegistraMark } from "@/components/brand/registra-mark"
+import { CeciliaMark } from "@/components/brand/cecilia-mark"
 import { useEngine } from "@/components/engine-provider"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -123,10 +123,10 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" render={<Link href="/" />}>
               <div className="flex aspect-square size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm [--mark-cutout:var(--primary)]">
-                <RegistraMark className="size-7" />
+                <CeciliaMark className="size-7" />
               </div>
               <div className="flex flex-col gap-0.5 leading-none">
-                <span className="font-display text-base font-semibold">Registra</span>
+                <span className="font-display text-base font-semibold">Cecilia</span>
                 <span className="text-xs text-sidebar-foreground/70">Organ recorder</span>
               </div>
             </SidebarMenuButton>

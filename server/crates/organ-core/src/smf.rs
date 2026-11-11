@@ -1,7 +1,7 @@
 //! Standard MIDI Files: import and export.
 //!
 //! * **Organ format** is MIDI exactly as the current organ speaks it (a
-//!   general cancel, the registration, then the performance). It is what
+//!   general cancel, the ceciliation, then the performance). It is what
 //!   OrganAssist's "Backup Entire Library as MIDI" produces, so it is also
 //!   how a library comes across from the original program.
 //! * **General MIDI** puts each division's notes on its own channel (Great 1,
@@ -22,7 +22,7 @@ use crate::driver::{Driver, OrganEvent};
 use crate::organ::{DivisionRole, Equivalent, Family, OrganDefinition};
 use crate::organist::Organist;
 use crate::recorder::{AutoRecorder, RecorderConfig};
-use crate::track::{Registration, StopRef, Track, TrackEvent as TEvent, TrackSource};
+use crate::track::{Ceciliation, StopRef, Track, TrackEvent as TEvent, TrackSource};
 
 const PPQ: u16 = 480;
 /// 120 crotchets a minute: one tick is 500000/480 µs, so 1 ms = 0.96 ticks.
@@ -119,7 +119,7 @@ fn organ_messages(track: &Track, organ: &OrganDefinition, out: &mut Vec<(u32, Ve
         }
     }
     let mut reg = track.initial.clone();
-    let set_reg = |t: u32, reg: &Registration, console: &mut ConsoleState, out: &mut Vec<(u32, Vec<u8>)>, push: &mut dyn FnMut(u32, OrganEvent, &mut ConsoleState, &mut Vec<(u32, Vec<u8>)>)| {
+    let set_reg = |t: u32, reg: &Ceciliation, console: &mut ConsoleState, out: &mut Vec<(u32, Vec<u8>)>, push: &mut dyn FnMut(u32, OrganEvent, &mut ConsoleState, &mut Vec<(u32, Vec<u8>)>)| {
         let target = organist.stops_for(reg);
         let drawn: BTreeSet<String> = console.stops.clone();
         for id in drawn.difference(&target) {
@@ -129,7 +129,7 @@ fn organ_messages(track: &Track, organ: &OrganDefinition, out: &mut Vec<(u32, Ve
             push(t, OrganEvent::Stop { stop: id.clone(), on: true }, console, out);
         }
     };
-    // Registration a moment after the cancel, so a toggle organ settles.
+    // Ceciliation a moment after the cancel, so a toggle organ settles.
     let start = if organ.all_stops_off.is_some() { 1 } else { 0 };
     set_reg(start, &reg, &mut console, out, &mut push);
     for (d, v) in &track.initial.expression {
@@ -520,8 +520,8 @@ pub fn import(bytes: &[u8], organ: &OrganDefinition, options: &ImportOptions, ti
         } else {
             options.channels.clone()
         };
-        // A plain registration to start from: these files carry no stops.
-        for e in default_registration(organ, channels.values().copied().collect()) {
+        // A plain ceciliation to start from: these files carry no stops.
+        for e in default_ceciliation(organ, channels.values().copied().collect()) {
             rec.on_event(0, &e);
         }
         for (t, m) in &msgs {
@@ -561,13 +561,13 @@ pub fn import(bytes: &[u8], organ: &OrganDefinition, options: &ImportOptions, ti
 }
 
 /// Principal 8′ and 4′ on the manuals, 16′ and 8′ on the pedal, Great to
-/// Pedal: a sensible start when a file has no registration of its own.
-fn default_registration(organ: &OrganDefinition, divisions: BTreeSet<DivisionRole>) -> Vec<OrganEvent> {
+/// Pedal: a sensible start when a file has no ceciliation of its own.
+fn default_ceciliation(organ: &OrganDefinition, divisions: BTreeSet<DivisionRole>) -> Vec<OrganEvent> {
     let voice = |division, family, footage: &str| StopRef {
         division,
         equivalent: Equivalent::Voice { family, footage: footage.into(), ranks: None, tag: String::new() },
     };
-    let mut reg = Registration::default();
+    let mut reg = Ceciliation::default();
     for d in &divisions {
         if *d == DivisionRole::Pedal {
             reg.stops.insert(voice(*d, Family::Flute, "16"));
@@ -599,7 +599,7 @@ mod tests {
     }
 
     #[test]
-    fn organ_format_round_trips_registration_and_notes() {
+    fn organ_format_round_trips_ceciliation_and_notes() {
         let demo = organ("demo");
         let hymn = sample_tracks().into_iter().next().unwrap();
         let bytes = export(&hymn, ExportFormat::Organ, &demo, &default_channels());
@@ -613,7 +613,7 @@ mod tests {
         assert_eq!(t.note_count(), hymn.note_count());
         let want = Organist::new(demo.clone()).stops_for(&hymn.initial);
         let got = Organist::new(demo.clone()).stops_for(&t.initial);
-        assert_eq!(got, want, "opening registration survives");
+        assert_eq!(got, want, "opening ceciliation survives");
         // Verse 4 adds stops: those changes come back as stop events.
         assert!(t.events.iter().any(|e| matches!(e.event, TEvent::Stop { on: true, .. })));
         // Timing is kept to the millisecond-ish.
@@ -650,7 +650,7 @@ mod tests {
         assert_eq!(back[0].info.title, "Old 100th");
         assert_eq!(back[0].source, TrackSource::Imported);
         assert_eq!(back[0].note_count(), hymn.note_count());
-        assert!(!back[0].initial.stops.is_empty(), "a starting registration is supplied");
+        assert!(!back[0].initial.stops.is_empty(), "a starting ceciliation is supplied");
     }
 
     #[test]

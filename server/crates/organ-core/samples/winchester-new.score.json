@@ -3,7 +3,7 @@
   "title": "On Jordan's Bank the Baptist's Cry",
   "composer": "Musikalisches Handbuch, Hamburg, 1690; harm. William Henry Monk",
   "melody": "WINCHESTER NEW",
-  "publication": "Registra sample arrangement",
+  "publication": "Cecilia sample arrangement",
   "copyright": "Public domain",
   "bpm": 92,
   "time": "4/4",
@@ -11,7 +11,7 @@
   "pickup": 1,
   "verses": 5,
   "gap": 2,
-  "registration": [
+  "ceciliation": [
     "great principal 8",
     "great flute 8",
     "great principal 4",
@@ -22,7 +22,7 @@
     "pedal principal 8",
     "great to pedal"
   ],
-  "verse_registration": {
+  "verse_ceciliation": {
     "2": ["+swell reed 8"],
     "3": ["-swell reed 8", "-great principal 8", "-great principal 4", "-swell principal 4", "+swell string 8", "+swell celeste 8", "-pedal principal 8", "-great to pedal", "+swell to pedal"],
     "4": ["+great principal 8", "+great principal 4", "+swell principal 4", "-swell string 8", "-swell celeste 8", "+pedal principal 8", "+great to pedal", "-swell to pedal"],

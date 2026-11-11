@@ -1,6 +1,6 @@
 # Organ MIDI driver research
 
-Research date: November 2026. Scope: how each organ maker, console control system and virtual organ program sends and receives **stops, couplers, pistons, expression and notes** over MIDI, so that Registra can implement drivers.
+Research date: November 2026. Scope: how each organ maker, console control system and virtual organ program sends and receives **stops, couplers, pistons, expression and notes** over MIDI, so that Cecilia can implement drivers.
 
 Conventions used here:
 - Byte formats are given **only when quoted from a source** (a manual or open-source code).
@@ -234,7 +234,7 @@ Source: Hauptwerk v9 Advanced User Guide, reference section pp. 121–128 ([PDF]
   - Pressing Cancel also sends all volume settings on SEQ.
   - Piston "pushbutton" values are sent on MOD only, and matter only for the CSM 128 sound module.
 - Sockets: MIDI IN, MIDI MOD (programmable, for a sound module) and MIDI SEQ (not programmable, for a sequencer or PC).
-- Registra ships this as the built-in **Makin 2-manual (template)** (`organs/makin-2m.organ.json`). Its channels and messages follow the manual; its stop list and Program Change numbers are placeholders until learned from a real console.
+- Cecilia ships this as the built-in **Makin 2-manual (template)** (`organs/makin-2m.organ.json`). Its channels and messages follow the manual; its stop list and Program Change numbers are placeholders until learned from a real console.
 
 **Older "MIDI programmable" models:** switching a MIDI stop sends SysEx code 3F followed by a Program Change on SEQ ([Vivaldi 15 manual](https://manualshive.com/en/manual/johannus/vivaldi-15/2021450?page=33)).
 
@@ -408,7 +408,7 @@ Source code: [`src/grandorgue/midi/`](https://github.com/GrandOrgue/grandorgue/t
 - **Organteq:**
   - Stops are mapped through "Action Mapping" (CC, note, Program Change).
   - No NRPN or SysEx support ([forum 12492](https://forum.modartt.com/viewtopic.php?id=12492)).
-  - No MIDI output, so Registra cannot read stop state from it ([forum 11296](https://forum.modartt.com/viewtopic.php?id=11296)).
+  - No MIDI output, so Cecilia cannot read stop state from it ([forum 11296](https://forum.modartt.com/viewtopic.php?id=11296)).
 - **Aeolus:** uses a single CC (#98 by default) that encodes group and mode (off/on/toggle) and then a button number (Aeolus README, in the aeolus-0.10.4 source package from kokkinizita.linuxaudio.org).
 
 ---
@@ -459,9 +459,9 @@ A data-driven profile format should support the following. Items marked † are 
 6. **Checksums:** † Roland/Rodgers (two's complement of the 7-bit sum over a byte range, configurable). Leave room for other checksum types.
 7. **Combination handling flags per profile:**
    - `pistonSendsStops` (Rodgers, Peterson, probably Johannus): record the stops and ignore pistons.
-   - `pistonWithoutStopFeedback` (Allen): record the piston Program Change. During playback either send the Program Change and trust the organ's capture memory (fragile if memories change), or emulate combinations by storing the registration per piston and memory level and sending stop messages. Memory-level messages are needed (format unknown for Allen).
+   - `pistonWithoutStopFeedback` (Allen): record the piston Program Change. During playback either send the Program Change and trust the organ's capture memory (fragile if memories change), or emulate combinations by storing the ceciliation per piston and memory level and sending stop messages. Memory-level messages are needed (format unknown for Allen).
    - Piston receive maps (Viscount PC on ch 16; Rodgers PC 1–26).
-8. **Snapshot / initial state:** request or send the full state at record start (Rodgers responds to MIDI Start; Peterson Auto Resend; Johannus all-off plus volume dump). Store the initial registration in each recording.
+8. **Snapshot / initial state:** request or send the full state at record start (Rodgers responds to MIDI Start; Peterson Auto Resend; Johannus all-off plus volume dump). Store the initial ceciliation in each recording.
 9. **Expression mappings per division:** CC7 or CC11 (different makers differ), velocity-mode warnings, clamp ranges (Johannus 55–127, Allen minimum about 20), 14-bit (MSB/LSB on separate channels, Syndyne), and slots for unknown SysEx swell types (Peterson).
 10. **Extra parameters on stops:** tremulant speed and depth carried with the tremulant state (Viscount). Model these as stop "attributes" stored with the event.
 11. **Port roles:** many organs send stops only on a specific port (Johannus SEQ, SSOS OUT2, Peterson Sequencer Out). The profile should state which port to use, so the UI can warn the user.

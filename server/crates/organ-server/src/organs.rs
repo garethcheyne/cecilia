@@ -59,7 +59,7 @@ impl OrganStore {
         self.organs.read().unwrap().get(id).map(|(o, _)| o.clone())
     }
 
-    /// Shipped with Registra (can't be changed, only copied).
+    /// Shipped with Cecilia (can't be changed, only copied).
     pub fn is_builtin(&self, id: &str) -> bool {
         self.organs.read().unwrap().get(id).is_some_and(|(_, b)| *b)
             && !self.dir.join(format!("{id}.organ.json")).exists()

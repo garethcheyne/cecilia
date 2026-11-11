@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test"
 
 test.beforeEach(async ({ request }) => {
-  await request.put("/api/v1/midi/config", { data: { inputs: ["Registra Simulator"], output: "Registra Simulator" } })
+  await request.put("/api/v1/midi/config", { data: { inputs: ["Cecilia Simulator"], output: "Cecilia Simulator" } })
   await request.put("/api/v1/simulator/organ", { data: { organ_id: "makin-2m" } })
   await request.post("/api/v1/player/stop")
 })

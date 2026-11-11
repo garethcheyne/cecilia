@@ -14,7 +14,7 @@ const server = path.join(root, "server")
 const web = path.join(root, "web")
 const skipE2e = process.argv.includes("--skip-e2e")
 const targetDir = process.env.CARGO_TARGET_DIR ?? path.join(server, "target")
-const exe = process.platform === "win32" ? "organ-server.exe" : "organ-server"
+const exe = process.platform === "win32" ? "cecilia.exe" : "cecilia"
 
 function run(title, cmd, args, cwd, env = {}) {
   console.log(`\n=== ${title} ===`)
@@ -33,7 +33,7 @@ if (!skipE2e) {
   run("Server build", "cargo", ["build", "-p", "organ-server"], server)
   run("Web build", "npm", ["run", "build"], web)
   run("Browser tests", "npx", ["playwright", "test"], web, {
-    REGISTRA_BIN: path.join(targetDir, "debug", exe),
+    CECILIA_BIN: path.join(targetDir, "debug", exe),
   })
 }
 console.log("\n✓ All tests passed")
