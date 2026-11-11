@@ -1,4 +1,17 @@
-const NOTE_NAMES = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"]
+const NOTE_NAMES = [
+  "C",
+  "C♯",
+  "D",
+  "D♯",
+  "E",
+  "F",
+  "F♯",
+  "G",
+  "G♯",
+  "A",
+  "A♯",
+  "B",
+]
 
 /** MIDI note number to scientific pitch name (60 = C4). */
 export function noteName(note: number): string {
@@ -35,9 +48,17 @@ export function describeMidi(bytes: number[]): DecodedMidi {
       // Note-on with velocity 0 is a note-off by convention.
       return d2 === 0
         ? { kind: "note-off", channel, summary: `Note off ${noteName(d1)}` }
-        : { kind: "note-on", channel, summary: `Note on ${noteName(d1)} vel ${d2}` }
+        : {
+            kind: "note-on",
+            channel,
+            summary: `Note on ${noteName(d1)} vel ${d2}`,
+          }
     case 0xa0:
-      return { kind: "pressure", channel, summary: `Key pressure ${noteName(d1)} ${d2}` }
+      return {
+        kind: "pressure",
+        channel,
+        summary: `Key pressure ${noteName(d1)} ${d2}`,
+      }
     case 0xb0:
       return { kind: "control", channel, summary: `CC ${d1} = ${d2}` }
     case 0xc0:
@@ -61,7 +82,9 @@ export function describeMidi(bytes: number[]): DecodedMidi {
 }
 
 export function toHex(bytes: number[]): string {
-  return bytes.map((b) => b.toString(16).padStart(2, "0").toUpperCase()).join(" ")
+  return bytes
+    .map((b) => b.toString(16).padStart(2, "0").toUpperCase())
+    .join(" ")
 }
 
 /** mm:ss.t */

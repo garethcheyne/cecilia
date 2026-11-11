@@ -5,7 +5,9 @@ import type { VersePlan } from "@/lib/api/client"
  * under 20 is a count ("4" = four verses); anything else lists verse numbers
  * ("12357", "1, 2, 3, 5, 7"). Empty = every recorded verse.
  */
-export function parseVerses(text: string): { ok: true; plan: VersePlan | null } | { ok: false } {
+export function parseVerses(
+  text: string
+): { ok: true; plan: VersePlan | null } | { ok: false } {
   const t = text.trim()
   if (!t) return { ok: true, plan: null }
   let list: number[]

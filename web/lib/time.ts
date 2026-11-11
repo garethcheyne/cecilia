@@ -10,5 +10,9 @@ export function formatClock(ms: number): string {
 /** "11 Nov 2026" from unix ms (0 = unknown). */
 export function formatDate(unixMs: number): string {
   if (!unixMs) return ""
-  return new Date(unixMs).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })
+  return new Date(unixMs).toLocaleDateString(undefined, {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  })
 }

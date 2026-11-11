@@ -5,15 +5,27 @@ import type { DivisionRole, OrganDefinition, Stop } from "@/lib/api/client"
  * `ConsoleState::sounding`: the keyboard's own speaking stops (unless unison
  * off is drawn), plus the speaking stops of any division coupled in.
  */
-export function keyboardSpeaks(organ: OrganDefinition, stopsOn: readonly string[], keyboard: DivisionRole): boolean {
+export function keyboardSpeaks(
+  organ: OrganDefinition,
+  stopsOn: readonly string[],
+  keyboard: DivisionRole
+): boolean {
   const on = new Set(stopsOn)
   const drawn = organ.stops.filter((s) => on.has(s.id))
   const sources = new Set<DivisionRole>()
-  if (!drawn.some((s) => s.division === keyboard && s.equivalent.type === "unison_off")) sources.add(keyboard)
+  if (
+    !drawn.some(
+      (s) => s.division === keyboard && s.equivalent.type === "unison_off"
+    )
+  )
+    sources.add(keyboard)
   for (const s of drawn) {
-    if (s.division === keyboard && s.equivalent.type === "coupler") sources.add(s.equivalent.source)
+    if (s.division === keyboard && s.equivalent.type === "coupler")
+      sources.add(s.equivalent.source)
   }
-  return drawn.some((s) => sources.has(s.division) && s.equivalent.type === "voice")
+  return drawn.some(
+    (s) => sources.has(s.division) && s.equivalent.type === "voice"
+  )
 }
 
 const PREFERENCE = ["flute", "principal", "string"]
@@ -22,13 +34,21 @@ const PREFERENCE = ["flute", "principal", "string"]
  * A gentle stop to draw so a silent keyboard can be heard: an 8′ flute
  * (16′ on the pedals), falling back to the nearest foundation stop.
  */
-export function starterStop(organ: OrganDefinition, keyboard: DivisionRole): Stop | null {
-  const voices = organ.stops.filter((s) => s.division === keyboard && s.equivalent.type === "voice")
+export function starterStop(
+  organ: OrganDefinition,
+  keyboard: DivisionRole
+): Stop | null {
+  const voices = organ.stops.filter(
+    (s) => s.division === keyboard && s.equivalent.type === "voice"
+  )
   const footage = keyboard === "pedal" ? ["16", "8"] : ["8", "4"]
   for (const f of footage) {
     for (const family of PREFERENCE) {
       const hit = voices.find(
-        (s) => s.equivalent.type === "voice" && s.equivalent.footage.trim() === f && s.equivalent.family === family
+        (s) =>
+          s.equivalent.type === "voice" &&
+          s.equivalent.footage.trim() === f &&
+          s.equivalent.family === family
       )
       if (hit) return hit
     }

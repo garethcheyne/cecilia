@@ -18,7 +18,12 @@ function useServiceKeys() {
   React.useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement
-      if (target.closest("input, textarea, [contenteditable], [role=slider], [role=dialog]")) return
+      if (
+        target.closest(
+          "input, textarea, [contenteditable], [role=slider], [role=dialog]"
+        )
+      )
+        return
       if (e.code === "Space") {
         e.preventDefault()
         if (state === "playing") t.pause()
@@ -46,7 +51,13 @@ const WIDTH: Record<PanelId, string> = {
  *
  * `standalone` is a display window with no sidebar or transport bar.
  */
-export function ServiceScreen({ panels, standalone = false }: { panels: PanelId[]; standalone?: boolean }) {
+export function ServiceScreen({
+  panels,
+  standalone = false,
+}: {
+  panels: PanelId[]
+  standalone?: boolean
+}) {
   const data = useServiceData()
   const wide = useWide()
   useServiceKeys()
@@ -54,15 +65,28 @@ export function ServiceScreen({ panels, standalone = false }: { panels: PanelId[
   if (panels.length === 1) {
     const id = panels[0]
     return (
-      <div className={cn("mx-auto flex w-full min-w-0 flex-1 flex-col p-3 sm:p-6", WIDTH[id])}>
-        <ServicePanel id={id} data={data} inColumn={standalone} />
+      <div
+        className={cn(
+          "mx-auto flex w-full min-w-0 flex-1 flex-col p-3 sm:p-6",
+          WIDTH[id]
+        )}
+      >
+        <ServicePanel
+          id={id}
+          data={data}
+          inColumn={standalone}
+          display={standalone}
+        />
       </div>
     )
   }
 
   if (!wide) {
     return (
-      <Tabs defaultValue={panels[0]} className="flex w-full min-w-0 flex-1 flex-col gap-3 p-3">
+      <Tabs
+        defaultValue={panels[0]}
+        className="flex w-full min-w-0 flex-1 flex-col gap-3 p-3"
+      >
         <TabsList className="self-start">
           {panels.map((p) => (
             <TabsTrigger key={p} value={p}>
@@ -72,7 +96,12 @@ export function ServiceScreen({ panels, standalone = false }: { panels: PanelId[
         </TabsList>
         {panels.map((p) => (
           <TabsContent key={p} value={p} className="flex min-w-0 flex-col">
-            <ServicePanel id={p} data={data} inColumn={standalone} />
+            <ServicePanel
+              id={p}
+              data={data}
+              inColumn={standalone}
+              display={standalone}
+            />
           </TabsContent>
         ))}
       </Tabs>
@@ -88,8 +117,12 @@ export function ServiceScreen({ panels, standalone = false }: { panels: PanelId[
       )}
     >
       {panels.map((p) => (
-        <section key={p} aria-label={PANEL_INFO[p].label} className="flex min-h-0 min-w-0 flex-col overflow-y-auto p-4 xl:p-6">
-          <ServicePanel id={p} data={data} inColumn />
+        <section
+          key={p}
+          aria-label={PANEL_INFO[p].label}
+          className="flex min-h-0 min-w-0 flex-col overflow-y-auto p-4 xl:p-6"
+        >
+          <ServicePanel id={p} data={data} inColumn display={standalone} />
         </section>
       ))}
     </div>

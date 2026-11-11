@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest"
 
-import { DEFAULT_DISPLAYS, displayUrl, panelsFromQuery, parseDisplays, shown } from "@/lib/displays"
+import {
+  DEFAULT_DISPLAYS,
+  displayUrl,
+  panelsFromQuery,
+  parseDisplays,
+  shown,
+} from "@/lib/displays"
 
 describe("parseDisplays", () => {
   it("falls back to the defaults", () => {
@@ -8,7 +14,13 @@ describe("parseDisplays", () => {
     expect(parseDisplays("not json")).toEqual(DEFAULT_DISPLAYS)
   })
   it("keeps good values and repairs bad ones", () => {
-    const d = parseDisplays(JSON.stringify({ layout: "split", panels: ["console", "order"], secondPanels: ["nope", 3] }))
+    const d = parseDisplays(
+      JSON.stringify({
+        layout: "split",
+        panels: ["console", "order"],
+        secondPanels: ["nope", 3],
+      })
+    )
     expect(d.layout).toBe("split")
     expect(d.panels).toEqual(["console", "order"])
     expect(d.secondPanels).toEqual(DEFAULT_DISPLAYS.secondPanels)
@@ -27,7 +39,9 @@ describe("shown", () => {
 
 describe("display addresses", () => {
   it("round-trips panels", () => {
-    expect(displayUrl(["console", "music"])).toBe("/service/display/?panels=console,music")
+    expect(displayUrl(["console", "music"])).toBe(
+      "/service/display/?panels=console,music"
+    )
     expect(panelsFromQuery("console,music")).toEqual(["console", "music"])
   })
   it("ignores unknown panels and repeats", () => {

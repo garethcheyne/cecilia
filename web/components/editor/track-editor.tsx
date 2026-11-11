@@ -52,7 +52,11 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { Field, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group"
 import {
   Select,
   SelectContent,
@@ -137,7 +141,11 @@ function IconButton({
 
 /** A heading in the right-click menu (outside any group). */
 function MenuHeading({ children }: { children: React.ReactNode }) {
-  return <div className="truncate px-1.5 py-1 text-xs font-medium text-muted-foreground">{children}</div>
+  return (
+    <div className="truncate px-1.5 py-1 text-xs font-medium text-muted-foreground">
+      {children}
+    </div>
+  )
 }
 
 // The clipboard survives switching tracks, so sections can be spliced
@@ -376,7 +384,7 @@ export function TrackEditor() {
       <div className="p-4">
         <Empty className="border">
           <EmptyHeader>
-            <EmptyTitle>Track not found</EmptyTitle>
+            <EmptyTitle>Piece not found</EmptyTitle>
             <EmptyDescription>
               It may have been deleted.{" "}
               <Link href="/library">Back to the library</Link>
@@ -835,6 +843,9 @@ export function TrackEditor() {
             Click a note, stop marker or verse marker to change it. Drag along
             the time ruler to select a section.
           </p>
+          <p className="text-xs font-medium text-muted-foreground">
+            Transpose the whole piece
+          </p>
           <div className="flex flex-wrap gap-2">
             <Button
               variant="outline"
@@ -842,7 +853,7 @@ export function TrackEditor() {
               onClick={() => apply((e) => transpose(e, new Set(), -1))}
             >
               <MinusIcon data-icon="inline-start" />
-              Transpose all
+              Down a semitone
             </Button>
             <Button
               variant="outline"
@@ -850,7 +861,7 @@ export function TrackEditor() {
               onClick={() => apply((e) => transpose(e, new Set(), 1))}
             >
               <PlusIcon data-icon="inline-start" />
-              Transpose all
+              Up a semitone
             </Button>
           </div>
         </>
@@ -932,18 +943,25 @@ export function TrackEditor() {
                 <ClipboardPasteIcon data-icon="inline-start" />
                 Paste section
               </Button>
+              {!clipboard && (
+                <span className="self-center text-xs text-muted-foreground">
+                  Select and copy a section first.
+                </span>
+              )}
             </div>
             <div className="flex items-center gap-2">
-              <Input
-                type="number"
-                min={0.1}
-                max={60}
-                step={0.5}
-                value={silence}
-                onChange={(e) => setSilence(Number(e.target.value) || 1)}
-                className="w-20"
-                aria-label="Seconds of silence"
-              />
+              <InputGroup className="w-32">
+                <InputGroupInput
+                  type="number"
+                  min={0.1}
+                  max={60}
+                  step={0.5}
+                  value={silence}
+                  onChange={(e) => setSilence(Number(e.target.value) || 1)}
+                  aria-label="Seconds of silence"
+                />
+                <InputGroupAddon align="inline-end">seconds</InputGroupAddon>
+              </InputGroup>
               <Button
                 variant="outline"
                 size="sm"

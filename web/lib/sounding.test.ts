@@ -3,7 +3,12 @@ import { describe, expect, it } from "vitest"
 import type { OrganDefinition } from "@/lib/api/client"
 import { coupledKeys, keyboardSpeaks, starterStop } from "@/lib/sounding"
 
-const voice = (id: string, division: string, family: string, footage: string) => ({
+const voice = (
+  id: string,
+  division: string,
+  family: string,
+  footage: string
+) => ({
   id,
   division,
   name: id,
@@ -19,8 +24,18 @@ const organ = {
     voice("gt-flute", "great", "flute", "8"),
     voice("pd-principal", "pedal", "principal", "8"),
     voice("pd-subbass", "pedal", "flute", "16"),
-    { id: "sw-gt", division: "great", name: "Swell to Great", equivalent: { type: "coupler", source: "swell", pitch: "unison" } },
-    { id: "gt-uo", division: "great", name: "Unison off", equivalent: { type: "unison_off" } },
+    {
+      id: "sw-gt",
+      division: "great",
+      name: "Swell to Great",
+      equivalent: { type: "coupler", source: "swell", pitch: "unison" },
+    },
+    {
+      id: "gt-uo",
+      division: "great",
+      name: "Unison off",
+      equivalent: { type: "unison_off" },
+    },
   ],
 } as unknown as OrganDefinition
 
@@ -61,9 +76,17 @@ describe("coupledKeys", () => {
   })
   it("shifts octave couplers", () => {
     const super4 = {
-      stops: [{ id: "sw-gt4", division: "great", equivalent: { type: "coupler", source: "swell", pitch: "super" } }],
+      stops: [
+        {
+          id: "sw-gt4",
+          division: "great",
+          equivalent: { type: "coupler", source: "swell", pitch: "super" },
+        },
+      ],
     } as unknown as OrganDefinition
-    expect([...(coupledKeys(super4, ["sw-gt4"], { great: [60] }).get("swell") ?? [])]).toEqual([72])
+    expect([
+      ...(coupledKeys(super4, ["sw-gt4"], { great: [60] }).get("swell") ?? []),
+    ]).toEqual([72])
   })
   it("does nothing with the coupler off", () => {
     expect(coupledKeys(organ, [], { great: [60] }).size).toBe(0)

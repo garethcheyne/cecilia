@@ -18,7 +18,10 @@ describe("parseVerses", () => {
   it("round-trips", () => {
     expect(formatVerses([1, 2, 3, 5, 7])).toBe("1, 2, 3, 5, 7")
     expect(formatVerses([1, 4])).toBe("1, 4")
-    expect(parseVerses(formatVerses([1, 4]))).toEqual({ ok: true, plan: [1, 4] })
+    expect(parseVerses(formatVerses([1, 4]))).toEqual({
+      ok: true,
+      plan: [1, 4],
+    })
     expect(parseVerses(formatVerses([2]))).toEqual({ ok: true, plan: [2] })
     expect(formatVerses(4)).toBe("4")
     expect(formatVerses(null)).toBe("")

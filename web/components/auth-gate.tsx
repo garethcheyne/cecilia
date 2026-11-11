@@ -5,14 +5,28 @@ import { LockIcon } from "lucide-react"
 
 import { CeciliaMark } from "@/components/brand/cecilia-mark"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { api } from "@/lib/api/client"
 
 /** Shows a sign-in screen when the server has a password and this browser isn't signed in. */
 export function AuthGate({ children }: { children: React.ReactNode }) {
-  const [state, setState] = React.useState<"checking" | "open" | "locked">("checking")
+  const [state, setState] = React.useState<"checking" | "open" | "locked">(
+    "checking"
+  )
   const [password, setPassword] = React.useState("")
   const [problem, setProblem] = React.useState<string | null>(null)
   const [busy, setBusy] = React.useState(false)
@@ -20,7 +34,9 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     api
       .GET("/api/v1/auth")
-      .then(({ data }) => setState(data && data.required && !data.signed_in ? "locked" : "open"))
+      .then(({ data }) =>
+        setState(data && data.required && !data.signed_in ? "locked" : "open")
+      )
       // Server unreachable: let the app show its own "can't reach" state.
       .catch(() => setState("open"))
   }, [])
@@ -29,9 +45,12 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
     e.preventDefault()
     setBusy(true)
     setProblem(null)
-    const { error } = await api.POST("/api/v1/auth/login", { body: { password } })
+    const { error } = await api.POST("/api/v1/auth/login", {
+      body: { password },
+    })
     setBusy(false)
-    if (error) setProblem((error as { error?: string }).error ?? "That didn't work.")
+    if (error)
+      setProblem((error as { error?: string }).error ?? "That didn't work.")
     else window.location.reload()
   }
 
@@ -46,7 +65,9 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
               <CeciliaMark className="size-8" />
             </div>
             <CardTitle className="text-xl">Cecilia</CardTitle>
-            <CardDescription>Enter the password to use the organ.</CardDescription>
+            <CardDescription>
+              Enter the password to use the organ.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <FieldGroup>
@@ -66,7 +87,11 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
             </FieldGroup>
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full" disabled={busy || !password}>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={busy || !password}
+            >
               <LockIcon data-icon="inline-start" />
               Sign in
             </Button>

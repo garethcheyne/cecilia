@@ -22,7 +22,11 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { Slider } from "@/components/ui/slider"
 import { Toggle } from "@/components/ui/toggle"
 import { NowPlayingScore } from "@/components/transport/now-playing-score"
@@ -35,7 +39,15 @@ import { cn } from "@/lib/utils"
 type Transport = ReturnType<typeof useTransport>
 
 /** The record button: one press records the whole service. */
-function RecordButton({ t, compact = false, large = false }: { t: Transport; compact?: boolean; large?: boolean }) {
+function RecordButton({
+  t,
+  compact = false,
+  large = false,
+}: {
+  t: Transport
+  compact?: boolean
+  large?: boolean
+}) {
   const state = t.recorder?.state ?? "off"
   const armed = state !== "off"
   const label =
@@ -75,7 +87,12 @@ function SeekBar({ t, className }: { t: Transport; className?: string }) {
   const loaded = !!p?.track_id
   const value = scrub ?? t.position
   return (
-    <div className={cn("flex min-w-0 items-center gap-3 text-xs text-muted-foreground tabular-nums", className)}>
+    <div
+      className={cn(
+        "flex min-w-0 items-center gap-3 text-xs text-muted-foreground tabular-nums",
+        className
+      )}
+    >
       <span className="w-12 text-right">{formatClock(value)}</span>
       <Slider
         aria-label="Position"
@@ -101,7 +118,12 @@ function TempoControl({ t }: { t: Transport }) {
     <Popover>
       <PopoverTrigger
         render={
-          <Button variant="ghost" size="sm" aria-label={`Tempo ${tempo}%`} disabled={!t.player?.track_id}>
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-label={`Tempo ${tempo}%`}
+            disabled={!t.player?.track_id}
+          >
             <GaugeIcon data-icon="inline-start" />
             <span className="tabular-nums">{tempo}%</span>
           </Button>
@@ -118,11 +140,39 @@ function TempoSlider({ t }: { t: Transport }) {
   const tempo = t.player?.tempo ?? 100
   const [draft, setDraft] = React.useState<number | null>(null)
   const id = t.player?.track_id
+  // The tempo saved with the piece, so "Keep" only shows when it would change it.
+  const [saved, setSaved] = React.useState<{
+    id: string
+    tempo: number
+  } | null>(null)
+  React.useEffect(() => {
+    if (!id) return
+    let cancelled = false
+    call(api.GET("/api/v1/library/{id}", { params: { path: { id } } }))
+      .then((tr) => !cancelled && setSaved({ id, tempo: tr.info.tempo ?? 100 }))
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [id])
+  const savedTempo = saved && saved.id === id ? saved.tempo : null
+  const canKeep = !!id && savedTempo !== null && savedTempo !== tempo
+
   async function keep() {
     if (!id) return
     try {
-      await call(api.PATCH("/api/v1/library/{id}", { params: { path: { id } }, body: { tempo } }))
-      toast.success(tempo === 100 ? "Back to the recorded speed" : `This piece will play at ${tempo}% from now on`)
+      await call(
+        api.PATCH("/api/v1/library/{id}", {
+          params: { path: { id } },
+          body: { tempo },
+        })
+      )
+      setSaved({ id, tempo })
+      toast.success(
+        tempo === 100
+          ? "Back to the recorded tempo"
+          : `This piece will play at ${tempo}% from now on`
+      )
     } catch (e) {
       toast.error((e as Error).message)
     }
@@ -131,7 +181,9 @@ function TempoSlider({ t }: { t: Transport }) {
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between text-sm">
         <span className="font-medium">Tempo</span>
-        <span className="tabular-nums text-muted-foreground">{draft ?? tempo}%</span>
+        <span className="text-muted-foreground tabular-nums">
+          {draft ?? tempo}%
+        </span>
       </div>
       <Slider
         aria-label="Tempo"
@@ -145,25 +197,46 @@ function TempoSlider({ t }: { t: Transport }) {
           t.tempo(v as number)
         }}
       />
-      <div className="flex justify-between">
+      <div className="flex min-h-6 items-center justify-between">
         <span className="text-xs text-muted-foreground">Slower · Faster</span>
-        <Button variant="outline" size="xs" onClick={() => t.tempo(100)} disabled={tempo === 100}>
-          Reset to 100%
-        </Button>
+        {tempo !== 100 && (
+          <Button variant="outline" size="xs" onClick={() => t.tempo(100)}>
+            Reset to 100%
+          </Button>
+        )}
       </div>
-      <Button variant="secondary" size="sm" onClick={keep} disabled={!id} title="Save this speed with the piece">
-        Keep {tempo}% for this piece
-      </Button>
+      {canKeep && (
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={keep}
+          title="Save this tempo with the piece"
+        >
+          Keep {tempo}% for this piece
+        </Button>
+      )}
     </div>
   )
 }
 
-function VerseControls({ t, stacked = false }: { t: Transport; stacked?: boolean }) {
+function VerseControls({
+  t,
+  stacked = false,
+}: {
+  t: Transport
+  stacked?: boolean
+}) {
   const p = t.player
   if (!p?.track_id || p.verses < 2) return null
-  const active = p.state === "playing" || p.state === "paused" || p.state === "starting"
+  const active =
+    p.state === "playing" || p.state === "paused" || p.state === "starting"
   return (
-    <div className={cn("flex items-center gap-1", stacked && "flex-col items-stretch gap-2")}>
+    <div
+      className={cn(
+        "flex items-center gap-1",
+        stacked && "flex-col items-stretch gap-2"
+      )}
+    >
       <Toggle
         variant="outline"
         size="sm"
@@ -208,7 +281,13 @@ function FadeButton({ t }: { t: Transport }) {
   )
 }
 
-function PlayPause({ t, size = "icon-lg" }: { t: Transport; size?: "icon" | "icon-lg" }) {
+function PlayPause({
+  t,
+  size = "icon-lg",
+}: {
+  t: Transport
+  size?: "icon" | "icon-lg"
+}) {
   const state = t.player?.state
   const loaded = !!t.player?.track_id
   const busy = state === "playing" || state === "starting"
@@ -231,19 +310,34 @@ function NowPlaying({ t }: { t: Transport }) {
     return (
       <div className="flex min-w-0 flex-col">
         <span className="truncate text-sm font-medium">Nothing playing</span>
-        <Link href="/library" className="truncate text-xs text-muted-foreground hover:text-foreground">
+        <Link
+          href="/library"
+          className="truncate text-xs text-muted-foreground hover:text-foreground"
+        >
           Choose music from the Library
         </Link>
       </div>
     )
   }
   const state =
-    p.state === "starting" ? "Setting stops…" : p.state === "paused" ? "Paused" : p.state === "stopped" ? "Ready" : null
+    p.state === "starting"
+      ? "Setting stops…"
+      : p.state === "paused"
+        ? "Paused"
+        : p.state === "stopped"
+          ? "Ready"
+          : null
   return (
     <div className="flex min-w-0 flex-col">
-      <span className="truncate font-display text-sm font-semibold">{p.title}</span>
+      <span className="truncate font-display text-sm font-semibold">
+        {p.title}
+      </span>
       <span className="truncate text-xs text-muted-foreground tabular-nums">
-        {[state, p.verses > 1 && `Verse ${p.verse} of ${p.verses}`, `${formatClock(t.elapsed)} / ${formatClock(p.total_ms)}`]
+        {[
+          state,
+          p.verses > 1 && `Verse ${p.verse} of ${p.verses}`,
+          `${formatClock(t.elapsed)} / ${formatClock(p.total_ms)}`,
+        ]
           .filter(Boolean)
           .join(" · ")}
       </span>
@@ -265,7 +359,10 @@ export function TransportBar() {
       {/* Phone: a thin progress line and one row of essentials. */}
       <div className="md:hidden">
         <div className="h-0.5 bg-muted">
-          <div className="h-full bg-primary transition-[width] duration-100" style={{ width: `${progress}%` }} />
+          <div
+            className="h-full bg-primary transition-[width] duration-100"
+            style={{ width: `${progress}%` }}
+          />
         </div>
         <div className="flex items-center gap-2 px-3 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
           <RecordButton t={t} compact />
@@ -278,13 +375,18 @@ export function TransportBar() {
                   aria-label="Show playback controls"
                 >
                   <NowPlaying t={t} />
-                  <ChevronUpIcon className="ml-auto size-4 shrink-0 text-muted-foreground" aria-hidden />
+                  <ChevronUpIcon
+                    className="ml-auto size-4 shrink-0 text-muted-foreground"
+                    aria-hidden
+                  />
                 </button>
               }
             />
             <DrawerContent>
               <DrawerHeader>
-                <DrawerTitle className="font-display">{p?.title ?? "Nothing playing"}</DrawerTitle>
+                <DrawerTitle className="font-display">
+                  {p?.title ?? "Nothing playing"}
+                </DrawerTitle>
                 <DrawerDescription>
                   {p?.track_id
                     ? p.verses > 1
@@ -316,7 +418,11 @@ export function TransportBar() {
                 </div>
                 {p?.track_id && <NowPlayingScore label />}
                 {!p?.track_id && (
-                  <Button variant="outline" render={<Link href="/library" />} nativeButton={false}>
+                  <Button
+                    variant="outline"
+                    render={<Link href="/library" />}
+                    nativeButton={false}
+                  >
                     <LibraryIcon data-icon="inline-start" />
                     Open the Library
                   </Button>

@@ -43,10 +43,25 @@ const RELEASE_MS = 35
 /** The track's own meter, or a guess for live recordings. */
 export function gridFor(track: Track, override?: Partial<Grid>): Grid {
   const m = track.meter
-  const firstNote = track.events.find((e) => e.type === "note" && e.velocity > 0)?.t ?? 0
+  const firstNote =
+    track.events.find((e) => e.type === "note" && e.velocity > 0)?.t ?? 0
   const base: Grid = m
-    ? { bpm: m.bpm, beats: m.beats, beatUnit: m.beat_unit, offsetMs: m.offset_ms ?? 0, fifths: m.fifths ?? 0, approximate: false }
-    : { bpm: 80, beats: 4, beatUnit: 4, offsetMs: firstNote, fifths: 0, approximate: true }
+    ? {
+        bpm: m.bpm,
+        beats: m.beats,
+        beatUnit: m.beat_unit,
+        offsetMs: m.offset_ms ?? 0,
+        fifths: m.fifths ?? 0,
+        approximate: false,
+      }
+    : {
+        bpm: 80,
+        beats: 4,
+        beatUnit: 4,
+        offsetMs: firstNote,
+        fifths: 0,
+        approximate: true,
+      }
   return { ...base, ...override }
 }
 
@@ -62,13 +77,18 @@ interface QNote {
 }
 
 /** Quantised notes in semiquavers from the first downbeat. */
-export function quantise(track: Track, g: Grid, span?: { start: number; end: number }): QNote[] {
+export function quantise(
+  track: Track,
+  g: Grid,
+  span?: { start: number; end: number }
+): QNote[] {
   const six = 60000 / g.bpm / 4
   const out: QNote[] = []
   const open = new Map<string, number>()
   for (const ev of track.events) {
     if (ev.type !== "note") continue
-    if (span && (ev.t < span.start || ev.t >= span.end) && ev.velocity > 0) continue
+    if (span && (ev.t < span.start || ev.t >= span.end) && ev.velocity > 0)
+      continue
     const k = `${ev.division}:${ev.key}`
     if (ev.velocity > 0) {
       open.set(k, ev.t)
@@ -76,8 +96,12 @@ export function quantise(track: Track, g: Grid, span?: { start: number; end: num
       const t0 = open.get(k)!
       open.delete(k)
       const s = Math.round((t0 - g.offsetMs) / six)
-      const e = Math.max(s + 1, Math.round((ev.t + RELEASE_MS - g.offsetMs) / six))
-      const staff: StaffId = ev.division === "pedal" ? "pedal" : ev.key >= 60 ? "treble" : "bass"
+      const e = Math.max(
+        s + 1,
+        Math.round((ev.t + RELEASE_MS - g.offsetMs) / six)
+      )
+      const staff: StaffId =
+        ev.division === "pedal" ? "pedal" : ev.key >= 60 ? "treble" : "bass"
       out.push({ staff, key: ev.key, s, e })
     }
   }
@@ -85,7 +109,11 @@ export function quantise(track: Track, g: Grid, span?: { start: number; end: num
 }
 
 /** Bars of slices, for every staff that has notes (treble and bass always). */
-export function layout(track: Track, g: Grid, span?: { start: number; end: number }): { measures: Measure[]; staves: StaffId[] } {
+export function layout(
+  track: Track,
+  g: Grid,
+  span?: { start: number; end: number }
+): { measures: Measure[]; staves: StaffId[] } {
   const notes = quantise(track, g, span)
   const len = measureSixteenths(g)
   const six = 60000 / g.bpm / 4
@@ -100,7 +128,9 @@ export function layout(track: Track, g: Grid, span?: { start: number; end: numbe
     const m1 = m0 + len
     const staffSlices = {} as Record<StaffId, Slice[]>
     for (const staff of staves) {
-      const here = notes.filter((n) => n.staff === staff && n.s < m1 && n.e > m0)
+      const here = notes.filter(
+        (n) => n.staff === staff && n.s < m1 && n.e > m0
+      )
       const cuts = new Set<number>([m0, m1])
       for (const n of here) {
         if (n.s > m0) cuts.add(n.s)
@@ -111,8 +141,12 @@ export function layout(track: Track, g: Grid, span?: { start: number; end: numbe
       for (let i = 0; i < bounds.length - 1; i++) {
         const [b0, b1] = [bounds[i], bounds[i + 1]]
         const sounding = here.filter((n) => n.s < b1 && n.e > b0)
-        const keys = [...new Set(sounding.map((n) => n.key))].sort((a, b) => a - b)
-        const tiedIn = [...new Set(sounding.filter((n) => n.s < b0).map((n) => n.key))]
+        const keys = [...new Set(sounding.map((n) => n.key))].sort(
+          (a, b) => a - b
+        )
+        const tiedIn = [
+          ...new Set(sounding.filter((n) => n.s < b0).map((n) => n.key)),
+        ]
         const prev = slices[slices.length - 1]
         if (prev && keys.length === 0 && prev.keys.length === 0) {
           prev.len += b1 - b0 // merge rests
@@ -144,7 +178,9 @@ const VALUES: { len: number; duration: string; dots: number }[] = [
 ]
 
 /** A length in semiquavers as tied note values, longest first. */
-export function durationParts(len: number): { duration: string; dots: number; len: number }[] {
+export function durationParts(
+  len: number
+): { duration: string; dots: number; len: number }[] {
   const out: { duration: string; dots: number; len: number }[] = []
   let left = len
   while (left > 0) {
@@ -164,7 +200,23 @@ export function spell(midi: number, fifths: number): string {
   return `${names[midi % 12]}/${Math.floor(midi / 12) - 1}`
 }
 
-const MAJOR = ["Cb", "Gb", "Db", "Ab", "Eb", "Bb", "F", "C", "G", "D", "A", "E", "B", "F#", "C#"]
+const MAJOR = [
+  "Cb",
+  "Gb",
+  "Db",
+  "Ab",
+  "Eb",
+  "Bb",
+  "F",
+  "C",
+  "G",
+  "D",
+  "A",
+  "E",
+  "B",
+  "F#",
+  "C#",
+]
 
 export function keyName(fifths: number): string {
   return MAJOR[Math.max(-7, Math.min(7, fifths)) + 7]

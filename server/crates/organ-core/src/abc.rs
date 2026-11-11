@@ -883,6 +883,29 @@ pub fn person(field: &str) -> String {
     format!("{name} {dates}").trim().to_string()
 }
 
+/// Everyone named in a credit field ("A (dates);B (dates)"), readably:
+/// "A (dates) and B (dates)". Traditional sources read "Traditional German";
+/// "unknown", "none" and "composite" add nothing.
+fn people(field: &str) -> String {
+    let names: Vec<String> = field
+        .split(';')
+        .map(str::trim)
+        .filter(|p| !p.is_empty())
+        .filter_map(|p| {
+            let low = p.to_ascii_lowercase();
+            if ["unknown", "none", "composite"].contains(&low.as_str()) {
+                None
+            } else if is_traditional(p) {
+                let word = p.trim_start_matches(|c: char| !c.is_alphabetic());
+                Some(if low.starts_with("traditional") { "Traditional".into() } else { format!("Traditional {word}") })
+            } else {
+                Some(person(p))
+            }
+        })
+        .collect();
+    names.join(" and ")
+}
+
 fn is_traditional(field: &str) -> bool {
     let f = field.trim().to_ascii_lowercase();
     let words = ["traditional", "unknown", "none", "english", "german", "french", "latin", "welsh", "dutch", "silesian",
@@ -1032,23 +1055,14 @@ pub fn from_open_hymnal(text: &str, file_stem: &str, cutoff: i32) -> Result<Scor
     let id = slug(&melody);
     let mut score = to_score(&tune, &id)?;
     score.melody = melody;
-    let composer = tune.fields.get("OHCOMPOSER").map(|s| person(s)).unwrap_or_default();
-    let arranger = tune.fields.get("OHARRANGER").map(|s| person(s)).unwrap_or_default();
-    let traditional = |s: &str| s.is_empty() || s.eq_ignore_ascii_case("unknown") || s.eq_ignore_ascii_case("none");
+    let composer = people(tune.fields.get("OHCOMPOSER").map(String::as_str).unwrap_or(""));
+    let arranger = people(tune.fields.get("OHARRANGER").map(String::as_str).unwrap_or(""));
     score.composer = match (composer.as_str(), arranger.as_str()) {
-        (c, a) if traditional(a) || a == c || a.eq_ignore_ascii_case("composite") => c.to_string(),
-        (c, a) if traditional(c) => format!("harmony by {a}"),
+        ("", "") => "Traditional".into(),
+        (c, a) if a.is_empty() || a == c => c.to_string(),
+        ("", a) => format!("harmony by {a}"),
         (c, a) => format!("{c}; harmony by {a}"),
     };
-    if is_traditional(tune.fields.get("OHCOMPOSER").map(String::as_str).unwrap_or("")) && !composer.is_empty() {
-        let c = composer.to_string();
-        let c = if c.eq_ignore_ascii_case("unknown") { "Traditional".to_string() } else { format!("Traditional {c}") };
-        score.composer = if traditional(&arranger) || arranger.eq_ignore_ascii_case("composite") {
-            c
-        } else {
-            format!("{c}; harmony by {arranger}")
-        };
-    }
     score.copyright = "Public domain".into();
     score.licence = "public-domain".into();
     score.publication = tune.source.first().map(|s| s.trim_start_matches("Music source:").trim().to_string()).unwrap_or_default();
@@ -1061,7 +1075,25 @@ pub fn from_open_hymnal(text: &str, file_stem: &str, cutoff: i32) -> Result<Scor
 pub fn slug(s: &str) -> String {
     let mut out = String::new();
     for c in s.to_lowercase().chars() {
-        if c.is_ascii_alphanumeric() {
+        // German and other accented letters: "Wasserflüssen" → "wasserfluessen".
+        let plain = match c {
+            'ä' | 'æ' => "ae",
+            'ö' | 'ø' | 'œ' => "oe",
+            'ü' => "ue",
+            'ß' => "ss",
+            'à' | 'á' | 'â' | 'ã' | 'å' => "a",
+            'è' | 'é' | 'ê' | 'ë' => "e",
+            'ì' | 'í' | 'î' | 'ï' => "i",
+            'ò' | 'ó' | 'ô' | 'õ' => "o",
+            'ù' | 'ú' | 'û' => "u",
+            'ç' => "c",
+            'ñ' => "n",
+            'ý' | 'ÿ' => "y",
+            _ => "",
+        };
+        if !plain.is_empty() {
+            out.push_str(plain);
+        } else if c.is_ascii_alphanumeric() {
             out.push(c);
         } else if !out.ends_with('-') && !out.is_empty() {
             out.push('-');
@@ -1129,6 +1161,17 @@ W: 3.I need Thy presence every passing hour.
         assert!(from_open_hymnal(&book, "x-y", 1955).is_ok());
         let living = EVENTIDE.replace("%OHARRANGER Monk, William Henry (1823-1889)", "%OHARRANGER Dumont, Brian James (1971-)");
         assert!(from_open_hymnal(&living, "x-y", 1955).is_err());
+    }
+
+    #[test]
+    fn credits_with_several_people() {
+        assert_eq!(
+            people("Kocher, Conrad (1786-1872);Monk, William Henry (1823-1889)"),
+            "Conrad Kocher (1786–1872) and William Henry Monk (1823–1889)"
+        );
+        assert_eq!(people("German"), "Traditional German");
+        assert_eq!(people("unknown"), "");
+        assert_eq!(slug("An Wasserflüssen Babylon"), "an-wasserfluessen-babylon");
     }
 
     #[test]

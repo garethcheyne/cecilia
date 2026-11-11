@@ -13,11 +13,19 @@ describe("noteName", () => {
 describe("describeMidi", () => {
   it("treats note-on with velocity 0 as note-off", () => {
     expect(describeMidi([0x90, 60, 0]).kind).toBe("note-off")
-    expect(describeMidi([0x91, 60, 64])).toMatchObject({ kind: "note-on", channel: 2 })
+    expect(describeMidi([0x91, 60, 64])).toMatchObject({
+      kind: "note-on",
+      channel: 2,
+    })
   })
   it("recognises Makin stop toggles and general cancel", () => {
-    expect(describeMidi([0xcb, 0x12])).toMatchObject({ kind: "program", channel: 12 })
-    expect(describeMidi([0xf0, 0x00, 0x4a, 0x4f, 0x48, 0x41, 0x53, 0x7f, 0xf7]).kind).toBe("sysex")
+    expect(describeMidi([0xcb, 0x12])).toMatchObject({
+      kind: "program",
+      channel: 12,
+    })
+    expect(
+      describeMidi([0xf0, 0x00, 0x4a, 0x4f, 0x48, 0x41, 0x53, 0x7f, 0xf7]).kind
+    ).toBe("sysex")
   })
 })
 

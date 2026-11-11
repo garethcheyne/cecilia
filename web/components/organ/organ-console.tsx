@@ -3,7 +3,12 @@
 import * as React from "react"
 
 import { Slider } from "@/components/ui/slider"
-import type { DivisionRole, OrganDefinition, OrganEvent, SimSnapshot } from "@/lib/api/client"
+import type {
+  DivisionRole,
+  OrganDefinition,
+  OrganEvent,
+  SimSnapshot,
+} from "@/lib/api/client"
 import { cn } from "@/lib/utils"
 
 import { CONSOLE_ORDER, DIVISION_BG, DIVISION_RING } from "./divisions"
@@ -39,7 +44,10 @@ export function OrganConsole({
     [organ]
   )
   const drawn = React.useMemo(() => new Set(state.stops), [state.stops])
-  const coupled = React.useMemo(() => coupledKeys(organ, state.stops, state.notes), [organ, state.stops, state.notes])
+  const coupled = React.useMemo(
+    () => coupledKeys(organ, state.stops, state.notes),
+    [organ, state.stops, state.notes]
+  )
 
   return (
     <div className="console-panel flex w-full min-w-0 flex-col gap-8 rounded-2xl p-3 text-panel-foreground sm:p-6">
@@ -49,10 +57,20 @@ export function OrganConsole({
         const expression = state.expression[division.role]
         const isPedal = division.role === "pedal"
         return (
-          <section key={division.role} aria-label={division.name} className="flex min-w-0 flex-col gap-3">
+          <section
+            key={division.role}
+            aria-label={division.name}
+            className="flex min-w-0 flex-col gap-3"
+          >
             <header className="flex flex-wrap items-center gap-x-4 gap-y-2">
               <h2 className="flex items-center gap-2.5 font-display text-lg font-semibold">
-                <span className={cn("h-4 w-1 rounded-full", DIVISION_BG[division.role])} aria-hidden />
+                <span
+                  className={cn(
+                    "h-4 w-1 rounded-full",
+                    DIVISION_BG[division.role]
+                  )}
+                  aria-hidden
+                />
                 {division.name}
               </h2>
               {activeDivision === division.role && (
@@ -68,11 +86,17 @@ export function OrganConsole({
                     min={0}
                     max={127}
                     onValueChange={(v) =>
-                      onAct({ type: "expression", division: division.role, value: v as number })
+                      onAct({
+                        type: "expression",
+                        division: division.role,
+                        value: v as number,
+                      })
                     }
                     aria-label={`${division.name} expression`}
                   />
-                  <span className="w-8 text-right tabular-nums">{Math.round((expression / 127) * 100)}%</span>
+                  <span className="w-8 text-right tabular-nums">
+                    {Math.round((expression / 127) * 100)}%
+                  </span>
                 </label>
               )}
             </header>
@@ -84,12 +108,16 @@ export function OrganConsole({
                     stop={stop}
                     on={drawn.has(stop.id)}
                     ringClass={DIVISION_RING[division.role]}
-                    onToggle={(on) => onAct({ type: "stop", stop: stop.id, on })}
+                    onToggle={(on) =>
+                      onAct({ type: "stop", stop: stop.id, on })
+                    }
                   />
                 ))}
               </div>
             )}
-            <div className={cn("min-w-0", isPedal && "mx-auto w-full max-w-3xl")}>
+            <div
+              className={cn("min-w-0", isPedal && "mx-auto w-full max-w-3xl")}
+            >
               <Keyboard
                 low={division.low_key}
                 high={division.high_key}
@@ -99,7 +127,12 @@ export function OrganConsole({
                 label={`${division.name} keys`}
                 colorClass={DIVISION_BG[division.role]}
                 onNote={(key, on) =>
-                  onAct({ type: "note", division: division.role, key, velocity: on ? 96 : 0 })
+                  onAct({
+                    type: "note",
+                    division: division.role,
+                    key,
+                    velocity: on ? 96 : 0,
+                  })
                 }
               />
             </div>

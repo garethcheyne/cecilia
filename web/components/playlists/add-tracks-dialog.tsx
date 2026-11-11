@@ -13,7 +13,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group"
 import type { TrackSummary } from "@/lib/api/client"
 import { formatClock } from "@/lib/time"
 
@@ -41,17 +45,25 @@ export function AddTracksDialog({
 
   const q = query.trim().toLowerCase()
   const shown = library.filter(
-    (t) => !q || [t.info.title, t.info.composer, t.info.melody].some((f) => f?.toLowerCase().includes(q))
+    (t) =>
+      !q ||
+      [t.info.title, t.info.composer, t.info.melody].some((f) =>
+        f?.toLowerCase().includes(q)
+      )
   )
   const toggle = (id: string, on: boolean) =>
-    setPicked((p) => (on ? [...p.filter((x) => x !== id), id] : p.filter((x) => x !== id)))
+    setPicked((p) =>
+      on ? [...p.filter((x) => x !== id), id] : p.filter((x) => x !== id)
+    )
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Add music</DialogTitle>
-          <DialogDescription>Tick pieces in the order you want them.</DialogDescription>
+          <DialogDescription>
+            Tick pieces in the order you want them.
+          </DialogDescription>
         </DialogHeader>
         <InputGroup>
           <InputGroupAddon>
@@ -70,11 +82,18 @@ export function AddTracksDialog({
             return (
               <li key={t.id}>
                 <label className="flex cursor-pointer items-center gap-3 rounded-lg px-2 py-2 hover:bg-muted">
-                  <Checkbox checked={n >= 0} onCheckedChange={(on) => toggle(t.id, !!on)} />
+                  <Checkbox
+                    checked={n >= 0}
+                    onCheckedChange={(on) => toggle(t.id, !!on)}
+                  />
                   <span className="flex min-w-0 flex-1 flex-col">
                     <span className="truncate font-medium">{t.info.title}</span>
                     <span className="truncate text-xs text-muted-foreground">
-                      {[t.info.melody || t.info.composer, formatClock(t.duration_ms), t.verses > 1 && `${t.verses} verses`]
+                      {[
+                        t.info.melody || t.info.composer,
+                        formatClock(t.duration_ms),
+                        t.verses > 1 && `${t.verses} verses`,
+                      ]
                         .filter(Boolean)
                         .join(" · ")}
                     </span>
@@ -88,7 +107,11 @@ export function AddTracksDialog({
               </li>
             )
           })}
-          {shown.length === 0 && <li className="py-6 text-center text-sm text-muted-foreground">Nothing matches.</li>}
+          {shown.length === 0 && (
+            <li className="py-6 text-center text-sm text-muted-foreground">
+              Nothing matches.
+            </li>
+          )}
         </ul>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
@@ -101,7 +124,9 @@ export function AddTracksDialog({
               onOpenChange(false)
             }}
           >
-            {picked.length === 1 ? "Add 1 piece" : `Add ${picked.length || ""} pieces`.replace("  ", " ")}
+            {picked.length === 1
+              ? "Add 1 piece"
+              : `Add ${picked.length || ""} pieces`.replace("  ", " ")}
           </Button>
         </DialogFooter>
       </DialogContent>

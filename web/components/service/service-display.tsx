@@ -50,7 +50,11 @@ export function ServiceDisplay() {
           data-on={fullscreen.on}
           aria-label={fullscreen.on ? "Leave full screen" : "Full screen"}
         >
-          {fullscreen.on ? <MinimizeIcon data-icon="inline-start" /> : <MaximizeIcon data-icon="inline-start" />}
+          {fullscreen.on ? (
+            <MinimizeIcon data-icon="inline-start" />
+          ) : (
+            <MaximizeIcon data-icon="inline-start" />
+          )}
           {fullscreen.on ? "Leave full screen" : "Full screen"}
         </Button>
       )}

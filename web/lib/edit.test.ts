@@ -19,7 +19,10 @@ import {
   transpose,
 } from "./edit"
 
-const sw = { division: "swell" as const, equivalent: { type: "tremulant" as const } }
+const sw = {
+  division: "swell" as const,
+  equivalent: { type: "tremulant" as const },
+}
 
 function track(): Track {
   return {
@@ -62,7 +65,9 @@ describe("toEdit / fromEdit", () => {
       { t: 200, type: "note", division: "great", key: 62, velocity: 80 },
       { t: 300, type: "note", division: "great", key: 62, velocity: 0 },
     ]
-    const types = fromEdit(toEdit(t)).events.filter((e) => e.t === 200).map((e) => (e.type === "note" ? e.velocity : "stop"))
+    const types = fromEdit(toEdit(t))
+      .events.filter((e) => e.t === 200)
+      .map((e) => (e.type === "note" ? e.velocity : "stop"))
     expect(types).toEqual([0, "stop", 80])
   })
 })
@@ -110,7 +115,9 @@ describe("sections", () => {
   it("cuts a section and closes the gap", () => {
     const e = deleteRange(toEdit(track()), 1400, 2100)
     // The first note is trimmed at 1400; the stop goes; the pedal note (2000) goes.
-    expect(e.notes.map((n) => [n.key, n.start, n.end])).toEqual([[60, 1000, 1400]])
+    expect(e.notes.map((n) => [n.key, n.start, n.end])).toEqual([
+      [60, 1000, 1400],
+    ])
     expect(e.controls).toHaveLength(0)
     expect(e.track.duration_ms).toBe(4300)
     expect(e.track.verses).toEqual([1800])
@@ -127,7 +134,9 @@ describe("sections", () => {
     expect(clip.notes).toHaveLength(1)
     expect(clip.controls).toHaveLength(1)
     e = pasteClip(e, clip, 4000)
-    expect(e.notes.filter((n) => n.key === 60).map((n) => n.start)).toEqual([1000, 4100])
+    expect(e.notes.filter((n) => n.key === 60).map((n) => n.start)).toEqual([
+      1000, 4100,
+    ])
     expect(new Set(e.notes.map((n) => n.id)).size).toBe(e.notes.length)
   })
 })
@@ -140,7 +149,11 @@ describe("context menu edits", () => {
     const [overlaid, ids] = overlayClip(e, clip, 3000)
     e = overlaid
     expect(e.notes).toHaveLength(3)
-    expect(e.notes.find((n) => n.id === ids[0])).toMatchObject({ key: 60, start: 3000, end: 3900 })
+    expect(e.notes.find((n) => n.id === ids[0])).toMatchObject({
+      key: 60,
+      start: 3000,
+      end: 3900,
+    })
     expect(e.track.duration_ms).toBe(5000)
   })
   it("flips a stop change", () => {

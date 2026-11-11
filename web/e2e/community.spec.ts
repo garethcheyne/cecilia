@@ -1,8 +1,9 @@
 import { expect, type Page, test } from "@playwright/test"
 
 // The test server points at e2e/fixtures/library: Eventide (bundled with
-// Cecilia too), Aberystwyth (Lent), Cranham and Mueller (Christmas), and the
-// Makin template.
+// Cecilia too), Aberystwyth (Lent), Cranham and Mueller (Christmas), and a
+// shared Makin setup. Its id differs from the built-in Makin template, which
+// the Organs page would otherwise hide as a duplicate.
 
 async function openShared(page: Page) {
   await page.goto("/library/")

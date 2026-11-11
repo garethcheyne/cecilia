@@ -22,7 +22,9 @@ export function readTextSize(): TextSize {
 }
 
 export function applyTextSize(size: TextSize) {
-  document.documentElement.style.fontSize = TEXT_SIZES.find((t) => t.value === size)!.scale
+  document.documentElement.style.fontSize = TEXT_SIZES.find(
+    (t) => t.value === size
+  )!.scale
   try {
     localStorage.setItem(KEY, size)
   } catch {

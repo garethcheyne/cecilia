@@ -7,9 +7,15 @@ import { ListMusicIcon, PlusIcon } from "lucide-react"
 import { toast } from "sonner"
 
 import { useEngine } from "@/components/engine-provider"
+import { PageBody } from "@/components/page-body"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import {
   Dialog,
   DialogContent,
@@ -18,7 +24,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -32,7 +45,13 @@ function suggestedName() {
   return `Sunday ${d.toLocaleDateString(undefined, { day: "numeric", month: "long" })}`
 }
 
-export function NewPlaylistDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
+export function NewPlaylistDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean
+  onOpenChange: (o: boolean) => void
+}) {
   const router = useRouter()
   const [name, setName] = React.useState("")
   const [busy, setBusy] = React.useState(false)
@@ -48,7 +67,9 @@ export function NewPlaylistDialog({ open, onOpenChange }: { open: boolean; onOpe
     if (!name.trim()) return
     setBusy(true)
     try {
-      const p = await call(api.POST("/api/v1/playlists", { body: { name: name.trim() } }))
+      const p = await call(
+        api.POST("/api/v1/playlists", { body: { name: name.trim() } })
+      )
       onOpenChange(false)
       router.push(`/playlists/edit/?id=${encodeURIComponent(p.id)}`)
     } catch (err) {
@@ -64,16 +85,27 @@ export function NewPlaylistDialog({ open, onOpenChange }: { open: boolean; onOpe
         <form onSubmit={create} className="flex flex-col gap-6">
           <DialogHeader>
             <DialogTitle>New playlist</DialogTitle>
-            <DialogDescription>An order of service: the music to play, in order.</DialogDescription>
+            <DialogDescription>
+              An order of service: the music to play, in order.
+            </DialogDescription>
           </DialogHeader>
           <FieldGroup>
             <Field>
               <FieldLabel htmlFor="playlist-name">Name</FieldLabel>
-              <Input id="playlist-name" value={name} onChange={(e) => setName(e.target.value)} autoFocus />
+              <Input
+                id="playlist-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                autoFocus
+              />
             </Field>
           </FieldGroup>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={busy || !name.trim()}>
@@ -99,9 +131,11 @@ export function PlaylistsIndex() {
   }, [connected])
 
   return (
-    <div className="mx-auto flex w-full min-w-0 max-w-5xl flex-col gap-4 p-3 sm:p-4">
+    <PageBody>
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">Plan each service here, then run it from the Service screen.</p>
+        <p className="text-sm text-muted-foreground">
+          Plan each service here, then run it from the Service screen.
+        </p>
         <Button onClick={() => setCreating(true)}>
           <PlusIcon data-icon="inline-start" />
           New playlist
@@ -120,7 +154,10 @@ export function PlaylistsIndex() {
               <ListMusicIcon />
             </EmptyMedia>
             <EmptyTitle>No playlists yet</EmptyTitle>
-            <EmptyDescription>Make one for Sunday: the voluntary, the hymns, and anything else to play.</EmptyDescription>
+            <EmptyDescription>
+              Make one for Sunday: the voluntary, the hymns, and anything else
+              to play.
+            </EmptyDescription>
           </EmptyHeader>
           <EmptyContent>
             <Button onClick={() => setCreating(true)}>
@@ -144,7 +181,8 @@ export function PlaylistsIndex() {
                     {service?.playlist_id === p.id && <Badge>Running</Badge>}
                   </CardTitle>
                   <CardDescription>
-                    {p.tracks === 1 ? "1 piece" : `${p.tracks} pieces`} · {formatDate(p.modified)}
+                    {p.tracks === 1 ? "1 piece" : `${p.tracks} pieces`} ·{" "}
+                    {formatDate(p.modified)}
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -153,6 +191,6 @@ export function PlaylistsIndex() {
         </div>
       )}
       <NewPlaylistDialog open={creating} onOpenChange={setCreating} />
-    </div>
+    </PageBody>
   )
 }

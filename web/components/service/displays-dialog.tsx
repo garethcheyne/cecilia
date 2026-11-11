@@ -1,7 +1,11 @@
 "use client"
 
 import * as React from "react"
-import { ExternalLinkIcon, MonitorIcon, MonitorSmartphoneIcon } from "lucide-react"
+import {
+  ExternalLinkIcon,
+  MonitorIcon,
+  MonitorSmartphoneIcon,
+} from "lucide-react"
 import { toast } from "sonner"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -16,20 +20,58 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Field, FieldDescription, FieldGroup, FieldLabel, FieldLegend, FieldSet } from "@/components/ui/field"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "@/components/ui/field"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { openDisplay, type ScreenCount } from "@/hooks/use-screens"
-import { type Displays, type Layout, PANEL_INFO, PANELS, type PanelId, shown } from "@/lib/displays"
+import {
+  type Displays,
+  type Layout,
+  PANEL_INFO,
+  PANELS,
+  type PanelId,
+  shown,
+} from "@/lib/displays"
 
-const PANEL_ITEMS = PANELS.map((p) => ({ value: p, label: PANEL_INFO[p].label }))
+const PANEL_ITEMS = PANELS.map((p) => ({
+  value: p,
+  label: PANEL_INFO[p].label,
+}))
 
-function PanelSelect({ id, label, value, onChange }: { id: string; label: string; value: PanelId; onChange: (p: PanelId) => void }) {
+function PanelSelect({
+  id,
+  label,
+  value,
+  onChange,
+}: {
+  id: string
+  label: string
+  value: PanelId
+  onChange: (p: PanelId) => void
+}) {
   return (
     <Field>
       <FieldLabel htmlFor={id}>{label}</FieldLabel>
-      <Select value={value} onValueChange={(v) => v && onChange(v as PanelId)} items={PANEL_ITEMS}>
+      <Select
+        value={value}
+        onValueChange={(v) => v && onChange(v as PanelId)}
+        items={PANEL_ITEMS}
+      >
         <SelectTrigger id={id} className="w-full">
           <SelectValue />
         </SelectTrigger>
@@ -87,7 +129,12 @@ function ScreenSettings({
             onChange={(p) => onPanels([p, panels[1]])}
           />
           {layout === "split" && (
-            <PanelSelect id={`${name}-second`} label="Right" value={panels[1]} onChange={(p) => onPanels([panels[0], p])} />
+            <PanelSelect
+              id={`${name}-second`}
+              label="Right"
+              value={panels[1]}
+              onChange={(p) => onPanels([panels[0], p])}
+            />
           )}
         </div>
       </FieldGroup>
@@ -108,19 +155,26 @@ export function DisplaysDialog({
   secondOpen: boolean
 }) {
   async function openSecond() {
-    const result = await openDisplay(shown(displays.secondLayout, displays.secondPanels))
+    const result = await openDisplay(
+      shown(displays.secondLayout, displays.secondPanels)
+    )
     if (result === "blocked") {
-      toast.error("The browser blocked the new window. Allow pop-ups for Cecilia, then press Open again.")
+      toast.error(
+        "The browser blocked the new window. Allow pop-ups for Cecilia, then press Open again."
+      )
     } else if (result === "window") {
       toast.success("Opened in a new window", {
-        description: "Drag it onto the other screen, then press Full screen in it.",
+        description:
+          "Drag it onto the other screen, then press Full screen in it.",
       })
     }
   }
 
   return (
     <Dialog>
-      <DialogTrigger render={<Button variant="outline" size="sm" />}>
+      <DialogTrigger
+        render={<Button variant="outline" size="sm" aria-label="Displays" />}
+      >
         <MonitorSmartphoneIcon data-icon="inline-start" />
         <span className="hidden sm:inline">Displays</span>
       </DialogTrigger>
@@ -128,8 +182,8 @@ export function DisplaysDialog({
         <DialogHeader>
           <DialogTitle>Displays</DialogTitle>
           <DialogDescription>
-            Choose what each screen shows during the service. Every screen follows the same service, so pressing Play
-            on one is seen on all.
+            Choose what each screen shows during the service. Every screen
+            follows the same service, so pressing Play on one is seen on all.
           </DialogDescription>
         </DialogHeader>
 
@@ -157,17 +211,22 @@ export function DisplaysDialog({
           <Alert>
             <MonitorIcon />
             <AlertTitle className="flex items-center gap-2">
-              More than one screen found <Badge variant="secondary">2+ screens</Badge>
+              More than one screen found{" "}
+              <Badge variant="secondary">2+ screens</Badge>
             </AlertTitle>
             <AlertDescription>
-              Open sends the second screen to the other monitor. The browser may ask permission to place windows the
-              first time.
+              Open sends the second screen to the other monitor. The browser may
+              ask permission to place windows the first time.
             </AlertDescription>
           </Alert>
         ) : (
           <Alert>
             <MonitorIcon />
-            <AlertTitle>{screens === "one" ? "Only one screen found" : "Can’t tell how many screens there are"}</AlertTitle>
+            <AlertTitle>
+              {screens === "one"
+                ? "Only one screen found"
+                : "Can’t tell how many screens there are"}
+            </AlertTitle>
             <AlertDescription>
               {screens === "one"
                 ? "Plug in another screen to use one, or open it as a window on this screen or on another device."
@@ -184,7 +243,9 @@ export function DisplaysDialog({
           )}
           <Button onClick={openSecond}>
             <ExternalLinkIcon data-icon="inline-start" />
-            {screens === "many" ? "Open on second screen" : "Open in a new window"}
+            {screens === "many"
+              ? "Open on second screen"
+              : "Open in a new window"}
           </Button>
         </DialogFooter>
       </DialogContent>

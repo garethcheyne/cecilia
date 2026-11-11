@@ -145,7 +145,10 @@ export function EngineProvider({ children }: { children: React.ReactNode }) {
           setRecorder(event)
         } else if (event.type === "library") {
           setLibraryVersion((v) => v + 1)
-          if (event.saved) toast.success(`Saved “${event.saved.info.title}”`, { description: "In your library" })
+          if (event.saved)
+            toast.success(`Saved “${event.saved.info.title}”`, {
+              description: "In your library",
+            })
         } else if (event.type === "lagged") {
           setSkipped((n) => n + event.skipped)
         }
@@ -174,8 +177,32 @@ export function EngineProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const value = React.useMemo(
-    () => ({ connected, status, simulator, player, playerAt, recorder, libraryVersion, service, live, statusAt, onMidi }),
-    [connected, status, simulator, player, playerAt, recorder, libraryVersion, service, live, statusAt, onMidi]
+    () => ({
+      connected,
+      status,
+      simulator,
+      player,
+      playerAt,
+      recorder,
+      libraryVersion,
+      service,
+      live,
+      statusAt,
+      onMidi,
+    }),
+    [
+      connected,
+      status,
+      simulator,
+      player,
+      playerAt,
+      recorder,
+      libraryVersion,
+      service,
+      live,
+      statusAt,
+      onMidi,
+    ]
   )
   const monitor = React.useMemo(
     () => ({ events, skipped, paused, setPaused, clearEvents }),
@@ -184,7 +211,9 @@ export function EngineProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <EngineContext.Provider value={value}>
-      <MonitorContext.Provider value={monitor}>{children}</MonitorContext.Provider>
+      <MonitorContext.Provider value={monitor}>
+        {children}
+      </MonitorContext.Provider>
     </EngineContext.Provider>
   )
 }

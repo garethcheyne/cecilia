@@ -21,6 +21,7 @@ import {
 import { toast } from "sonner"
 
 import { useEngine } from "@/components/engine-provider"
+import { PageBody } from "@/components/page-body"
 import { ImportDialog } from "@/components/library/import-dialog"
 import { TrackDetailsDialog } from "@/components/library/track-details-dialog"
 import {
@@ -33,7 +34,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -43,10 +43,27 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { useTransport } from "@/hooks/use-transport"
 import { api, apiUrl, call, type TrackSummary } from "@/lib/api/client"
 import { formatClock, formatDate } from "@/lib/time"
@@ -56,7 +73,7 @@ type SortKey = "title" | "duration" | "added"
 
 const SOURCE_LABEL: Record<TrackSummary["source"], string> = {
   recorded: "Recorded",
-  sample: "Sample",
+  sample: "Comes with Cecilia",
   imported: "Imported",
 }
 
@@ -77,7 +94,10 @@ function sortTracks(list: TrackSummary[], key: SortKey, asc: boolean) {
       case "duration":
         return dir * (a.duration_ms - b.duration_ms)
       case "added":
-        return dir * (a.created - b.created) || a.info.title.localeCompare(b.info.title)
+        return (
+          dir * (a.created - b.created) ||
+          a.info.title.localeCompare(b.info.title)
+        )
     }
   })
 }
@@ -97,10 +117,23 @@ function SortHeader({
 }) {
   const active = sort.key === k
   return (
-    <TableHead className={className} aria-sort={active ? (sort.asc ? "ascending" : "descending") : "none"}>
-      <Button variant="ghost" size="sm" className="-ml-2.5" onClick={() => onSort(k)}>
+    <TableHead
+      className={className}
+      aria-sort={active ? (sort.asc ? "ascending" : "descending") : "none"}
+    >
+      <Button
+        variant="ghost"
+        size="sm"
+        className="-ml-2.5"
+        onClick={() => onSort(k)}
+      >
         {label}
-        {active && (sort.asc ? <ArrowUpIcon data-icon="inline-end" /> : <ArrowDownIcon data-icon="inline-end" />)}
+        {active &&
+          (sort.asc ? (
+            <ArrowUpIcon data-icon="inline-end" />
+          ) : (
+            <ArrowDownIcon data-icon="inline-end" />
+          ))}
       </Button>
     </TableHead>
   )
@@ -121,14 +154,24 @@ function TrackMenu({
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button variant="ghost" size="icon" aria-label={`More for ${track.info.title}`}>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={`More for ${track.info.title}`}
+          >
             <EllipsisVerticalIcon />
           </Button>
         }
       />
       <DropdownMenuContent align="end">
         <DropdownMenuGroup>
-          <DropdownMenuItem render={<Link href={`/library/edit/?id=${encodeURIComponent(track.id)}`} />}>
+          <DropdownMenuItem
+            render={
+              <Link
+                href={`/library/edit/?id=${encodeURIComponent(track.id)}`}
+              />
+            }
+          >
             <PianoIcon />
             Open in editor
           </DropdownMenuItem>
@@ -143,12 +186,28 @@ function TrackMenu({
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem render={<a href={apiUrl(`/api/v1/library/${encodeURIComponent(track.id)}/midi`)} download />}>
+          <DropdownMenuItem
+            render={
+              <a
+                href={apiUrl(
+                  `/api/v1/library/${encodeURIComponent(track.id)}/midi`
+                )}
+                download
+              />
+            }
+          >
             <FileDownIcon />
             MIDI for this organ
           </DropdownMenuItem>
           <DropdownMenuItem
-            render={<a href={apiUrl(`/api/v1/library/${encodeURIComponent(track.id)}/midi?format=general_midi`)} download />}
+            render={
+              <a
+                href={apiUrl(
+                  `/api/v1/library/${encodeURIComponent(track.id)}/midi?format=general_midi`
+                )}
+                download
+              />
+            }
           >
             <FileDownIcon />
             General MIDI
@@ -167,7 +226,12 @@ function TrackMenu({
 }
 
 function Playing() {
-  return <AudioLinesIcon className="size-4 animate-pulse text-primary" aria-label="Playing" />
+  return (
+    <AudioLinesIcon
+      className="size-4 animate-pulse text-primary"
+      aria-label="Playing"
+    />
+  )
 }
 
 export function LibraryView() {
@@ -175,7 +239,10 @@ export function LibraryView() {
   const t = useTransport()
   const [tracks, setTracks] = React.useState<TrackSummary[] | null>(null)
   const [query, setQuery] = React.useState("")
-  const [sort, setSort] = React.useState<{ key: SortKey; asc: boolean }>({ key: "added", asc: false })
+  const [sort, setSort] = React.useState<{ key: SortKey; asc: boolean }>({
+    key: "added",
+    asc: false,
+  })
   const [editing, setEditing] = React.useState<TrackSummary | null>(null)
   const [deleting, setDeleting] = React.useState<TrackSummary | null>(null)
   const [importing, setImporting] = React.useState(false)
@@ -194,17 +261,27 @@ export function LibraryView() {
   const shown = React.useMemo(() => {
     if (!tracks) return []
     const q = query.trim().toLowerCase()
-    return sortTracks(tracks.filter((tr) => matches(tr, q)), sort.key, sort.asc)
+    return sortTracks(
+      tracks.filter((tr) => matches(tr, q)),
+      sort.key,
+      sort.asc
+    )
   }, [tracks, query, sort])
 
   const onSort = (key: SortKey) =>
-    setSort((s) => (s.key === key ? { key, asc: !s.asc } : { key, asc: key === "title" }))
+    setSort((s) =>
+      s.key === key ? { key, asc: !s.asc } : { key, asc: key === "title" }
+    )
 
   const playingId = t.player?.state !== "stopped" ? t.player?.track_id : null
 
   async function duplicate(tr: TrackSummary) {
     try {
-      const copy = await call(api.POST("/api/v1/library/{id}/duplicate", { params: { path: { id: tr.id } } }))
+      const copy = await call(
+        api.POST("/api/v1/library/{id}/duplicate", {
+          params: { path: { id: tr.id } },
+        })
+      )
       toast.success(`Made “${copy.info.title}”`)
     } catch (e) {
       toast.error((e as Error).message)
@@ -213,7 +290,9 @@ export function LibraryView() {
 
   async function remove(tr: TrackSummary) {
     try {
-      await call(api.DELETE("/api/v1/library/{id}", { params: { path: { id: tr.id } } }))
+      await call(
+        api.DELETE("/api/v1/library/{id}", { params: { path: { id: tr.id } } })
+      )
       toast.success(`Deleted “${tr.info.title}”`)
     } catch (e) {
       toast.error((e as Error).message)
@@ -241,7 +320,7 @@ export function LibraryView() {
   )
 
   return (
-    <div className="mx-auto flex w-full min-w-0 max-w-6xl flex-col gap-4 p-3 sm:p-4">
+    <PageBody>
       <div className="flex flex-wrap items-center gap-3">
         <InputGroup className="w-full sm:max-w-sm">
           <InputGroupAddon>
@@ -256,7 +335,9 @@ export function LibraryView() {
         </InputGroup>
         {tracks && (
           <span className="text-sm text-muted-foreground">
-            {shown.length === tracks.length ? `${tracks.length} pieces` : `${shown.length} of ${tracks.length}`}
+            {shown.length === tracks.length
+              ? `${tracks.length} pieces`
+              : `${shown.length} of ${tracks.length}`}
           </span>
         )}
         <div className="ml-auto flex gap-2">
@@ -275,11 +356,22 @@ export function LibraryView() {
             />
             <DropdownMenuContent align="end">
               <DropdownMenuGroup>
-                <DropdownMenuItem render={<a href={apiUrl("/api/v1/export/library.csv")} download />}>
+                <DropdownMenuItem
+                  render={
+                    <a href={apiUrl("/api/v1/export/library.csv")} download />
+                  }
+                >
                   <FileDownIcon />
                   List as a spreadsheet (CSV)
                 </DropdownMenuItem>
-                <DropdownMenuItem render={<a href={apiUrl("/api/v1/export/library-midi.zip")} download />}>
+                <DropdownMenuItem
+                  render={
+                    <a
+                      href={apiUrl("/api/v1/export/library-midi.zip")}
+                      download
+                    />
+                  }
+                >
                   <FileDownIcon />
                   Back up every piece as MIDI
                 </DropdownMenuItem>
@@ -303,27 +395,42 @@ export function LibraryView() {
             </EmptyMedia>
             <EmptyTitle>Your library is empty</EmptyTitle>
             <EmptyDescription>
-              Press Record in the bar below and play: each piece is saved here when it ends.
+              Press Record in the bar below and play: each piece is saved here
+              when it ends.
             </EmptyDescription>
           </EmptyHeader>
         </Empty>
       ) : shown.length === 0 ? (
-        <p className="py-10 text-center text-sm text-muted-foreground">Nothing matches “{query}”.</p>
+        <p className="py-10 text-center text-sm text-muted-foreground">
+          Nothing matches “{query}”.
+        </p>
       ) : (
         <>
           {/* Phone: a simple list. */}
           <ul className="flex flex-col divide-y overflow-hidden rounded-xl border bg-card md:hidden">
             {shown.map((tr) => (
-              <li key={tr.id} className={cn("flex items-center gap-2 py-2 pr-1 pl-3", playingId === tr.id && "bg-accent/50")}>
+              <li
+                key={tr.id}
+                className={cn(
+                  "flex items-center gap-2 py-2 pr-1 pl-3",
+                  playingId === tr.id && "bg-accent/50"
+                )}
+              >
                 <button
                   type="button"
                   className="flex min-w-0 flex-1 flex-col text-left"
                   onClick={() => t.load(tr.id)}
                   aria-label={`Play ${tr.info.title}`}
                 >
-                  <span className="truncate font-display font-semibold">{tr.info.title}</span>
+                  <span className="truncate font-display font-semibold">
+                    {tr.info.title}
+                  </span>
                   <span className="truncate text-xs text-muted-foreground">
-                    {[tr.info.melody || tr.info.composer, formatClock(tr.duration_ms), tr.verses > 1 && `${tr.verses} verses`]
+                    {[
+                      tr.info.melody || tr.info.composer,
+                      formatClock(tr.duration_ms),
+                      tr.verses > 1 && `${tr.verses} verses`,
+                    ]
                       .filter(Boolean)
                       .join(" · ")}
                   </span>
@@ -340,11 +447,28 @@ export function LibraryView() {
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-12" />
-                  <SortHeader label="Title" k="title" sort={sort} onSort={onSort} />
+                  <SortHeader
+                    label="Title"
+                    k="title"
+                    sort={sort}
+                    onSort={onSort}
+                  />
                   <TableHead>Tune</TableHead>
-                  <SortHeader label="Length" k="duration" sort={sort} onSort={onSort} className="w-24" />
+                  <SortHeader
+                    label="Length"
+                    k="duration"
+                    sort={sort}
+                    onSort={onSort}
+                    className="w-24"
+                  />
                   <TableHead className="w-20">Verses</TableHead>
-                  <SortHeader label="Added" k="added" sort={sort} onSort={onSort} className="w-32" />
+                  <SortHeader
+                    label="Added"
+                    k="added"
+                    sort={sort}
+                    onSort={onSort}
+                    className="w-32"
+                  />
                   <TableHead className="w-12" />
                 </TableRow>
               </TableHeader>
@@ -356,23 +480,34 @@ export function LibraryView() {
                     onDoubleClick={() => t.load(tr.id)}
                   >
                     <TableCell>{playButton(tr)}</TableCell>
-                    <TableCell className="max-w-0 w-full">
+                    <TableCell className="w-full max-w-0">
                       <div className="flex min-w-0 flex-col">
-                        <span className="truncate font-display font-semibold">{tr.info.title}</span>
+                        <span className="truncate font-display font-semibold">
+                          {tr.info.title}
+                        </span>
                         <span className="truncate text-xs text-muted-foreground">
-                          {tr.info.composer || tr.organ_name}
+                          {[
+                            tr.info.composer || tr.organ_name,
+                            SOURCE_LABEL[tr.source],
+                          ]
+                            .filter(Boolean)
+                            .join(" · ")}
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">{tr.info.melody}</TableCell>
-                    <TableCell className="tabular-nums">{formatClock(tr.duration_ms)}</TableCell>
-                    <TableCell className="tabular-nums">{tr.verses > 1 ? tr.verses : ""}</TableCell>
-                    <TableCell>
-                      {tr.source === "recorded" ? (
-                        <span className="text-sm text-muted-foreground">{formatDate(tr.created)}</span>
-                      ) : (
-                        <Badge variant="secondary">{SOURCE_LABEL[tr.source]}</Badge>
-                      )}
+                    <TableCell className="text-muted-foreground">
+                      {tr.info.melody}
+                    </TableCell>
+                    <TableCell className="tabular-nums">
+                      {formatClock(tr.duration_ms)}
+                    </TableCell>
+                    <TableCell className="tabular-nums">
+                      {tr.verses > 1 ? tr.verses : ""}
+                    </TableCell>
+                    <TableCell className="text-sm whitespace-nowrap text-muted-foreground">
+                      {tr.source === "sample"
+                        ? "Built in"
+                        : formatDate(tr.created)}
                     </TableCell>
                     <TableCell>{menu(tr)}</TableCell>
                   </TableRow>
@@ -384,24 +519,37 @@ export function LibraryView() {
       )}
 
       <ImportDialog open={importing} onOpenChange={setImporting} />
-      <TrackDetailsDialog track={editing} open={!!editing} onOpenChange={(o) => !o && setEditing(null)} />
+      <TrackDetailsDialog
+        track={editing}
+        open={!!editing}
+        onOpenChange={(o) => !o && setEditing(null)}
+      />
 
-      <AlertDialog open={!!deleting} onOpenChange={(o) => !o && setDeleting(null)}>
+      <AlertDialog
+        open={!!deleting}
+        onOpenChange={(o) => !o && setDeleting(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete “{deleting?.info.title}”?</AlertDialogTitle>
+            <AlertDialogTitle>
+              Delete “{deleting?.info.title}”?
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              It disappears from the library and playlists. A copy is kept in the server&apos;s history folder.
+              It disappears from the library and playlists. A copy is kept in
+              the server&apos;s history folder.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Keep it</AlertDialogCancel>
-            <AlertDialogAction variant="destructive" onClick={() => deleting && remove(deleting)}>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={() => deleting && remove(deleting)}
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </PageBody>
   )
 }

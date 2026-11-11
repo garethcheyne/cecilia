@@ -16,7 +16,9 @@ export interface Note {
 }
 
 /** Everything that isn't a note: stop changes, expression, master volume. */
-export type NewControl = Exclude<Schemas["TrackEvent"], { type: "note" }> & { t: number }
+export type NewControl = Exclude<Schemas["TrackEvent"], { type: "note" }> & {
+  t: number
+}
 export type Control = NewControl & { id: number }
 
 export interface EditTrack {
@@ -41,7 +43,14 @@ export function toEdit(track: Track): EditTrack {
       const k = `${e.division}:${e.key}`
       const stack = open.get(k) ?? []
       if (e.velocity > 0) {
-        const n: Note = { id: id++, division: e.division, key: e.key, start: e.t, end: track.duration_ms, velocity: e.velocity }
+        const n: Note = {
+          id: id++,
+          division: e.division,
+          key: e.key,
+          start: e.t,
+          end: track.duration_ms,
+          velocity: e.velocity,
+        }
         notes.push(n)
         stack.push(n)
         open.set(k, stack)
@@ -61,8 +70,22 @@ export function fromEdit(e: EditTrack): Track {
   type Ev = TimedEvent & { rank: number }
   const events: Ev[] = []
   for (const n of e.notes) {
-    events.push({ t: Math.round(n.start), type: "note", division: n.division, key: n.key, velocity: n.velocity, rank: 2 })
-    events.push({ t: Math.round(n.end), type: "note", division: n.division, key: n.key, velocity: 0, rank: 0 })
+    events.push({
+      t: Math.round(n.start),
+      type: "note",
+      division: n.division,
+      key: n.key,
+      velocity: n.velocity,
+      rank: 2,
+    })
+    events.push({
+      t: Math.round(n.end),
+      type: "note",
+      division: n.division,
+      key: n.key,
+      velocity: 0,
+      rank: 0,
+    })
   }
   for (const c of e.controls) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -81,26 +104,55 @@ export function fromEdit(e: EditTrack): Track {
 
 const clampKey = (k: number) => Math.max(0, Math.min(127, k))
 
-export function moveNotes(e: EditTrack, ids: Set<number>, dt: number, dkey: number): EditTrack {
-  const minStart = Math.min(...e.notes.filter((n) => ids.has(n.id)).map((n) => n.start))
+export function moveNotes(
+  e: EditTrack,
+  ids: Set<number>,
+  dt: number,
+  dkey: number
+): EditTrack {
+  const minStart = Math.min(
+    ...e.notes.filter((n) => ids.has(n.id)).map((n) => n.start)
+  )
   const shift = Math.max(dt, -minStart) // never before the start
   return {
     ...e,
     notes: e.notes.map((n) =>
-      ids.has(n.id) ? { ...n, start: n.start + shift, end: n.end + shift, key: clampKey(n.key + dkey) } : n
+      ids.has(n.id)
+        ? {
+            ...n,
+            start: n.start + shift,
+            end: n.end + shift,
+            key: clampKey(n.key + dkey),
+          }
+        : n
     ),
   }
 }
 
-export function resizeNotes(e: EditTrack, ids: Set<number>, dEnd: number): EditTrack {
+export function resizeNotes(
+  e: EditTrack,
+  ids: Set<number>,
+  dEnd: number
+): EditTrack {
   return {
     ...e,
-    notes: e.notes.map((n) => (ids.has(n.id) ? { ...n, end: Math.max(n.start + MIN_NOTE_MS, n.end + dEnd) } : n)),
+    notes: e.notes.map((n) =>
+      ids.has(n.id)
+        ? { ...n, end: Math.max(n.start + MIN_NOTE_MS, n.end + dEnd) }
+        : n
+    ),
   }
 }
 
-export function setDivision(e: EditTrack, ids: Set<number>, division: DivisionRole): EditTrack {
-  return { ...e, notes: e.notes.map((n) => (ids.has(n.id) ? { ...n, division } : n)) }
+export function setDivision(
+  e: EditTrack,
+  ids: Set<number>,
+  division: DivisionRole
+): EditTrack {
+  return {
+    ...e,
+    notes: e.notes.map((n) => (ids.has(n.id) ? { ...n, division } : n)),
+  }
 }
 
 export function deleteNotes(e: EditTrack, ids: Set<number>): EditTrack {
@@ -111,31 +163,63 @@ export function deleteControls(e: EditTrack, ids: Set<number>): EditTrack {
   return { ...e, controls: e.controls.filter((c) => !ids.has(c.id)) }
 }
 
-export function addNote(e: EditTrack, n: Omit<Note, "id">): [EditTrack, number] {
+export function addNote(
+  e: EditTrack,
+  n: Omit<Note, "id">
+): [EditTrack, number] {
   const id = e.nextId
   return [{ ...e, notes: [...e.notes, { ...n, id }], nextId: id + 1 }, id]
 }
 
 export function addControl(e: EditTrack, c: NewControl): [EditTrack, number] {
   const id = e.nextId
-  return [{ ...e, controls: [...e.controls, { ...c, id } as Control], nextId: id + 1 }, id]
+  return [
+    {
+      ...e,
+      controls: [...e.controls, { ...c, id } as Control],
+      nextId: id + 1,
+    },
+    id,
+  ]
 }
 
 export function moveControl(e: EditTrack, id: number, t: number): EditTrack {
-  return { ...e, controls: e.controls.map((c) => (c.id === id ? { ...c, t: Math.max(0, t) } : c)) }
+  return {
+    ...e,
+    controls: e.controls.map((c) =>
+      c.id === id ? { ...c, t: Math.max(0, t) } : c
+    ),
+  }
 }
 
 /** Transpose notes (all notes when `ids` is empty). */
-export function transpose(e: EditTrack, ids: Set<number>, semitones: number): EditTrack {
+export function transpose(
+  e: EditTrack,
+  ids: Set<number>,
+  semitones: number
+): EditTrack {
   const all = ids.size === 0
-  return { ...e, notes: e.notes.map((n) => (all || ids.has(n.id) ? { ...n, key: clampKey(n.key + semitones) } : n)) }
+  return {
+    ...e,
+    notes: e.notes.map((n) =>
+      all || ids.has(n.id) ? { ...n, key: clampKey(n.key + semitones) } : n
+    ),
+  }
 }
 
 /** Notes overlapping a time/pitch rectangle. */
-export function notesIn(e: EditTrack, t0: number, t1: number, k0: number, k1: number): number[] {
+export function notesIn(
+  e: EditTrack,
+  t0: number,
+  t1: number,
+  k0: number,
+  k1: number
+): number[] {
   const [a, b] = [Math.min(t0, t1), Math.max(t0, t1)]
   const [lo, hi] = [Math.min(k0, k1), Math.max(k0, k1)]
-  return e.notes.filter((n) => n.end > a && n.start < b && n.key >= lo && n.key <= hi).map((n) => n.id)
+  return e.notes
+    .filter((n) => n.end > a && n.start < b && n.key >= lo && n.key <= hi)
+    .map((n) => n.id)
 }
 
 export type RangeKind = "notes" | "stops" | "expression"
@@ -168,12 +252,18 @@ export function deleteRange(
       notes.push({ ...n, start: end })
     }
   }
-  const isKind = (c: Control) => (c.type === "stop" ? kinds.includes("stops") : kinds.includes("expression"))
+  const isKind = (c: Control) =>
+    c.type === "stop" ? kinds.includes("stops") : kinds.includes("expression")
   const controls = e.controls
     .filter((c) => !(isKind(c) && c.t >= start && c.t < end))
     .map((c) => ({ ...c, t: shift(c.t) }))
   const track = close ? shiftTrack(e.track, start, -len) : e.track
-  return { ...e, track, notes: notes.filter((n) => n.end - n.start >= 1), controls }
+  return {
+    ...e,
+    track,
+    notes: notes.filter((n) => n.end - n.start >= 1),
+    controls,
+  }
 }
 
 /** Insert `ms` of silence at `at`, pushing later events along. */
@@ -182,13 +272,19 @@ export function insertTime(e: EditTrack, at: number, ms: number): EditTrack {
   return {
     ...e,
     track: shiftTrack(e.track, at, ms),
-    notes: e.notes.map((n) => ({ ...n, start: s(n.start), end: n.start < at && n.end > at ? n.end : s(n.end) })),
+    notes: e.notes.map((n) => ({
+      ...n,
+      start: s(n.start),
+      end: n.start < at && n.end > at ? n.end : s(n.end),
+    })),
     controls: e.controls.map((c) => ({ ...c, t: s(c.t) })),
   }
 }
 
 function shiftTrack(track: Track, at: number, by: number): Track {
-  const verses = (track.verses ?? []).map((v) => (v >= at ? v + by : v)).filter((v) => v > 0)
+  const verses = (track.verses ?? [])
+    .map((v) => (v >= at ? v + by : v))
+    .filter((v) => v > 0)
   return { ...track, verses, duration_ms: Math.max(0, track.duration_ms + by) }
 }
 
@@ -205,7 +301,11 @@ export function copyRange(e: EditTrack, start: number, end: number): Clip {
     notes: e.notes
       .filter((n) => n.start >= start && n.start < end)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .map(({ id, ...n }) => ({ ...n, start: n.start - start, end: Math.min(n.end, end) - start })),
+      .map(({ id, ...n }) => ({
+        ...n,
+        start: n.start - start,
+        end: Math.min(n.end, end) - start,
+      })),
     controls: e.controls
       .filter((c) => c.t >= start && c.t < end)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -219,8 +319,19 @@ export function pasteClip(e: EditTrack, clip: Clip, at: number): EditTrack {
   let id = next.nextId
   next = {
     ...next,
-    notes: [...next.notes, ...clip.notes.map((n) => ({ ...n, id: id++, start: n.start + at, end: n.end + at }))],
-    controls: [...next.controls, ...clip.controls.map((c) => ({ ...c, id: id++, t: c.t + at }) as Control)],
+    notes: [
+      ...next.notes,
+      ...clip.notes.map((n) => ({
+        ...n,
+        id: id++,
+        start: n.start + at,
+        end: n.end + at,
+      })),
+    ],
+    controls: [
+      ...next.controls,
+      ...clip.controls.map((c) => ({ ...c, id: id++, t: c.t + at }) as Control),
+    ],
   }
   return { ...next, nextId: id }
 }
@@ -234,23 +345,51 @@ export function copyNotes(e: EditTrack, ids: Set<number>): Clip {
   return {
     length: end - start,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    notes: chosen.map(({ id, ...n }) => ({ ...n, start: n.start - start, end: n.end - start })),
+    notes: chosen.map(({ id, ...n }) => ({
+      ...n,
+      start: n.start - start,
+      end: n.end - start,
+    })),
     controls: [],
   }
 }
 
 /** Lay a clip's notes and changes over the track at `at`, without moving
  * anything that's already there. Returns the new notes' ids. */
-export function overlayClip(e: EditTrack, clip: Clip, at: number): [EditTrack, number[]] {
+export function overlayClip(
+  e: EditTrack,
+  clip: Clip,
+  at: number
+): [EditTrack, number[]] {
   let id = e.nextId
-  const added = clip.notes.map((n) => ({ ...n, id: id++, start: n.start + at, end: n.end + at }))
-  const controls = clip.controls.map((c) => ({ ...c, id: id++, t: c.t + at }) as Control)
-  return [{ ...e, notes: [...e.notes, ...added], controls: [...e.controls, ...controls], nextId: id }, added.map((n) => n.id)]
+  const added = clip.notes.map((n) => ({
+    ...n,
+    id: id++,
+    start: n.start + at,
+    end: n.end + at,
+  }))
+  const controls = clip.controls.map(
+    (c) => ({ ...c, id: id++, t: c.t + at }) as Control
+  )
+  return [
+    {
+      ...e,
+      notes: [...e.notes, ...added],
+      controls: [...e.controls, ...controls],
+      nextId: id,
+    },
+    added.map((n) => n.id),
+  ]
 }
 
 /** Turn a stop change into its opposite (drawn becomes pushed in). */
 export function flipStop(e: EditTrack, id: number): EditTrack {
-  return { ...e, controls: e.controls.map((c) => (c.id === id && c.type === "stop" ? { ...c, on: !c.on } : c)) }
+  return {
+    ...e,
+    controls: e.controls.map((c) =>
+      c.id === id && c.type === "stop" ? { ...c, on: !c.on } : c
+    ),
+  }
 }
 
 /** Snap a time to a grid (ms), or leave it when the grid is 0. */

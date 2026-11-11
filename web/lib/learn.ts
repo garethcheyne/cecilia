@@ -7,7 +7,8 @@ import type { Schemas } from "@/lib/api/client"
 export type StopBinding = Schemas["StopBinding"]
 export type ValueBinding = Schemas["ValueBinding"]
 
-export const hex = (bytes: number[]) => bytes.map((b) => b.toString(16).padStart(2, "0").toUpperCase()).join(" ")
+export const hex = (bytes: number[]) =>
+  bytes.map((b) => b.toString(16).padStart(2, "0").toUpperCase()).join(" ")
 
 export const isNote = (m: number[]) => m.length === 3 && (m[0] & 0xe0) === 0x80
 
@@ -22,7 +23,10 @@ export function firstControl(msgs: number[][]): number[] | null {
  * one data byte are a switch with that byte as the value; anything else is
  * a pair of on and off messages.
  */
-export function stopBinding(on: number[][], off: number[][]): StopBinding | null {
+export function stopBinding(
+  on: number[][],
+  off: number[][]
+): StopBinding | null {
   const a = firstControl(on)
   const b = firstControl(off)
   if (!a || !b) return null
@@ -33,7 +37,11 @@ export function stopBinding(on: number[][], off: number[][]): StopBinding | null
     // two program changes are two different messages, not one with a value.
     if (diff.length === 1 && a.length >= 3 && diff[0] === a.length - 1) {
       const i = diff[0]
-      const pattern = a.map((x, j) => (j === i ? "vv" : x.toString(16).padStart(2, "0").toUpperCase())).join(" ")
+      const pattern = a
+        .map((x, j) =>
+          j === i ? "vv" : x.toString(16).padStart(2, "0").toUpperCase()
+        )
+        .join(" ")
       return { type: "switch", pattern, on: a[i], off: b[i] }
     }
   }
@@ -42,7 +50,10 @@ export function stopBinding(on: number[][], off: number[][]): StopBinding | null
 
 /** A pedal swept through its range: the controller that moved, and how far. */
 export function valueBinding(msgs: number[][]): ValueBinding | null {
-  const counts = new Map<string, { status: number; cc: number; values: number[] }>()
+  const counts = new Map<
+    string,
+    { status: number; cc: number; values: number[] }
+  >()
   for (const m of msgs) {
     if (m.length !== 3 || (m[0] & 0xf0) !== 0xb0) continue
     const k = `${m[0]}:${m[1]}`
@@ -50,7 +61,9 @@ export function valueBinding(msgs: number[][]): ValueBinding | null {
     c.values.push(m[2])
     counts.set(k, c)
   }
-  const best = [...counts.values()].sort((x, y) => y.values.length - x.values.length)[0]
+  const best = [...counts.values()].sort(
+    (x, y) => y.values.length - x.values.length
+  )[0]
   if (!best || best.values.length < 2) return null
   const min = Math.min(...best.values)
   const max = Math.max(...best.values)
@@ -60,8 +73,12 @@ export function valueBinding(msgs: number[][]): ValueBinding | null {
 }
 
 /** A keyboard from its lowest and highest notes being played. */
-export function keyboard(msgs: number[][]): { channel: number; low: number; high: number } | null {
-  const ons = msgs.filter((m) => isNote(m) && (m[0] & 0xf0) === 0x90 && m[2] > 0)
+export function keyboard(
+  msgs: number[][]
+): { channel: number; low: number; high: number } | null {
+  const ons = msgs.filter(
+    (m) => isNote(m) && (m[0] & 0xf0) === 0x90 && m[2] > 0
+  )
   if (ons.length === 0) return null
   const channel = (ons[0][0] & 0x0f) + 1
   const keys = ons.filter((m) => (m[0] & 0x0f) + 1 === channel).map((m) => m[1])

@@ -17,14 +17,18 @@ export function ConsoleView() {
     <>
       <PageHeader title="Console">
         {status?.output && (
-          <Button variant="outline" size="sm" onClick={() => liveAct({ type: "all_stops_off" })} title="Push in every stop">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => liveAct({ type: "all_stops_off" })}
+            title="Push in every stop"
+          >
             <RotateCcwIcon data-icon="inline-start" />
-            <span className="hidden sm:inline">General cancel</span>
-            <span className="sm:hidden">Cancel</span>
+            General cancel
           </Button>
         )}
       </PageHeader>
-      <div className="mx-auto flex w-full min-w-0 max-w-6xl flex-col gap-4 p-3 sm:p-4">
+      <div className="mx-auto flex w-full max-w-6xl min-w-0 flex-col gap-4 p-3 sm:p-4">
         <LiveConsole />
       </div>
     </>

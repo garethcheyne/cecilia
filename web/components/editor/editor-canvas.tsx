@@ -23,7 +23,11 @@ export interface Selection {
   verse: number | null
 }
 
-export const EMPTY_SELECTION: Selection = { notes: new Set(), controls: new Set(), verse: null }
+export const EMPTY_SELECTION: Selection = {
+  notes: new Set(),
+  controls: new Set(),
+  verse: null,
+}
 
 export type ChangePhase = "start" | "move" | "end"
 
@@ -62,12 +66,32 @@ const STOPS = 58
 const EXPR = 34
 const VERSE = 22
 const BLACK = new Set([1, 3, 6, 8, 10])
-const DIVISIONS: DivisionRole[] = ["pedal", "great", "swell", "choir", "solo", "echo"]
+const DIVISIONS: DivisionRole[] = [
+  "pedal",
+  "great",
+  "swell",
+  "choir",
+  "solo",
+  "echo",
+]
 
 type Drag =
-  | { kind: "move"; base: EditTrack; ids: Set<number>; ms0: number; key0: number }
+  | {
+      kind: "move"
+      base: EditTrack
+      ids: Set<number>
+      ms0: number
+      key0: number
+    }
   | { kind: "resize"; base: EditTrack; ids: Set<number>; ms0: number }
-  | { kind: "band"; x0: number; y0: number; x1: number; y1: number; additive: boolean }
+  | {
+      kind: "band"
+      x0: number
+      y0: number
+      x1: number
+      y1: number
+      additive: boolean
+    }
   | { kind: "pan"; x0: number; y0: number; scroll0: number; top0: number }
   | { kind: "draw"; base: EditTrack; id: number; start: number }
   | { kind: "range"; ms0: number }
@@ -75,7 +99,10 @@ type Drag =
   | { kind: "verse"; index: number; v0: number; ms0: number }
 
 function cssVar(name: string): string {
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || "#888"
+  return (
+    getComputedStyle(document.documentElement).getPropertyValue(name).trim() ||
+    "#888"
+  )
 }
 
 export function EditorCanvas(p: Props) {
@@ -84,7 +111,11 @@ export function EditorCanvas(p: Props) {
   const [size, setSize] = React.useState({ w: 800, h: 480 })
   const [scrollMs, setScrollMs] = React.useState(0)
   const [topKey, setTopKey] = React.useState(84)
-  const [hover, setHover] = React.useState<{ x: number; y: number; text: string } | null>(null)
+  const [hover, setHover] = React.useState<{
+    x: number
+    y: number
+    text: string
+  } | null>(null)
   const drag = React.useRef<Drag | null>(null)
   const [band, setBand] = React.useState<Drag | null>(null)
   const touch = React.useRef(false)
@@ -103,13 +134,20 @@ export function EditorCanvas(p: Props) {
     const hi = Math.max(...p.edit.notes.map((n) => n.key))
     const lo = Math.min(...p.edit.notes.map((n) => n.key))
     const mid = Math.round((hi + lo) / 2)
-    setTopKey(Math.min(127, Math.max(hi + 2, mid + Math.floor(visibleKeys / 2))))
+    setTopKey(
+      Math.min(127, Math.max(hi + 2, mid + Math.floor(visibleKeys / 2)))
+    )
   }, [p.edit.notes, visibleKeys])
 
   React.useEffect(() => {
     const el = wrap.current
     if (!el) return
-    const ro = new ResizeObserver(([e]) => setSize({ w: Math.max(320, e.contentRect.width), h: Math.max(360, e.contentRect.height) }))
+    const ro = new ResizeObserver(([e]) =>
+      setSize({
+        w: Math.max(320, e.contentRect.width),
+        h: Math.max(360, e.contentRect.height),
+      })
+    )
     ro.observe(el)
     return () => ro.disconnect()
   }, [])
@@ -123,25 +161,51 @@ export function EditorCanvas(p: Props) {
     }
   }
 
-  const x = React.useCallback((ms: number) => GUTTER + (ms - scrollMs) * pxPerMs, [scrollMs, pxPerMs])
-  const msAt = React.useCallback((px: number) => scrollMs + (px - GUTTER) / pxPerMs, [scrollMs, pxPerMs])
-  const y = React.useCallback((key: number) => rollTop + (topKey - key) * keyH, [rollTop, topKey, keyH])
-  const keyAt = React.useCallback((py: number) => Math.round(topKey - (py - rollTop) / keyH + 0.5), [topKey, rollTop, keyH])
+  const x = React.useCallback(
+    (ms: number) => GUTTER + (ms - scrollMs) * pxPerMs,
+    [scrollMs, pxPerMs]
+  )
+  const msAt = React.useCallback(
+    (px: number) => scrollMs + (px - GUTTER) / pxPerMs,
+    [scrollMs, pxPerMs]
+  )
+  const y = React.useCallback(
+    (key: number) => rollTop + (topKey - key) * keyH,
+    [rollTop, topKey, keyH]
+  )
+  const keyAt = React.useCallback(
+    (py: number) => Math.round(topKey - (py - rollTop) / keyH + 0.5),
+    [topKey, rollTop, keyH]
+  )
 
   const track = p.edit.track
   const meter = track.meter
 
   // Stop markers, stacked when simultaneous: computed once per change.
   const markers = React.useMemo(() => {
-    const stops = p.edit.controls.filter((c) => c.type === "stop").sort((a, b) => a.t - b.t)
-    const out: { id: number; t: number; row: number; on: boolean; label: string }[] = []
+    const stops = p.edit.controls
+      .filter((c) => c.type === "stop")
+      .sort((a, b) => a.t - b.t)
+    const out: {
+      id: number
+      t: number
+      row: number
+      on: boolean
+      label: string
+    }[] = []
     let lastT = -1e9
     let row = 0
     for (const c of stops) {
       if (c.type !== "stop") continue
       row = Math.abs(c.t - lastT) < 4 / pxPerMs ? row + 1 : 0
       lastT = c.t
-      out.push({ id: c.id, t: c.t, row: Math.min(row, 5), on: c.on, label: stopLabel(c.stop, p.organ) })
+      out.push({
+        id: c.id,
+        t: c.t,
+        row: Math.min(row, 5),
+        on: c.on,
+        label: stopLabel(c.stop, p.organ),
+      })
     }
     return out
   }, [p.edit.controls, p.organ, pxPerMs])
@@ -168,7 +232,9 @@ export function EditorCanvas(p: Props) {
       danger: cssVar("--destructive"),
       verse: cssVar("--division-echo"),
     }
-    const div = Object.fromEntries(DIVISIONS.map((d) => [d, cssVar(`--division-${d}`)])) as Record<DivisionRole, string>
+    const div = Object.fromEntries(
+      DIVISIONS.map((d) => [d, cssVar(`--division-${d}`)])
+    ) as Record<DivisionRole, string>
     const W = size.w
     const H = size.h
     g.clearRect(0, 0, W, H)
@@ -203,15 +269,26 @@ export function EditorCanvas(p: Props) {
       const firstBar = Math.floor((t0 - offset) / barLen)
       for (let b = firstBar; offset + b * barLen < t1; b++) {
         const bt = offset + b * barLen
-        if (bt >= 0) gridLines.push({ t: bt, strong: true, label: String(b + 1) })
+        if (bt >= 0)
+          gridLines.push({ t: bt, strong: true, label: String(b + 1) })
         if (beat * pxPerMs > 12) {
-          for (let i = 1; i < meter.beats; i++) gridLines.push({ t: bt + i * beat, strong: false })
+          for (let i = 1; i < meter.beats; i++)
+            gridLines.push({ t: bt + i * beat, strong: false })
         }
       }
     } else {
-      const step = [0.5, 1, 2, 5, 10, 30, 60].find((s) => s * p.pxPerSec >= 60) ?? 60
-      for (let s = Math.floor(t0 / 1000 / step) * step; s * 1000 < t1; s += step) {
-        gridLines.push({ t: s * 1000, strong: true, label: formatClock(s * 1000) })
+      const step =
+        [0.5, 1, 2, 5, 10, 30, 60].find((s) => s * p.pxPerSec >= 60) ?? 60
+      for (
+        let s = Math.floor(t0 / 1000 / step) * step;
+        s * 1000 < t1;
+        s += step
+      ) {
+        gridLines.push({
+          t: s * 1000,
+          strong: true,
+          label: formatClock(s * 1000),
+        })
       }
     }
     for (const l of gridLines) {
@@ -227,7 +304,12 @@ export function EditorCanvas(p: Props) {
     if (p.range) {
       g.fillStyle = col.primary
       g.globalAlpha = 0.1
-      g.fillRect(x(p.range[0]), RULER, (p.range[1] - p.range[0]) * pxPerMs, H - RULER)
+      g.fillRect(
+        x(p.range[0]),
+        RULER,
+        (p.range[1] - p.range[0]) * pxPerMs,
+        H - RULER
+      )
       g.globalAlpha = 1
     }
 
@@ -244,7 +326,13 @@ export function EditorCanvas(p: Props) {
     g.rect(GUTTER, rollTop, W - GUTTER, rollBottom - rollTop)
     g.clip()
     for (const n of p.edit.notes) {
-      if (n.end < t0 || n.start > t1 || n.key > topKey + 1 || n.key < topKey - visibleKeys - 1) continue
+      if (
+        n.end < t0 ||
+        n.start > t1 ||
+        n.key > topKey + 1 ||
+        n.key < topKey - visibleKeys - 1
+      )
+        continue
       const nx = x(n.start)
       const nw = Math.max(3, (n.end - n.start) * pxPerMs)
       const ny = y(n.key) + 1
@@ -298,7 +386,8 @@ export function EditorCanvas(p: Props) {
     const exprTop = RULER + STOPS + 4
     const exprH = EXPR - 8
     const byDiv = new Map<DivisionRole, { t: number; v: number }[]>()
-    for (const [d, v] of Object.entries(track.initial.expression ?? {})) byDiv.set(d as DivisionRole, [{ t: 0, v: v as number }])
+    for (const [d, v] of Object.entries(track.initial.expression ?? {}))
+      byDiv.set(d as DivisionRole, [{ t: 0, v: v as number }])
     for (const c of [...p.edit.controls].sort((a, b) => a.t - b.t)) {
       if (c.type !== "expression") continue
       const list = byDiv.get(c.division) ?? [{ t: 0, v: 127 }]
@@ -312,7 +401,10 @@ export function EditorCanvas(p: Props) {
       let prev = pts[0]
       g.moveTo(GUTTER, exprTop + exprH * (1 - prev.v / 127))
       for (const pt of pts.slice(1)) {
-        g.lineTo(Math.max(GUTTER, x(pt.t)), exprTop + exprH * (1 - prev.v / 127))
+        g.lineTo(
+          Math.max(GUTTER, x(pt.t)),
+          exprTop + exprH * (1 - prev.v / 127)
+        )
         g.lineTo(Math.max(GUTTER, x(pt.t)), exprTop + exprH * (1 - pt.v / 127))
         prev = pt
       }
@@ -365,7 +457,9 @@ export function EditorCanvas(p: Props) {
     g.fillStyle = col.text
     g.font = "10px var(--font-sans), sans-serif"
     g.fillText("Stops", 6, RULER + 16)
+    // The expression lane is the swell pedal; two lines to fit the gutter.
     g.fillText("Swell", 6, RULER + STOPS + 14)
+    g.fillText("pedal", 6, RULER + STOPS + 26)
     g.fillText("Verse", 6, rollBottom + 15)
     g.save()
     g.beginPath()
@@ -395,15 +489,39 @@ export function EditorCanvas(p: Props) {
       g.strokeStyle = col.primary
       g.lineWidth = 1
       g.setLineDash([4, 3])
-      g.strokeRect(Math.min(band.x0, band.x1), Math.min(band.y0, band.y1), Math.abs(band.x1 - band.x0), Math.abs(band.y1 - band.y0))
+      g.strokeRect(
+        Math.min(band.x0, band.x1),
+        Math.min(band.y0, band.y1),
+        Math.abs(band.x1 - band.x0),
+        Math.abs(band.y1 - band.y0)
+      )
       g.setLineDash([])
     }
-  }, [p, size, scrollMs, topKey, keyH, visibleKeys, rollTop, rollBottom, pxPerMs, x, y, msAt, markers, band, track, meter])
+  }, [
+    p,
+    size,
+    scrollMs,
+    topKey,
+    keyH,
+    visibleKeys,
+    rollTop,
+    rollBottom,
+    pxPerMs,
+    x,
+    y,
+    msAt,
+    markers,
+    band,
+    track,
+    meter,
+  ])
 
   // ---------------------------------------------------------------------
   // Pointer handling
   // ---------------------------------------------------------------------
-  const local = (e: React.PointerEvent | React.MouseEvent | React.WheelEvent) => {
+  const local = (
+    e: React.PointerEvent | React.MouseEvent | React.WheelEvent
+  ) => {
     const r = canvas.current!.getBoundingClientRect()
     return { px: e.clientX - r.left, py: e.clientY - r.top }
   }
@@ -419,9 +537,13 @@ export function EditorCanvas(p: Props) {
   }
 
   const markerAt = (px: number, py: number) =>
-    markers.find((m) => Math.abs(x(m.t) - px) <= 6 && Math.abs(RULER + 10 + m.row * 9 - py) <= 6)
+    markers.find(
+      (m) =>
+        Math.abs(x(m.t) - px) <= 6 && Math.abs(RULER + 10 + m.row * 9 - py) <= 6
+    )
 
-  const verseAt = (px: number) => (track.verses ?? []).findIndex((v) => Math.abs(x(v) - px) <= 7)
+  const verseAt = (px: number) =>
+    (track.verses ?? []).findIndex((v) => Math.abs(x(v) - px) <= 7)
 
   /** What's at a point, for the context menu. */
   function targetAt(px: number, py: number): ContextTarget {
@@ -446,8 +568,10 @@ export function EditorCanvas(p: Props) {
     const { px, py } = local(e)
     const t = targetAt(px, py)
     // Act on what was clicked: select it if it isn't already.
-    if (t.kind === "note" && !p.selection.notes.has(t.id)) p.onSelect({ ...EMPTY_SELECTION, notes: new Set([t.id]) })
-    if (t.kind === "stop") p.onSelect({ ...EMPTY_SELECTION, controls: new Set([t.id]) })
+    if (t.kind === "note" && !p.selection.notes.has(t.id))
+      p.onSelect({ ...EMPTY_SELECTION, notes: new Set([t.id]) })
+    if (t.kind === "stop")
+      p.onSelect({ ...EMPTY_SELECTION, controls: new Set([t.id]) })
     if (t.kind === "verse") p.onSelect({ ...EMPTY_SELECTION, verse: t.index })
     if (t.kind === "roll" || t.kind === "lane") p.onCursor(t.ms)
     p.onContextTarget?.(t)
@@ -475,7 +599,13 @@ export function EditorCanvas(p: Props) {
       const m = markerAt(px, py)
       if (m) {
         p.onSelect({ ...EMPTY_SELECTION, controls: new Set([m.id]) })
-        drag.current = { kind: "control", base: p.edit, id: m.id, ms0: ms, t0: m.t }
+        drag.current = {
+          kind: "control",
+          base: p.edit,
+          id: m.id,
+          ms0: ms,
+          t0: m.t,
+        }
         p.onChange(p.edit, "start")
       } else {
         p.onSelect(EMPTY_SELECTION)
@@ -491,7 +621,12 @@ export function EditorCanvas(p: Props) {
       const i = verseAt(px)
       if (i >= 0) {
         p.onSelect({ ...EMPTY_SELECTION, verse: i })
-        drag.current = { kind: "verse", index: i, v0: track.verses![i], ms0: ms }
+        drag.current = {
+          kind: "verse",
+          index: i,
+          v0: track.verses![i],
+          ms0: ms,
+        }
         p.onChange(p.edit, "start")
       } else {
         p.onSelect(EMPTY_SELECTION)
@@ -521,7 +656,13 @@ export function EditorCanvas(p: Props) {
     if (p.tool === "draw") {
       const start = snap(ms, p.grid)
       const len = p.grid > 0 ? p.grid : 500
-      const [next, id] = addNote(p.edit, { division: p.drawDivision, key: keyAt(py), start, end: start + len, velocity: 80 })
+      const [next, id] = addNote(p.edit, {
+        division: p.drawDivision,
+        key: keyAt(py),
+        start,
+        end: start + len,
+        velocity: 80,
+      })
       p.onChange(p.edit, "start")
       p.onChange(next, "move")
       p.onSelect({ ...EMPTY_SELECTION, notes: new Set([id]) })
@@ -529,10 +670,23 @@ export function EditorCanvas(p: Props) {
       return
     }
     if (touch.current) {
-      drag.current = { kind: "pan", x0: px, y0: py, scroll0: scrollMs, top0: topKey }
+      drag.current = {
+        kind: "pan",
+        x0: px,
+        y0: py,
+        scroll0: scrollMs,
+        top0: topKey,
+      }
       return
     }
-    const d: Drag = { kind: "band", x0: px, y0: py, x1: px, y1: py, additive: e.shiftKey }
+    const d: Drag = {
+      kind: "band",
+      x0: px,
+      y0: py,
+      x1: px,
+      y1: py,
+      additive: e.shiftKey,
+    }
     drag.current = d
     setBand(d)
     if (!e.shiftKey) p.onSelect(EMPTY_SELECTION)
@@ -546,10 +700,22 @@ export function EditorCanvas(p: Props) {
       // Hover help
       if (py >= RULER && py < RULER + STOPS) {
         const m = markerAt(px, py)
-        setHover(m ? { x: px, y: py, text: `${m.label} ${m.on ? "on" : "off"} · ${formatClock(m.t)}` } : null)
+        setHover(
+          m
+            ? {
+                x: px,
+                y: py,
+                text: `${m.label} ${m.on ? "on" : "off"} · ${formatClock(m.t)}`,
+              }
+            : null
+        )
       } else if (py >= rollTop && py < rollBottom && px > GUTTER) {
         const n = noteAt(px, py)
-        setHover(n ? { x: px, y: py, text: `${noteName(n.key)} · ${n.division}` } : null)
+        setHover(
+          n
+            ? { x: px, y: py, text: `${noteName(n.key)} · ${n.division}` }
+            : null
+        )
       } else {
         setHover(null)
       }
@@ -569,11 +735,20 @@ export function EditorCanvas(p: Props) {
         break
       case "draw": {
         const end = Math.max(d.start + 20, snap(ms, p.grid) || ms)
-        p.onChange({ ...d.base, notes: d.base.notes.map((n) => (n.id === d.id ? { ...n, end } : n)) }, "move")
+        p.onChange(
+          {
+            ...d.base,
+            notes: d.base.notes.map((n) => (n.id === d.id ? { ...n, end } : n)),
+          },
+          "move"
+        )
         break
       }
       case "control":
-        p.onChange(moveControl(d.base, d.id, snap(d.t0 + (ms - d.ms0), p.grid)), "move")
+        p.onChange(
+          moveControl(d.base, d.id, snap(d.t0 + (ms - d.ms0), p.grid)),
+          "move"
+        )
         break
       case "verse": {
         const verses = [...(track.verses ?? [])]
@@ -584,21 +759,36 @@ export function EditorCanvas(p: Props) {
       case "range": {
         const a = d.ms0
         const b = Math.max(0, snap(ms, p.grid))
-        p.onRange(Math.abs(b - a) * pxPerMs > 3 ? [Math.min(a, b), Math.max(a, b)] : null)
+        p.onRange(
+          Math.abs(b - a) * pxPerMs > 3
+            ? [Math.min(a, b), Math.max(a, b)]
+            : null
+        )
         break
       }
       case "band": {
         const nd = { ...d, x1: px, y1: py }
         drag.current = nd
         setBand(nd)
-        const ids = notesIn(p.edit, msAt(d.x0), msAt(px), keyAt(d.y0), keyAt(py))
+        const ids = notesIn(
+          p.edit,
+          msAt(d.x0),
+          msAt(px),
+          keyAt(d.y0),
+          keyAt(py)
+        )
         const set = new Set(d.additive ? [...p.selection.notes, ...ids] : ids)
         p.onSelect({ ...EMPTY_SELECTION, notes: set })
         break
       }
       case "pan":
         setScrollMs(Math.max(0, d.scroll0 - (px - d.x0) / pxPerMs))
-        setTopKey(Math.max(visibleKeys, Math.min(127, Math.round(d.top0 + (py - d.y0) / keyH))))
+        setTopKey(
+          Math.max(
+            visibleKeys,
+            Math.min(127, Math.round(d.top0 + (py - d.y0) / keyH))
+          )
+        )
         break
     }
   }
@@ -607,7 +797,8 @@ export function EditorCanvas(p: Props) {
     const d = drag.current
     drag.current = null
     setBand(null)
-    if (d && ["move", "resize", "draw", "control", "verse"].includes(d.kind)) p.onChange(p.edit, "end")
+    if (d && ["move", "resize", "draw", "control", "verse"].includes(d.kind))
+      p.onChange(p.edit, "end")
   }
 
   function onDoubleClick(e: React.MouseEvent) {
@@ -625,14 +816,19 @@ export function EditorCanvas(p: Props) {
     if (e.ctrlKey || e.metaKey) {
       const { px } = local(e)
       const at = msAt(px)
-      const next = Math.max(5, Math.min(800, p.pxPerSec * (e.deltaY < 0 ? 1.15 : 1 / 1.15)))
+      const next = Math.max(
+        5,
+        Math.min(800, p.pxPerSec * (e.deltaY < 0 ? 1.15 : 1 / 1.15))
+      )
       p.onZoom(next)
       setScrollMs(Math.max(0, at - (px - GUTTER) / (next / 1000)))
     } else if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
       const dx = e.shiftKey ? e.deltaY : e.deltaX
       setScrollMs((s) => Math.max(0, s + dx / pxPerMs))
     } else {
-      setTopKey((k) => Math.max(visibleKeys, Math.min(127, k - Math.sign(e.deltaY) * 3)))
+      setTopKey((k) =>
+        Math.max(visibleKeys, Math.min(127, k - Math.sign(e.deltaY) * 3))
+      )
     }
   }
 
@@ -650,11 +846,18 @@ export function EditorCanvas(p: Props) {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div ref={wrap} className="relative min-h-[360px] flex-1 overflow-hidden rounded-xl border">
+      <div
+        ref={wrap}
+        className="relative min-h-[360px] flex-1 overflow-hidden rounded-xl border"
+      >
         <canvas
           ref={canvas}
           className="absolute inset-0 size-full touch-none select-none"
-          style={{ width: size.w, height: size.h, cursor: p.tool === "draw" ? "crosshair" : "default" }}
+          style={{
+            width: size.w,
+            height: size.h,
+            cursor: p.tool === "draw" ? "crosshair" : "default",
+          }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
@@ -669,7 +872,10 @@ export function EditorCanvas(p: Props) {
         {hover && (
           <div
             className="pointer-events-none absolute z-10 rounded-md bg-popover px-2 py-1 text-xs text-popover-foreground shadow-md ring-1 ring-foreground/10"
-            style={{ left: Math.min(hover.x + 12, size.w - 220), top: hover.y + 14 }}
+            style={{
+              left: Math.min(hover.x + 12, size.w - 220),
+              top: hover.y + 14,
+            }}
           >
             {hover.text}
           </div>
@@ -677,7 +883,7 @@ export function EditorCanvas(p: Props) {
       </div>
       <input
         type="range"
-        aria-label="Scroll through the track"
+        aria-label="Scroll through the piece"
         min={0}
         max={Math.round(maxScroll)}
         value={Math.min(Math.round(scrollMs), Math.round(maxScroll))}

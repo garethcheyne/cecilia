@@ -2,7 +2,15 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { ListMusicIcon, MusicIcon, PauseIcon, PlayIcon, SkipBackIcon, SkipForwardIcon, SquareIcon } from "lucide-react"
+import {
+  ListMusicIcon,
+  MusicIcon,
+  PauseIcon,
+  PlayIcon,
+  SkipBackIcon,
+  SkipForwardIcon,
+  SquareIcon,
+} from "lucide-react"
 import { toast } from "sonner"
 
 import { LiveConsole } from "@/components/console/live-console"
@@ -10,12 +18,19 @@ import { ScoreView } from "@/components/editor/score-view"
 import type { ServiceData } from "@/components/service/use-service-data"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
 import { Kbd } from "@/components/ui/kbd"
 import { Progress } from "@/components/ui/progress"
 import { Spinner } from "@/components/ui/spinner"
 import { useTransport } from "@/hooks/use-transport"
-import { api, call, type Track } from "@/lib/api/client"
+import { api, call, type PlaylistSummary, type Track } from "@/lib/api/client"
 import type { PanelId } from "@/lib/displays"
 import { formatClock } from "@/lib/time"
 import { cn } from "@/lib/utils"
@@ -25,21 +40,120 @@ function act(request: Promise<unknown>) {
   request.catch((e: Error) => toast.error(e.message))
 }
 
-function NoService() {
+/** On a display screen: a quiet line, nothing to press. */
+function Waiting({ text }: { text: string }) {
+  return (
+    <div className="flex min-h-[50svh] flex-1 items-center justify-center p-6 text-center">
+      <p className="font-display text-2xl text-muted-foreground sm:text-3xl">
+        {text}
+      </p>
+    </div>
+  )
+}
+
+/** No service yet: the playlists, most recently edited first, ready to run. */
+function NoService({ display }: { display: boolean }) {
+  const [playlists, setPlaylists] = React.useState<PlaylistSummary[] | null>(
+    null
+  )
+  const [starting, setStarting] = React.useState<string | null>(null)
+
+  React.useEffect(() => {
+    if (display) return
+    call(api.GET("/api/v1/playlists"))
+      .then((list) =>
+        setPlaylists([...list].sort((a, b) => b.modified - a.modified))
+      )
+      .catch(() => setPlaylists([]))
+  }, [display])
+
+  if (display) return <Waiting text="The service hasn't started yet" />
+
+  async function run(id: string) {
+    setStarting(id)
+    try {
+      await call(
+        api.POST("/api/v1/service/start", { body: { playlist_id: id } })
+      )
+    } catch (e) {
+      toast.error((e as Error).message)
+    } finally {
+      setStarting(null)
+    }
+  }
+
+  if (playlists && playlists.length > 0) {
+    const listed = playlists.slice(0, 5)
+    return (
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-1">
+          <h2 className="font-display text-2xl font-semibold">Run a service</h2>
+          <p className="text-sm text-muted-foreground">
+            Choose the playlist for this service. You can change pieces as you
+            go.
+          </p>
+        </div>
+        <ul className="flex flex-col divide-y overflow-hidden rounded-xl border bg-card">
+          {listed.map((pl) => (
+            <li key={pl.id} className="flex items-center gap-3 px-4 py-3">
+              <div className="flex min-w-0 flex-1 flex-col">
+                <span className="truncate font-display text-lg font-semibold">
+                  {pl.name}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  {pl.tracks === 1 ? "1 piece" : `${pl.tracks} pieces`}
+                </span>
+              </div>
+              <Button
+                disabled={pl.tracks === 0 || starting !== null}
+                onClick={() => run(pl.id)}
+              >
+                {starting === pl.id ? (
+                  <Spinner data-icon="inline-start" />
+                ) : (
+                  <PlayIcon data-icon="inline-start" />
+                )}
+                Run service
+              </Button>
+            </li>
+          ))}
+        </ul>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="self-start"
+          render={<Link href="/playlists" />}
+          nativeButton={false}
+        >
+          <ListMusicIcon data-icon="inline-start" />
+          {playlists.length > listed.length
+            ? `All ${playlists.length} playlists`
+            : "Edit playlists"}
+        </Button>
+      </div>
+    )
+  }
+
   return (
     <Empty className="border">
       <EmptyHeader>
         <EmptyMedia variant="icon">
           <ListMusicIcon />
         </EmptyMedia>
-        <EmptyTitle>No service running</EmptyTitle>
-        <EmptyDescription>Open a playlist and press Run service.</EmptyDescription>
+        <EmptyTitle>
+          {playlists ? "No playlists yet" : "No service running"}
+        </EmptyTitle>
+        <EmptyDescription>
+          Make a playlist of the music for a service, then run it here.
+        </EmptyDescription>
       </EmptyHeader>
-      <EmptyContent>
-        <Button render={<Link href="/playlists" />} nativeButton={false}>
-          Choose a playlist
-        </Button>
-      </EmptyContent>
+      {playlists && (
+        <EmptyContent>
+          <Button render={<Link href="/playlists" />} nativeButton={false}>
+            Make a playlist
+          </Button>
+        </EmptyContent>
+      )}
     </Empty>
   )
 }
@@ -48,7 +162,15 @@ function NoService() {
  * The pieces in order, large and easy to tap, with big buttons. One tap gets
  * a piece ready; a second tap (or a double-click) plays it now.
  */
-function OrderPanel({ data, inColumn }: { data: ServiceData; inColumn: boolean }) {
+function OrderPanel({
+  data,
+  inColumn,
+  display,
+}: {
+  data: ServiceData
+  inColumn: boolean
+  display: boolean
+}) {
   const { service, playlist, library } = data
   const t = useTransport()
   const currentRef = React.useRef<HTMLLIElement>(null)
@@ -62,13 +184,17 @@ function OrderPanel({ data, inColumn }: { data: ServiceData; inColumn: boolean }
     const again = lastTap.current?.row === row && now - lastTap.current.at < 450
     lastTap.current = again ? null : { row, at: now }
     if (again) {
-      act(call(api.POST("/api/v1/service/select", { body: { row } })).then(() => call(api.POST("/api/v1/player/play"))))
+      act(
+        call(api.POST("/api/v1/service/select", { body: { row } })).then(() =>
+          call(api.POST("/api/v1/player/play"))
+        )
+      )
     } else {
       act(call(api.POST("/api/v1/service/select", { body: { row } })))
     }
   }
 
-  if (!service || !playlist) return <NoService />
+  if (!service || !playlist) return <NoService display={display} />
 
   const state = t.player?.state
   const playing = state === "playing" || state === "starting"
@@ -86,11 +212,22 @@ function OrderPanel({ data, inColumn }: { data: ServiceData; inColumn: boolean }
   return (
     <div className="flex min-h-full flex-col gap-4">
       <div className="flex flex-wrap items-center gap-3">
-        <h2 className="font-display text-2xl font-semibold sm:text-3xl">{playlist.name}</h2>
-        <Badge variant={service.state === "waiting" ? "default" : "secondary"} className="text-sm" aria-live="polite">
+        <h2 className="font-display text-2xl font-semibold sm:text-3xl">
+          {playlist.name}
+        </h2>
+        <Badge
+          variant={service.state === "waiting" ? "default" : "secondary"}
+          className="text-sm"
+          aria-live="polite"
+        >
           {status}
         </Badge>
-        <Button variant="ghost" size="sm" className="ml-auto" onClick={() => act(call(api.POST("/api/v1/service/end")))}>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="ml-auto"
+          onClick={() => act(call(api.POST("/api/v1/service/end")))}
+        >
           End service
         </Button>
       </div>
@@ -101,7 +238,10 @@ function OrderPanel({ data, inColumn }: { data: ServiceData; inColumn: boolean }
           const isNext = service.next_row === i
           if (row.type === "text") {
             return (
-              <li key={i} className="px-4 py-2 font-display text-lg text-muted-foreground italic sm:text-xl">
+              <li
+                key={i}
+                className="px-4 py-2 font-display text-lg text-muted-foreground italic sm:text-xl"
+              >
                 {row.text}
               </li>
             )
@@ -115,18 +255,26 @@ function OrderPanel({ data, inColumn }: { data: ServiceData; inColumn: boolean }
                 title="Tap to get it ready; double-tap to play it now"
                 className={cn(
                   "flex w-full touch-manipulation items-center gap-4 rounded-2xl border bg-card px-4 py-4 text-left transition-colors outline-none hover:bg-accent/40 focus-visible:ring-3 focus-visible:ring-ring/50 sm:px-5",
-                  current && "border-primary bg-primary/5 ring-2 ring-primary/30"
+                  current &&
+                    "border-primary bg-primary/5 ring-2 ring-primary/30"
                 )}
                 aria-current={current ? "step" : undefined}
               >
                 <div className="flex min-w-0 flex-1 flex-col gap-1">
-                  <span className={cn("font-display text-xl font-semibold sm:text-2xl", !current && "text-foreground/80")}>
+                  <span
+                    className={cn(
+                      "font-display text-xl font-semibold sm:text-2xl",
+                      !current && "text-foreground/80"
+                    )}
+                  >
                     {tr?.info.title ?? "Missing track"}
                   </span>
                   <span className="text-sm text-muted-foreground sm:text-base">
                     {[
                       row.note,
-                      row.verses != null ? `Verses ${formatVerses(row.verses)}` : tr && tr.verses > 1 && `${tr.verses} verses`,
+                      row.verses != null
+                        ? `Verses ${formatVerses(row.verses)}`
+                        : tr && tr.verses > 1 && `${tr.verses} verses`,
                       tr && formatClock(tr.duration_ms),
                     ]
                       .filter(Boolean)
@@ -148,7 +296,9 @@ function OrderPanel({ data, inColumn }: { data: ServiceData; inColumn: boolean }
       <div
         className={cn(
           "sticky mt-auto flex items-center justify-center gap-3 pt-4",
-          inColumn ? "bottom-0 bg-linear-to-t from-background from-60% to-transparent pb-3" : "bottom-24 md:bottom-20"
+          inColumn
+            ? "bottom-0 bg-linear-to-t from-background from-60% to-transparent pb-3"
+            : "bottom-24 md:bottom-20"
         )}
       >
         <Button
@@ -197,7 +347,9 @@ function OrderPanel({ data, inColumn }: { data: ServiceData; inColumn: boolean }
         </span>
         <span>Double-click a piece to play it now</span>
       </p>
-      <p className="text-center text-sm text-muted-foreground md:hidden">Double-tap a piece to play it now</p>
+      <p className="text-center text-sm text-muted-foreground md:hidden">
+        Double-tap a piece to play it now
+      </p>
     </div>
   )
 }
@@ -208,10 +360,19 @@ function NowPanel({ data }: { data: ServiceData }) {
   const { library, currentTrackId, nextTrackId, service } = data
   const p = t.player
   const active = !!p?.track_id && p.state !== "stopped"
-  const title = active ? p?.title : currentTrackId ? library.get(currentTrackId)?.info.title : null
-  const next = nextTrackId && nextTrackId !== currentTrackId ? library.get(nextTrackId)?.info.title : null
+  // A piece loaded in the player counts as ready, service or not.
+  const loaded = p?.track_id ? p.title : null
+  const title = active
+    ? p?.title
+    : (loaded ??
+      (currentTrackId ? library.get(currentTrackId)?.info.title : null))
+  const next =
+    nextTrackId && nextTrackId !== currentTrackId
+      ? library.get(nextTrackId)?.info.title
+      : null
   const left = active && p ? Math.max(0, p.total_ms - t.elapsed) : 0
-  const progress = active && p && p.total_ms > 0 ? (t.elapsed / p.total_ms) * 100 : 0
+  const progress =
+    active && p && p.total_ms > 0 ? (t.elapsed / p.total_ms) * 100 : 0
   const state = !active
     ? service?.state === "waiting"
       ? `Starts in ${service.countdown ?? 0} s`
@@ -222,12 +383,27 @@ function NowPanel({ data }: { data: ServiceData }) {
       ? "Paused"
       : "Playing"
 
+  if (!title && service?.state !== "waiting")
+    return <Waiting text="Nothing playing yet" />
+
   return (
     <div className="flex min-h-[60svh] flex-1 flex-col items-center justify-center gap-6 px-4 py-10 text-center">
-      <Badge variant={active && p?.state !== "paused" ? "default" : "secondary"} className="text-base">
+      <Badge
+        variant={active && p?.state !== "paused" ? "default" : "secondary"}
+        className="text-base"
+      >
         {state}
       </Badge>
-      <p className="font-display text-4xl leading-tight font-semibold text-balance sm:text-6xl">{title ?? "—"}</p>
+      {title && (
+        <p className="font-display text-4xl leading-tight font-semibold text-balance sm:text-6xl">
+          {title}
+        </p>
+      )}
+      {!active && p?.track_id && p.verses > 1 && (
+        <p className="text-2xl text-muted-foreground sm:text-3xl">
+          {p.verses} verses
+        </p>
+      )}
       {active && p && (
         <>
           {p.verses > 1 && (
@@ -235,11 +411,19 @@ function NowPanel({ data }: { data: ServiceData }) {
               Verse {p.verse} of {p.verses}
             </p>
           )}
-          <Progress value={progress} className="w-full max-w-xl" aria-label="Progress through the piece" />
-          <p className="font-mono text-3xl tabular-nums sm:text-4xl">{formatClock(left)} left</p>
+          <Progress
+            value={progress}
+            className="w-full max-w-xl"
+            aria-label="Progress through the piece"
+          />
+          <p className="font-mono text-3xl tabular-nums sm:text-4xl">
+            {formatClock(left)} left
+          </p>
         </>
       )}
-      {next && <p className="text-lg text-muted-foreground sm:text-xl">Next: {next}</p>}
+      {next && (
+        <p className="text-lg text-muted-foreground sm:text-xl">Next: {next}</p>
+      )}
     </div>
   )
 }
@@ -247,7 +431,8 @@ function NowPanel({ data }: { data: ServiceData }) {
 /** The score of the piece that's playing (or ready), following along. */
 function MusicPanel({ data }: { data: ServiceData }) {
   const t = useTransport()
-  const playingId = t.player && t.player.state !== "stopped" ? t.player.track_id : null
+  const playingId =
+    t.player && t.player.state !== "stopped" ? t.player.track_id : null
   const id = playingId ?? data.currentTrackId
   const [track, setTrack] = React.useState<Track | null>(null)
 
@@ -266,7 +451,9 @@ function MusicPanel({ data }: { data: ServiceData }) {
             <MusicIcon />
           </EmptyMedia>
           <EmptyTitle>No music yet</EmptyTitle>
-          <EmptyDescription>The score appears here when a piece is ready or playing.</EmptyDescription>
+          <EmptyDescription>
+            The score appears here when a piece is ready or playing.
+          </EmptyDescription>
         </EmptyHeader>
       </Empty>
     )
@@ -280,16 +467,35 @@ function MusicPanel({ data }: { data: ServiceData }) {
   }
   return (
     <div className="flex min-w-0 flex-col gap-3">
-      <h2 className="font-display text-2xl font-semibold sm:text-3xl">{track.info.title}</h2>
-      <ScoreView track={track} position={playingId === id ? t.position : null} />
+      <h2 className="font-display text-2xl font-semibold sm:text-3xl">
+        {track.info.title}
+      </h2>
+      <ScoreView
+        track={track}
+        position={playingId === id ? t.position : null}
+      />
     </div>
   )
 }
 
-export function ServicePanel({ id, data, inColumn }: { id: PanelId; data: ServiceData; inColumn: boolean }) {
+/**
+ * One Service panel. `display` is a second screen that people watch rather
+ * than touch, so it never asks them to do anything.
+ */
+export function ServicePanel({
+  id,
+  data,
+  inColumn,
+  display = false,
+}: {
+  id: PanelId
+  data: ServiceData
+  inColumn: boolean
+  display?: boolean
+}) {
   switch (id) {
     case "order":
-      return <OrderPanel data={data} inColumn={inColumn} />
+      return <OrderPanel data={data} inColumn={inColumn} display={display} />
     case "now":
       return <NowPanel data={data} />
     case "music":

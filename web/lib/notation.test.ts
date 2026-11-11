@@ -6,8 +6,12 @@ import { durationParts, gridFor, keyName, layout, spell } from "./notation"
 
 function track(): Track {
   // 120 bpm: a crotchet is 500 ms, a semiquaver 125 ms. Downbeat at 1000 ms.
-  const note = (t: number, key: number, v: number, division: "great" | "pedal" = "great") =>
-    ({ t, type: "note", division, key, velocity: v }) as const
+  const note = (
+    t: number,
+    key: number,
+    v: number,
+    division: "great" | "pedal" = "great"
+  ) => ({ t, type: "note", division, key, velocity: v }) as const
   return {
     schema: 1,
     id: "t",
@@ -17,7 +21,14 @@ function track(): Track {
     modified: 0,
     initial: { stops: [], expression: {} },
     duration_ms: 5000,
-    meter: { bpm: 120, beats: 4, beat_unit: 4, fifths: 1, mode: "major", offset_ms: 1000 },
+    meter: {
+      bpm: 120,
+      beats: 4,
+      beat_unit: 4,
+      fifths: 1,
+      mode: "major",
+      offset_ms: 1000,
+    },
     events: [
       note(1000, 67, 80), // G4 minim
       note(1000, 43, 80, "pedal"), // G2 semibreve in the pedal
@@ -50,13 +61,19 @@ describe("layout", () => {
       [4, [59]],
       [12, []],
     ])
-    expect(measures[0].staves.pedal.map((s) => [s.len, s.keys])).toEqual([[16, [43]]])
+    expect(measures[0].staves.pedal.map((s) => [s.len, s.keys])).toEqual([
+      [16, [43]],
+    ])
   })
 
   it("ties notes that span a cut", () => {
     const t = track()
     // Overlap: the A starts while the G is still held.
-    t.events = t.events.map((e) => (e.type === "note" && e.key === 67 && e.velocity === 0 ? { ...e, t: 2465 } : e))
+    t.events = t.events.map((e) =>
+      e.type === "note" && e.key === 67 && e.velocity === 0
+        ? { ...e, t: 2465 }
+        : e
+    )
     const { measures } = layout(t, gridFor(t))
     const s = measures[0].staves.treble
     expect(s[1].keys).toEqual([67, 69])

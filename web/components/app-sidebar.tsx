@@ -41,6 +41,8 @@ interface NavItem {
   href: string
   icon: LucideIcon
   soon?: boolean
+  /** Works, but its features are still to come. */
+  later?: boolean
 }
 
 const PERFORM: NavItem[] = [
@@ -55,14 +57,15 @@ const PERFORM: NavItem[] = [
 const SETUP: NavItem[] = [
   { title: "MIDI Setup", href: "/setup/midi", icon: CableIcon },
   { title: "Organs", href: "/organs", icon: Music4Icon },
-  { title: "Assistant", href: "/setup/assistant", icon: MicIcon },
+  { title: "Assistant", href: "/setup/assistant", icon: MicIcon, later: true },
   { title: "Settings", href: "/setup/settings", icon: SettingsIcon },
 ]
 
 function NavGroup({ label, items }: { label: string; items: NavItem[] }) {
   // trailingSlash is on, so normalise "/setup/midi/" to "/setup/midi".
   const pathname = usePathname().replace(/(.)\/$/, "$1")
-  const active = (href: string) => pathname === href || (href !== "/" && pathname.startsWith(`${href}/`))
+  const active = (href: string) =>
+    pathname === href || (href !== "/" && pathname.startsWith(`${href}/`))
   return (
     <SidebarGroup>
       <SidebarGroupLabel>{label}</SidebarGroupLabel>
@@ -71,21 +74,28 @@ function NavGroup({ label, items }: { label: string; items: NavItem[] }) {
           {items.map((item) => (
             <SidebarMenuItem key={item.href}>
               {item.soon ? (
-                <SidebarMenuButton disabled tooltip={`${item.title} (coming soon)`}>
+                <SidebarMenuButton
+                  disabled
+                  tooltip={`${item.title} (coming soon)`}
+                >
                   <item.icon />
                   <span>{item.title}</span>
                 </SidebarMenuButton>
               ) : (
                 <SidebarMenuButton
                   isActive={active(item.href)}
-                  tooltip={item.title}
-                  render={<Link href={item.href} />}
+                  tooltip={
+                    item.later ? `${item.title} (coming later)` : item.title
+                  }
+                  // No prefetching: the static export has no prefetch files to serve.
+                  render={<Link href={item.href} prefetch={false} />}
                 >
                   <item.icon />
                   <span>{item.title}</span>
                 </SidebarMenuButton>
               )}
               {item.soon && <SidebarMenuBadge>Soon</SidebarMenuBadge>}
+              {item.later && <SidebarMenuBadge>Later</SidebarMenuBadge>}
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
@@ -121,13 +131,20 @@ export function AppSidebar() {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" render={<Link href="/" />}>
+            <SidebarMenuButton
+              size="lg"
+              render={<Link href="/" prefetch={false} />}
+            >
               <div className="flex aspect-square size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm [--mark-cutout:var(--primary)]">
                 <CeciliaMark className="size-7" />
               </div>
               <div className="flex flex-col gap-0.5 leading-none">
-                <span className="font-display text-base font-semibold">Cecilia</span>
-                <span className="text-xs text-sidebar-foreground/70">Organ recorder</span>
+                <span className="font-display text-base font-semibold">
+                  Cecilia
+                </span>
+                <span className="text-xs text-sidebar-foreground/70">
+                  Organ recorder
+                </span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>

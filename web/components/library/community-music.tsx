@@ -94,6 +94,8 @@ const SOURCES: { value: SourceFilter; label: string }[] = [
 ]
 
 const ANY = "any"
+/** Pieces shown at a time; long lists grow on request. */
+const PAGE = 50
 const capital = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 
 /** Music shared by other churches, ready to add to this library. */
@@ -104,8 +106,11 @@ export function CommunityMusic() {
   const [mine, setMine] = React.useState<Set<string>>(new Set())
   const [filters, setFilters] = React.useState<Filters>(NO_FILTERS)
   const [busy, setBusy] = React.useState<string | null>(null)
-  const set = (patch: Partial<Filters>) =>
+  const [limit, setLimit] = React.useState(PAGE)
+  const set = (patch: Partial<Filters>) => {
     setFilters((f) => ({ ...f, ...patch }))
+    setLimit(PAGE)
+  }
 
   const load = React.useCallback(async (refresh = false) => {
     setProblem(null)
@@ -322,7 +327,7 @@ export function CommunityMusic() {
         </Empty>
       ) : (
         <ul className="flex flex-col divide-y overflow-hidden rounded-xl border bg-card">
-          {shown.map((m) => (
+          {shown.slice(0, limit).map((m) => (
             <li
               key={m.id}
               className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3"
@@ -386,6 +391,16 @@ export function CommunityMusic() {
             </li>
           ))}
         </ul>
+      )}
+      {shown.length > limit && (
+        <Button
+          variant="outline"
+          className="self-center"
+          onClick={() => setLimit((l) => l + PAGE)}
+        >
+          Show {Math.min(PAGE, shown.length - limit)} more (
+          {shown.length - limit} left)
+        </Button>
       )}
       <p className="text-xs text-muted-foreground">
         Shared by Cecilia users and checked before it&apos;s added. Everything

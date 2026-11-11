@@ -41,7 +41,10 @@ import { api, call, type MidiConfig, type PortList } from "@/lib/api/client"
 const NO_OUTPUT = "__none__"
 
 /** Available ports plus any saved ones that have gone missing, so they stay visible. */
-function withSaved(available: string[], saved: string[]): { name: string; present: boolean }[] {
+function withSaved(
+  available: string[],
+  saved: string[]
+): { name: string; present: boolean }[] {
   const all = [...available, ...saved.filter((s) => !available.includes(s))]
   return all.map((name) => ({ name, present: available.includes(name) }))
 }
@@ -100,8 +103,13 @@ export function PortsCard() {
   async function save() {
     setSaving(true)
     try {
-      const config: MidiConfig = { inputs, output: output === NO_OUTPUT ? null : output }
-      const status = await call(api.PUT("/api/v1/midi/config", { body: config }))
+      const config: MidiConfig = {
+        inputs,
+        output: output === NO_OUTPUT ? null : output,
+      }
+      const status = await call(
+        api.PUT("/api/v1/midi/config", { body: config })
+      )
       setSaved(config)
       if (status.missing.length > 0) {
         toast.warning(`Saved, but could not open: ${status.missing.join(", ")}`)
@@ -125,13 +133,34 @@ export function PortsCard() {
     <Card>
       <CardHeader>
         <CardTitle>Ports</CardTitle>
-        <CardDescription>
-          Choose where the organ&apos;s MIDI comes from and where playback goes. With
-          Hauptwerk, use virtual cables such as loopMIDI.
+        <CardDescription className="flex flex-col gap-1.5">
+          <span>
+            Choose the connection Cecilia hears the organ on, and the one it
+            plays the organ through.
+          </span>
+          <details className="text-xs">
+            <summary className="cursor-pointer underline-offset-2 select-none hover:underline">
+              Using a virtual organ on a computer?
+            </summary>
+            <p className="pt-1">
+              With Hauptwerk or GrandOrgue, connect Cecilia using virtual MIDI
+              cables (for example loopMIDI on Windows), then choose those cables
+              here.
+            </p>
+          </details>
         </CardDescription>
         <CardAction>
-          <Button variant="outline" size="sm" onClick={refresh} disabled={!connected || loading}>
-            {loading ? <Spinner data-icon="inline-start" /> : <RefreshCwIcon data-icon="inline-start" />}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={refresh}
+            disabled={!connected || loading}
+          >
+            {loading ? (
+              <Spinner data-icon="inline-start" />
+            ) : (
+              <RefreshCwIcon data-icon="inline-start" />
+            )}
             Refresh
           </Button>
         </CardAction>
@@ -151,7 +180,8 @@ export function PortsCard() {
               </EmptyMedia>
               <EmptyTitle>No MIDI ports found</EmptyTitle>
               <EmptyDescription>
-                Connect a MIDI interface or create virtual cables, then refresh.
+                Plug in the organ&apos;s MIDI cable or USB lead, then press
+                Refresh.
               </EmptyDescription>
             </EmptyHeader>
           </Empty>
@@ -160,21 +190,28 @@ export function PortsCard() {
             <FieldSet>
               <FieldLegend variant="label">Organ in</FieldLegend>
               <FieldDescription>
-                Console or Hauptwerk output. You can listen to several.
+                Where Cecilia listens to the organ. You can choose more than
+                one.
               </FieldDescription>
               <FieldGroup data-slot="checkbox-group">
                 {inputRows.length === 0 && (
-                  <FieldDescription>No input ports available.</FieldDescription>
+                  <FieldDescription>Nothing to listen to yet.</FieldDescription>
                 )}
                 {inputRows.map(({ name, present }) => (
-                  <Field key={name} orientation="horizontal" data-disabled={!connected || undefined}>
+                  <Field
+                    key={name}
+                    orientation="horizontal"
+                    data-disabled={!connected || undefined}
+                  >
                     <Checkbox
                       id={`in-${name}`}
                       checked={inputs.includes(name)}
                       disabled={!connected}
                       onCheckedChange={(checked) =>
                         setInputs((prev) =>
-                          checked ? [...prev, name] : prev.filter((p) => p !== name)
+                          checked
+                            ? [...prev, name]
+                            : prev.filter((p) => p !== name)
                         )
                       }
                     />
@@ -190,9 +227,13 @@ export function PortsCard() {
             <FieldSet>
               <FieldLegend variant="label">Organ out</FieldLegend>
               <FieldDescription>
-                The organ or Hauptwerk input. Only one output is used.
+                Where Cecilia plays the organ. Choose one.
               </FieldDescription>
-              <RadioGroup value={output} onValueChange={(v) => setOutput(String(v))} disabled={!connected}>
+              <RadioGroup
+                value={output}
+                onValueChange={(v) => setOutput(String(v))}
+                disabled={!connected}
+              >
                 <Field orientation="horizontal">
                   <RadioGroupItem value={NO_OUTPUT} id="out-none" />
                   <FieldLabel htmlFor="out-none" className="font-normal">

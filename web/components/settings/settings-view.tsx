@@ -4,7 +4,12 @@ import * as React from "react"
 import { DownloadIcon, LogOutIcon, UploadIcon } from "lucide-react"
 import { toast } from "sonner"
 
-import { applyTextSize, readTextSize, TEXT_SIZES, type TextSize } from "@/components/text-size"
+import {
+  applyTextSize,
+  readTextSize,
+  TEXT_SIZES,
+  type TextSize,
+} from "@/components/text-size"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,9 +20,22 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { PageBody } from "@/components/page-body"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Slider } from "@/components/ui/slider"
@@ -46,7 +64,14 @@ function SecondsSlider({
       <FieldLabel htmlFor={id}>
         {label}: {value / 1000} s
       </FieldLabel>
-      <Slider id={id} min={min} max={max} step={500} value={value} onValueChange={(v) => onChange(v as number)} />
+      <Slider
+        id={id}
+        min={min}
+        max={max}
+        step={500}
+        value={value}
+        onValueChange={(v) => onChange(v as number)}
+      />
       <FieldDescription>{hint}</FieldDescription>
     </Field>
   )
@@ -62,8 +87,12 @@ export function SettingsView() {
   const dirty = React.useRef(false)
 
   React.useEffect(() => {
-    call(api.GET("/api/v1/settings")).then(setSettings).catch((e: Error) => toast.error(e.message))
-    call(api.GET("/api/v1/auth")).then(setAuth).catch(() => {})
+    call(api.GET("/api/v1/settings"))
+      .then(setSettings)
+      .catch((e: Error) => toast.error(e.message))
+    call(api.GET("/api/v1/auth"))
+      .then(setAuth)
+      .catch(() => {})
   }, [])
 
   // Save shortly after a change.
@@ -85,10 +114,16 @@ export function SettingsView() {
 
   async function savePassword(newPassword: string | null) {
     try {
-      await call(api.PUT("/api/v1/auth/password", { body: { password: newPassword } }))
+      await call(
+        api.PUT("/api/v1/auth/password", { body: { password: newPassword } })
+      )
       setAuth({ required: newPassword !== null })
       setPassword("")
-      toast.success(newPassword ? "Password set. Other devices will need it." : "Password removed")
+      toast.success(
+        newPassword
+          ? "Password set. Other devices will need it."
+          : "Password removed"
+      )
     } catch (e) {
       toast.error((e as Error).message)
     }
@@ -96,21 +131,29 @@ export function SettingsView() {
 
   async function restore(file: File) {
     try {
-      const res = await fetch(apiUrl("/api/v1/import/backup"), { method: "POST", body: file, credentials: "include" })
+      const res = await fetch(apiUrl("/api/v1/import/backup"), {
+        method: "POST",
+        body: file,
+        credentials: "include",
+      })
       const body = await res.json()
       if (!res.ok) throw new Error(body.error ?? "Restore failed")
-      toast.success(`Restored ${body.tracks} pieces, ${body.organs} organs and ${body.playlists} playlists`)
+      toast.success(
+        `Restored ${body.tracks} pieces, ${body.organs} organs and ${body.playlists} playlists`
+      )
     } catch (e) {
       toast.error((e as Error).message)
     }
   }
 
   return (
-    <div className="mx-auto grid w-full min-w-0 max-w-5xl gap-4 p-3 sm:p-4 lg:grid-cols-2">
+    <PageBody className="grid lg:grid-cols-2">
       <Card>
         <CardHeader>
           <CardTitle>Recording</CardTitle>
-          <CardDescription>How a service is split into separate pieces.</CardDescription>
+          <CardDescription>
+            How a service is split into separate pieces.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {settings ? (
@@ -122,7 +165,12 @@ export function SettingsView() {
                 min={2000}
                 max={60000}
                 value={settings.recording.silence_ms}
-                onChange={(v) => change({ ...settings, recording: { ...settings.recording, silence_ms: v } })}
+                onChange={(v) =>
+                  change({
+                    ...settings,
+                    recording: { ...settings.recording, silence_ms: v },
+                  })
+                }
               />
               <SecondsSlider
                 id="margin-start"
@@ -131,7 +179,12 @@ export function SettingsView() {
                 min={0}
                 max={15000}
                 value={settings.recording.margin_start_ms}
-                onChange={(v) => change({ ...settings, recording: { ...settings.recording, margin_start_ms: v } })}
+                onChange={(v) =>
+                  change({
+                    ...settings,
+                    recording: { ...settings.recording, margin_start_ms: v },
+                  })
+                }
               />
               <SecondsSlider
                 id="margin-end"
@@ -140,7 +193,12 @@ export function SettingsView() {
                 min={0}
                 max={15000}
                 value={settings.recording.margin_end_ms}
-                onChange={(v) => change({ ...settings, recording: { ...settings.recording, margin_end_ms: v } })}
+                onChange={(v) =>
+                  change({
+                    ...settings,
+                    recording: { ...settings.recording, margin_end_ms: v },
+                  })
+                }
               />
             </FieldGroup>
           ) : (
@@ -152,7 +210,9 @@ export function SettingsView() {
       <Card>
         <CardHeader>
           <CardTitle>Playback</CardTitle>
-          <CardDescription>Fading out, and organs whose stops only toggle.</CardDescription>
+          <CardDescription>
+            Fading out, and organs whose stops only toggle.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {settings ? (
@@ -164,20 +224,36 @@ export function SettingsView() {
                 min={1000}
                 max={30000}
                 value={settings.playback.fade_ms}
-                onChange={(v) => change({ ...settings, playback: { ...settings.playback, fade_ms: v } })}
+                onChange={(v) =>
+                  change({
+                    ...settings,
+                    playback: { ...settings.playback, fade_ms: v },
+                  })
+                }
               />
               <Field>
-                <FieldLabel htmlFor="settle">Pause after general cancel: {settings.playback.settle_ms} ms</FieldLabel>
+                <FieldLabel htmlFor="settle">
+                  Pause after general cancel: {settings.playback.settle_ms} ms
+                </FieldLabel>
                 <Slider
                   id="settle"
                   min={0}
                   max={3000}
                   step={50}
                   value={settings.playback.settle_ms}
-                  onValueChange={(v) => change({ ...settings, playback: { ...settings.playback, settle_ms: v as number } })}
+                  onValueChange={(v) =>
+                    change({
+                      ...settings,
+                      playback: {
+                        ...settings.playback,
+                        settle_ms: v as number,
+                      },
+                    })
+                  }
                 />
                 <FieldDescription>
-                  On organs like the Makin, the stops need a moment to clear before the opening registration is set.
+                  On organs like the Makin, the stops need a moment to clear
+                  before the opening registration is set.
                 </FieldDescription>
               </Field>
             </FieldGroup>
@@ -190,7 +266,9 @@ export function SettingsView() {
       <Card>
         <CardHeader>
           <CardTitle>Text size</CardTitle>
-          <CardDescription>For this device only, so a tablet at the console can use big text.</CardDescription>
+          <CardDescription>
+            For this device only, so a tablet at the console can use big text.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <ToggleGroup
@@ -214,6 +292,40 @@ export function SettingsView() {
 
       <Card>
         <CardHeader>
+          <CardTitle>Backup</CardTitle>
+          <CardDescription>
+            Everything (music, playlists, organs and settings) in one file. Keep
+            a copy somewhere other than the Cecilia box.
+          </CardDescription>
+        </CardHeader>
+        <CardFooter className="flex-wrap gap-2">
+          <Button
+            render={<a href={apiUrl("/api/v1/export/backup.zip")} download />}
+            nativeButton={false}
+          >
+            <DownloadIcon data-icon="inline-start" />
+            Download a backup
+          </Button>
+          <Button variant="outline" onClick={() => fileInput.current?.click()}>
+            <UploadIcon data-icon="inline-start" />
+            Restore from a backup
+          </Button>
+          <input
+            ref={fileInput}
+            type="file"
+            accept=".zip"
+            className="sr-only"
+            onChange={(e) => {
+              const f = e.target.files?.[0]
+              e.target.value = ""
+              if (f) setRestoreFile(f)
+            }}
+          />
+        </CardFooter>
+      </Card>
+
+      <Card className="lg:col-span-2">
+        <CardHeader>
           <CardTitle>Password</CardTitle>
           <CardDescription>
             {auth?.required
@@ -228,9 +340,11 @@ export function SettingsView() {
               if (password.length >= 6) void savePassword(password)
             }}
           >
-            <FieldGroup>
+            <FieldGroup className="max-w-sm">
               <Field>
-                <FieldLabel htmlFor="new-password">{auth?.required ? "New password" : "Password"}</FieldLabel>
+                <FieldLabel htmlFor="new-password">
+                  {auth?.required ? "New password" : "Password"}
+                </FieldLabel>
                 <Input
                   id="new-password"
                   type="password"
@@ -244,7 +358,10 @@ export function SettingsView() {
           </form>
         </CardContent>
         <CardFooter className="flex-wrap gap-2">
-          <Button disabled={password.length < 6} onClick={() => savePassword(password)}>
+          <Button
+            disabled={password.length < 6}
+            onClick={() => savePassword(password)}
+          >
             {auth?.required ? "Change password" : "Set password"}
           </Button>
           {auth?.required && (
@@ -267,44 +384,17 @@ export function SettingsView() {
         </CardFooter>
       </Card>
 
-      <Card className="lg:col-span-2">
-        <CardHeader>
-          <CardTitle>Backup</CardTitle>
-          <CardDescription>
-            Everything (music, playlists, organs and settings) in one file. Keep a copy somewhere other than the
-            Cecilia box.
-          </CardDescription>
-        </CardHeader>
-        <CardFooter className="flex-wrap gap-2">
-          <Button render={<a href={apiUrl("/api/v1/export/backup.zip")} download />} nativeButton={false}>
-            <DownloadIcon data-icon="inline-start" />
-            Download a backup
-          </Button>
-          <Button variant="outline" onClick={() => fileInput.current?.click()}>
-            <UploadIcon data-icon="inline-start" />
-            Restore from a backup
-          </Button>
-          <input
-            ref={fileInput}
-            type="file"
-            accept=".zip"
-            className="sr-only"
-            onChange={(e) => {
-              const f = e.target.files?.[0]
-              e.target.value = ""
-              if (f) setRestoreFile(f)
-            }}
-          />
-        </CardFooter>
-      </Card>
-
-      <AlertDialog open={!!restoreFile} onOpenChange={(o) => !o && setRestoreFile(null)}>
+      <AlertDialog
+        open={!!restoreFile}
+        onOpenChange={(o) => !o && setRestoreFile(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Restore {restoreFile?.name}?</AlertDialogTitle>
             <AlertDialogDescription>
-              Pieces, playlists and organs in the backup replace ones with the same name here. Anything else is kept.
-              This device&apos;s MIDI ports and password don&apos;t change.
+              Pieces, playlists and organs in the backup replace ones with the
+              same name here. Anything else is kept. This device&apos;s MIDI
+              ports and password don&apos;t change.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -320,6 +410,6 @@ export function SettingsView() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </PageBody>
   )
 }

@@ -2,16 +2,35 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { RotateCcwIcon, Volume2Icon, VolumeXIcon } from "lucide-react"
+import {
+  ArrowLeftRightIcon,
+  RotateCcwIcon,
+  Volume2Icon,
+  VolumeXIcon,
+} from "lucide-react"
 import { toast } from "sonner"
 
 import { useEngine } from "@/components/engine-provider"
 import { ConnectionCard } from "@/components/organ/connection-card"
 import { OrganConsole } from "@/components/organ/organ-console"
 import { PageHeader } from "@/components/page-header"
-import { Alert, AlertAction, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import {
+  Alert,
+  AlertAction,
+  AlertDescription,
+  AlertTitle,
+} from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Kbd } from "@/components/ui/kbd"
 import {
   Select,
@@ -38,9 +57,11 @@ import { keyboardSpeaks, starterStop } from "@/lib/sounding"
 const SIM_PORT = "Cecilia Simulator"
 
 function act(event: OrganEvent) {
-  return call(api.POST("/api/v1/simulator/act", { body: event })).catch((e: Error) => {
-    toast.error(e.message)
-  })
+  return call(api.POST("/api/v1/simulator/act", { body: event })).catch(
+    (e: Error) => {
+      toast.error(e.message)
+    }
+  )
 }
 
 export function SimulatorView() {
@@ -54,7 +75,9 @@ export function SimulatorView() {
     if (!organId) return
     let cancelled = false
     Promise.all([
-      call(api.GET("/api/v1/organs/{id}", { params: { path: { id: organId } } })),
+      call(
+        api.GET("/api/v1/organs/{id}", { params: { path: { id: organId } } })
+      ),
       call(api.GET("/api/v1/organs")),
     ])
       .then(([o, list]) => {
@@ -85,16 +108,25 @@ export function SimulatorView() {
    * leave a silent simulator, draw a soft stop first and say so.
    */
   async function press(event: OrganEvent) {
-    if (organ && event.type === "note" && event.velocity > 0 && !keyboardSpeaks(organ, stopsOn.current, event.division)) {
+    if (
+      organ &&
+      event.type === "note" &&
+      event.velocity > 0 &&
+      !keyboardSpeaks(organ, stopsOn.current, event.division)
+    ) {
       const stop = starterStop(organ, event.division)
       if (stop) {
         stopsOn.current = [...stopsOn.current, stop.id]
         await act({ type: "stop", stop: stop.id, on: true })
-        const feet = stop.equivalent.type === "voice" ? ` ${formatFootage(stop.equivalent.footage)}` : ""
+        const feet =
+          stop.equivalent.type === "voice"
+            ? ` ${formatFootage(stop.equivalent.footage)}`
+            : ""
         const name = stop.full_name ?? stop.names.join(" ")
         toast(`Drew ${name}${feet} so you can hear the keys`, {
           id: "starter-stop",
-          description: "An organ is silent until a stop is drawn. Choose other stops above to change the sound.",
+          description:
+            "An organ is silent until a stop is drawn. Choose other stops above to change the sound.",
         })
       }
     }
@@ -121,14 +153,23 @@ export function SimulatorView() {
     }
   }
 
-  const routed = !!status && status.inputs.includes(SIM_PORT) && status.output === SIM_PORT
+  const routed =
+    !!status && status.inputs.includes(SIM_PORT) && status.output === SIM_PORT
 
   return (
     <>
       <PageHeader title="Simulator">
         {simulator && (
-          <Badge variant="secondary" className="hidden sm:inline-flex" title={simulator.audio ?? undefined}>
-            {simulator.audio ? <Volume2Icon data-icon="inline-start" /> : <VolumeXIcon data-icon="inline-start" />}
+          <Badge
+            variant="secondary"
+            className="hidden sm:inline-flex"
+            title={simulator.audio ?? undefined}
+          >
+            {simulator.audio ? (
+              <Volume2Icon data-icon="inline-start" />
+            ) : (
+              <VolumeXIcon data-icon="inline-start" />
+            )}
             {simulator.audio ? "Sound on" : "Silent"}
           </Badge>
         )}
@@ -140,38 +181,45 @@ export function SimulatorView() {
           title="Push in every stop and release all keys"
         >
           <RotateCcwIcon data-icon="inline-start" />
-          <span className="hidden sm:inline">General cancel</span>
-          <span className="sm:hidden">Cancel</span>
+          General cancel
         </Button>
       </PageHeader>
 
-      <div className="mx-auto flex w-full min-w-0 max-w-6xl flex-col gap-4 p-3 sm:p-4">
+      <div className="mx-auto flex w-full max-w-6xl min-w-0 flex-col gap-4 p-3 sm:p-4">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div className="flex flex-col gap-1">
-            <p className="font-display text-2xl font-semibold sm:text-3xl">{organ?.name ?? "Loading organ…"}</p>
+            <p className="font-display text-2xl font-semibold sm:text-3xl">
+              {organ?.name ?? "Loading organ…"}
+            </p>
             <p className="text-sm text-muted-foreground">
-              A virtual organ for practising, testing and listening without an instrument.
+              A virtual organ for practising, testing and listening without an
+              instrument.
             </p>
           </div>
           {organs.length > 1 && organId && (
-            <Select
-              value={organId}
-              onValueChange={(v) => v && void loadOrgan(String(v))}
-              items={organs.map((o) => ({ value: o.id, label: o.name }))}
-            >
-              <SelectTrigger className="w-64" aria-label="Organ">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {organs.map((o) => (
-                    <SelectItem key={o.id} value={o.id}>
-                      {o.name}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={<Button variant="outline" size="sm" />}
+              >
+                <ArrowLeftRightIcon data-icon="inline-start" />
+                Change organ
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-64">
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel>Organ to simulate</DropdownMenuLabel>
+                  <DropdownMenuRadioGroup
+                    value={organId}
+                    onValueChange={(v) => v && void loadOrgan(String(v))}
+                  >
+                    {organs.map((o) => (
+                      <DropdownMenuRadioItem key={o.id} value={o.id}>
+                        {o.name}
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
         </div>
 
@@ -179,11 +227,16 @@ export function SimulatorView() {
           <Alert>
             <AlertTitle>Playing here isn&apos;t being recorded</AlertTitle>
             <AlertDescription>
-              To record what you play, and to hear playback on this organ, choose {SIM_PORT} as
-              both Organ in and Organ out.
+              To record what you play, and to hear playback on this organ,
+              choose {SIM_PORT} as both Organ in and Organ out.
             </AlertDescription>
             <AlertAction>
-              <Button size="sm" variant="outline" render={<Link href="/setup/midi" />} nativeButton={false}>
+              <Button
+                size="sm"
+                variant="outline"
+                render={<Link href="/setup/midi" />}
+                nativeButton={false}
+              >
                 MIDI Setup
               </Button>
             </AlertAction>
@@ -191,7 +244,12 @@ export function SimulatorView() {
         )}
 
         {organ && simulator ? (
-          <OrganConsole organ={organ} state={simulator.console} onAct={press} activeDivision={playDivision} />
+          <OrganConsole
+            organ={organ}
+            state={simulator.console}
+            onAct={press}
+            activeDivision={playDivision}
+          />
         ) : (
           <Skeleton className="h-[36rem] w-full rounded-xl" />
         )}
@@ -200,7 +258,8 @@ export function SimulatorView() {
           <div className="hidden flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted-foreground md:flex">
             <span>Play with your computer keyboard:</span>
             <span className="flex items-center gap-1">
-              <Kbd>A</Kbd>–<Kbd>;</Kbd> plays {noteName(base)} to {noteName(base + 16)}
+              <Kbd>A</Kbd>–<Kbd>;</Kbd> plays {noteName(base)} to{" "}
+              {noteName(base + 16)}
             </span>
             <span className="flex items-center gap-1">
               <Kbd>Z</Kbd> <Kbd>X</Kbd> change octave
@@ -210,9 +269,16 @@ export function SimulatorView() {
               <Select
                 value={playDivision}
                 onValueChange={(v) => v && setPlayOn(v as DivisionRole)}
-                items={organ.divisions.map((d) => ({ value: d.role, label: d.name }))}
+                items={organ.divisions.map((d) => ({
+                  value: d.role,
+                  label: d.name,
+                }))}
               >
-                <SelectTrigger size="sm" className="w-32" aria-label="Division for computer keys">
+                <SelectTrigger
+                  size="sm"
+                  className="w-32"
+                  aria-label="Division for computer keys"
+                >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

@@ -31,6 +31,21 @@ const NOT_FAITHFUL: [&str; 8] = [
     "We_All_Believe_In_One_True_God-Wir_Glauben_All_An_Einen_Gott_Schoepfer",
 ];
 
+/// The title a tune is best known by, where the Open Hymnal's first hymn
+/// for it is a less familiar one. The others stay as its other titles.
+const BEST_KNOWN: [(&str, &str); 10] = [
+    ("aberystwyth-parry", "Jesu, Lover of My Soul"),
+    ("aurelia", "The Church's One Foundation"),
+    ("darwall", "Rejoice, the Lord Is King"),
+    ("ebenezer", "O the Deep, Deep Love of Jesus"),
+    ("franconia", "Blest Are the Pure in Heart"),
+    ("italian-hymn", "Come, Thou Almighty King"),
+    ("melita", "Eternal Father, Strong to Save"),
+    ("ode-to-joy", "Joyful, Joyful, We Adore Thee"),
+    ("st-agnes", "Jesus, the Very Thought of Thee"),
+    ("tempus-adest-floridum", "Good King Wenceslas"),
+];
+
 /// The latest year of death that's out of copyright everywhere we know of.
 fn cutoff_year() -> i32 {
     let secs = std::time::SystemTime::now()
@@ -150,6 +165,16 @@ pub fn import_open_hymnal(source: &Path, library: &Path, write: bool) -> anyhow:
                 accepted.insert(score.id.clone(), score);
             }
             Err(e) => skipped.push((stem.clone(), e)),
+        }
+    }
+
+    for (id, best) in BEST_KNOWN {
+        if let Some(s) = accepted.get_mut(id) {
+            if s.title != best {
+                let old = std::mem::replace(&mut s.title, best.to_string());
+                s.other_titles.retain(|t| !t.eq_ignore_ascii_case(best) && !t.to_ascii_lowercase().ends_with(&best.to_ascii_lowercase()));
+                s.other_titles.insert(0, old);
+            }
         }
     }
 

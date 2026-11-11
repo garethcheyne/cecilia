@@ -12,6 +12,9 @@ const FRACTIONS: Record<string, string> = {
 
 /** Footage as engraved on a stop: "8" -> "8′", "2 2/3" -> "2⅔′". */
 export function formatFootage(footage: string): string {
-  const parts = footage.trim().split(/\s+/).map((p) => FRACTIONS[p] ?? p)
+  const parts = footage
+    .trim()
+    .split(/\s+/)
+    .map((p) => FRACTIONS[p] ?? p)
   return `${parts.join("")}′`
 }

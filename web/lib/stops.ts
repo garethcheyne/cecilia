@@ -10,21 +10,34 @@ const DIVISION: Record<DivisionRole, string> = {
   echo: "Echo",
 }
 
-export function divisionName(d: DivisionRole, organ?: OrganDefinition | null): string {
+export function divisionName(
+  d: DivisionRole,
+  organ?: OrganDefinition | null
+): string {
   return organ?.divisions.find((x) => x.role === d)?.name ?? DIVISION[d]
 }
 
-function sameEquivalent(a: StopRef["equivalent"], b: StopRef["equivalent"]): boolean {
+function sameEquivalent(
+  a: StopRef["equivalent"],
+  b: StopRef["equivalent"]
+): boolean {
   return JSON.stringify(a) === JSON.stringify(b)
 }
 
 /** The stop on `organ` that is exactly this one, if any. */
 export function findStop(ref: StopRef, organ?: OrganDefinition | null) {
-  return organ?.stops.find((s) => s.division === ref.division && sameEquivalent(s.equivalent, ref.equivalent))
+  return organ?.stops.find(
+    (s) =>
+      s.division === ref.division &&
+      sameEquivalent(s.equivalent, ref.equivalent)
+  )
 }
 
 /** "Great Open Diapason 8′", or a generic name when this organ lacks it. */
-export function stopLabel(ref: StopRef, organ?: OrganDefinition | null): string {
+export function stopLabel(
+  ref: StopRef,
+  organ?: OrganDefinition | null
+): string {
   const d = divisionName(ref.division, organ)
   const exact = findStop(ref, organ)
   if (exact) {
@@ -46,7 +59,10 @@ export function stopLabel(ref: StopRef, organ?: OrganDefinition | null): string 
   }
 }
 
-export function stopRefOf(organ: OrganDefinition, stopId: string): StopRef | null {
+export function stopRefOf(
+  organ: OrganDefinition,
+  stopId: string
+): StopRef | null {
   const s = organ.stops.find((x) => x.id === stopId)
   return s ? { division: s.division, equivalent: s.equivalent } : null
 }

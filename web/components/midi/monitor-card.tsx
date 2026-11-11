@@ -39,15 +39,29 @@ export function MonitorCard() {
       <CardHeader>
         <CardTitle>Live monitor</CardTitle>
         <CardDescription>
-          MIDI going in and out of the server, newest first.
-          {skipped > 0 && ` ${skipped} messages skipped while this page was busy.`}
+          Every message between Cecilia and the organ, newest first.
+          {skipped > 0 &&
+            ` ${skipped} messages skipped while this page was busy.`}
         </CardDescription>
         <CardAction className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => setPaused(!paused)}>
-            {paused ? <PlayIcon data-icon="inline-start" /> : <PauseIcon data-icon="inline-start" />}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPaused(!paused)}
+          >
+            {paused ? (
+              <PlayIcon data-icon="inline-start" />
+            ) : (
+              <PauseIcon data-icon="inline-start" />
+            )}
             {paused ? "Resume" : "Pause"}
           </Button>
-          <Button variant="outline" size="sm" onClick={clearEvents} disabled={events.length === 0}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={clearEvents}
+            disabled={events.length === 0}
+          >
             <EraserIcon data-icon="inline-start" />
             Clear
           </Button>
@@ -60,7 +74,9 @@ export function MonitorCard() {
               <EmptyMedia variant="icon">
                 <ActivityIcon />
               </EmptyMedia>
-              <EmptyTitle>{paused ? "Monitor paused" : "Waiting for MIDI"}</EmptyTitle>
+              <EmptyTitle>
+                {paused ? "Monitor paused" : "Waiting for MIDI"}
+              </EmptyTitle>
               <EmptyDescription>
                 Press a key or draw a stop on the console to see it here.
               </EmptyDescription>
@@ -76,7 +92,9 @@ export function MonitorCard() {
                   <TableHead className="w-12">Ch</TableHead>
                   <TableHead>Message</TableHead>
                   <TableHead className="hidden md:table-cell">Port</TableHead>
-                  <TableHead className="hidden text-right sm:table-cell">Bytes</TableHead>
+                  <TableHead className="hidden text-right sm:table-cell">
+                    Bytes
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -84,15 +102,21 @@ export function MonitorCard() {
                   const decoded = describeMidi(e.bytes)
                   return (
                     <TableRow key={e.id}>
-                      <TableCell className="font-mono text-xs tabular-nums text-muted-foreground">
+                      <TableCell className="font-mono text-xs text-muted-foreground tabular-nums">
                         {(e.t_us / 1_000_000).toFixed(3)}
                       </TableCell>
                       <TableCell>
-                        <Badge variant={e.direction === "in" ? "secondary" : "outline"}>
+                        <Badge
+                          variant={
+                            e.direction === "in" ? "secondary" : "outline"
+                          }
+                        >
                           {e.direction === "in" ? "In" : "Out"}
                         </Badge>
                       </TableCell>
-                      <TableCell className="tabular-nums">{decoded.channel ?? "–"}</TableCell>
+                      <TableCell className="tabular-nums">
+                        {decoded.channel ?? "–"}
+                      </TableCell>
                       <TableCell>{decoded.summary}</TableCell>
                       <TableCell className="hidden max-w-48 truncate text-muted-foreground md:table-cell">
                         {e.port}

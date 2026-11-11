@@ -47,24 +47,36 @@ export function apiUrl(path: string): string {
 }
 
 /** POST a file's bytes to an import endpoint. */
-export async function uploadFile<T>(path: string, file: File, options?: unknown): Promise<T> {
+export async function uploadFile<T>(
+  path: string,
+  file: File,
+  options?: unknown
+): Promise<T> {
   const params = new URLSearchParams({ name: file.name })
   if (options !== undefined) params.set("options", JSON.stringify(options))
   let res: Response
   try {
-    res = await fetch(apiUrl(`${path}?${params}`), { method: "POST", body: file, credentials: "include" })
+    res = await fetch(apiUrl(`${path}?${params}`), {
+      method: "POST",
+      body: file,
+      credentials: "include",
+    })
   } catch {
     throw new ApiError("Can't reach the Cecilia server. Is it running?")
   }
   const body = await res.json().catch(() => null)
-  if (!res.ok) throw new ApiError(body?.error ?? `Request failed (${res.status})`)
+  if (!res.ok)
+    throw new ApiError(body?.error ?? `Request failed (${res.status})`)
   return body as T
 }
 
 /** Empty string = same origin (production, served by organ-server). */
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? ""
 
-export const api = createClient<paths>({ baseUrl: API_URL, credentials: "include" })
+export const api = createClient<paths>({
+  baseUrl: API_URL,
+  credentials: "include",
+})
 
 export function eventsUrl(): string {
   const base = API_URL || window.location.origin

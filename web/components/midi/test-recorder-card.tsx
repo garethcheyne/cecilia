@@ -20,7 +20,11 @@ import {
 import { api, call } from "@/lib/api/client"
 import { formatDuration } from "@/lib/midi"
 
-const STATE_LABEL = { idle: "Idle", recording: "Recording", playing: "Playing" } as const
+const STATE_LABEL = {
+  idle: "Idle",
+  recording: "Recording",
+  playing: "Playing",
+} as const
 
 export function TestRecorderCard() {
   const { connected, status, statusAt } = useEngine()
@@ -31,8 +35,10 @@ export function TestRecorderCard() {
 
   // The server only reports times on state changes; interpolate between them.
   const sinceStatus = state !== "idle" && now > statusAt ? now - statusAt : 0
-  const duration = (test?.duration_ms ?? 0) + (state === "recording" ? sinceStatus : 0)
-  const position = state === "playing" ? (test?.position_ms ?? 0) + sinceStatus : 0
+  const duration =
+    (test?.duration_ms ?? 0) + (state === "recording" ? sinceStatus : 0)
+  const position =
+    state === "playing" ? (test?.position_ms ?? 0) + sinceStatus : 0
 
   async function run(action: "record" | "stop" | "play") {
     setBusy(true)
@@ -62,11 +68,20 @@ export function TestRecorderCard() {
       <CardHeader>
         <CardTitle>Test recorder</CardTitle>
         <CardDescription>
-          Records and replays the exact MIDI received, bypassing all organ logic. If this
-          doesn&apos;t play back correctly, check the cables and ports first.
+          Play a few notes, then play them straight back exactly as they came
+          in. If that doesn&apos;t sound right, check the cables and the choices
+          under Ports.
         </CardDescription>
         <CardAction>
-          <Badge variant={state === "recording" ? "destructive" : state === "playing" ? "default" : "secondary"}>
+          <Badge
+            variant={
+              state === "recording"
+                ? "destructive"
+                : state === "playing"
+                  ? "default"
+                  : "secondary"
+            }
+          >
             {STATE_LABEL[state]}
           </Badge>
         </CardAction>
@@ -75,24 +90,32 @@ export function TestRecorderCard() {
         <dl className="grid grid-cols-3 gap-4">
           <div className="flex flex-col gap-1">
             <dt className="text-xs text-muted-foreground">Length</dt>
-            <dd className="font-mono text-2xl tabular-nums">{formatDuration(duration)}</dd>
+            <dd className="font-mono text-2xl tabular-nums">
+              {formatDuration(duration)}
+            </dd>
           </div>
           <div className="flex flex-col gap-1">
             <dt className="text-xs text-muted-foreground">Position</dt>
-            <dd className="font-mono text-2xl tabular-nums">{formatDuration(position)}</dd>
+            <dd className="font-mono text-2xl tabular-nums">
+              {formatDuration(position)}
+            </dd>
           </div>
           <div className="flex flex-col gap-1">
             <dt className="text-xs text-muted-foreground">Messages</dt>
-            <dd className="font-mono text-2xl tabular-nums">{test?.events ?? 0}</dd>
+            <dd className="font-mono text-2xl tabular-nums">
+              {test?.events ?? 0}
+            </dd>
           </div>
         </dl>
         {(noInputs || noOutput) && (
           <Alert>
-            <AlertTitle>{noInputs ? "No input connected" : "No output connected"}</AlertTitle>
+            <AlertTitle>
+              {noInputs ? "No input connected" : "No output connected"}
+            </AlertTitle>
             <AlertDescription>
               {noInputs
-                ? "Pick at least one Organ in port to record."
-                : "Pick an Organ out port to play back."}
+                ? "Choose at least one connection under Organ in to record."
+                : "Choose a connection under Organ out to play back."}
             </AlertDescription>
           </Alert>
         )}
@@ -116,12 +139,19 @@ export function TestRecorderCard() {
         </Button>
         <Button
           onClick={() => run("play")}
-          disabled={!connected || busy || state !== "idle" || noOutput || !test?.events}
+          disabled={
+            !connected || busy || state !== "idle" || noOutput || !test?.events
+          }
         >
           <PlayIcon data-icon="inline-start" />
           Play
         </Button>
-        <Button variant="ghost" className="ml-auto" onClick={panic} disabled={!connected || noOutput}>
+        <Button
+          variant="ghost"
+          className="ml-auto"
+          onClick={panic}
+          disabled={!connected || noOutput}
+        >
           <OctagonXIcon data-icon="inline-start" />
           All notes off
         </Button>

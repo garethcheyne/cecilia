@@ -14,7 +14,13 @@ const MOUTH_Y = 21
 const FOOT_Y = 27
 
 /** Cecilia's mark: a flat of five organ pipes. Colours follow `currentColor`. */
-export function CeciliaMark({ className, title }: { className?: string; title?: string }) {
+export function CeciliaMark({
+  className,
+  title,
+}: {
+  className?: string
+  title?: string
+}) {
   return (
     <svg
       viewBox="0 0 32 32"
@@ -26,15 +32,38 @@ export function CeciliaMark({ className, title }: { className?: string; title?: 
       {PIPES.map(([x, top]) => (
         <g key={x}>
           {/* body */}
-          <rect x={x - HALF} y={top} width={HALF * 2} height={MOUTH_Y - top} rx={0.8} fill="currentColor" />
+          <rect
+            x={x - HALF}
+            y={top}
+            width={HALF * 2}
+            height={MOUTH_Y - top}
+            rx={0.8}
+            fill="currentColor"
+          />
           {/* mouth: the upper lip cut-out */}
-          <path d={`M${x - 1.4} ${MOUTH_Y} h2.8 l-0.6 -2 h-1.6 z`} fill="var(--mark-cutout, var(--sidebar-accent))" opacity={0.7} />
+          <path
+            d={`M${x - 1.4} ${MOUTH_Y} h2.8 l-0.6 -2 h-1.6 z`}
+            fill="var(--mark-cutout, var(--sidebar-accent))"
+            opacity={0.7}
+          />
           {/* conical foot */}
-          <path d={`M${x - HALF} ${MOUTH_Y} h${HALF * 2} l-1.7 ${FOOT_Y - MOUTH_Y} h-1.6 z`} fill="currentColor" opacity={0.85} />
+          <path
+            d={`M${x - HALF} ${MOUTH_Y} h${HALF * 2} l-1.7 ${FOOT_Y - MOUTH_Y} h-1.6 z`}
+            fill="currentColor"
+            opacity={0.85}
+          />
         </g>
       ))}
       {/* the pipe shade / impost the pipes stand on */}
-      <rect x={2} y={FOOT_Y} width={28} height={2} rx={0.5} fill="currentColor" opacity={0.6} />
+      <rect
+        x={2}
+        y={FOOT_Y}
+        width={28}
+        height={2}
+        rx={0.5}
+        fill="currentColor"
+        opacity={0.6}
+      />
     </svg>
   )
 }

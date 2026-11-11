@@ -11,12 +11,18 @@ export type ServiceData = ReturnType<typeof useServiceData>
 export function useServiceData() {
   const { service, connected, libraryVersion } = useEngine()
   const [playlist, setPlaylist] = React.useState<Playlist | null>(null)
-  const [library, setLibrary] = React.useState<Map<string, TrackSummary>>(new Map())
+  const [library, setLibrary] = React.useState<Map<string, TrackSummary>>(
+    new Map()
+  )
 
   const playlistId = service?.playlist_id
   React.useEffect(() => {
     if (!playlistId) return
-    call(api.GET("/api/v1/playlists/{id}", { params: { path: { id: playlistId } } }))
+    call(
+      api.GET("/api/v1/playlists/{id}", {
+        params: { path: { id: playlistId } },
+      })
+    )
       .then(setPlaylist)
       .catch(() => setPlaylist(null))
   }, [playlistId])
@@ -28,7 +34,11 @@ export function useServiceData() {
       .catch(() => {})
   }, [connected, libraryVersion])
 
-  const running = !!service && service.state !== "idle" && !!playlist && playlist.id === playlistId
+  const running =
+    !!service &&
+    service.state !== "idle" &&
+    !!playlist &&
+    playlist.id === playlistId
   const rows = running ? (playlist?.rows ?? []) : []
   const trackAt = (i: number | null | undefined) => {
     const row = i == null ? undefined : rows[i]

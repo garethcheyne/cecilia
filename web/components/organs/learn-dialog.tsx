@@ -16,7 +16,12 @@ import { Progress } from "@/components/ui/progress"
 import { Spinner } from "@/components/ui/spinner"
 import { useEngine } from "@/components/engine-provider"
 import type { OrganDefinition } from "@/lib/api/client"
-import { describeBinding, firstControl, stopBinding, type StopBinding } from "@/lib/learn"
+import {
+  describeBinding,
+  firstControl,
+  stopBinding,
+  type StopBinding,
+} from "@/lib/learn"
 import { stopLabel } from "@/lib/stops"
 
 type Step = "on" | "off" | "done"
@@ -55,7 +60,9 @@ export function LearnDialog({
 
   const { onMidi } = useEngine()
   const stop = organ.stops.find((s) => s.id === stopIds[index])
-  const label = stop ? stopLabel({ division: stop.division, equivalent: stop.equivalent }, organ) : ""
+  const label = stop
+    ? stopLabel({ division: stop.division, equivalent: stop.equivalent }, organ)
+    : ""
   const many = stopIds.length > 1
 
   // Listen for the organ: the first stop message moves to the next step.
@@ -102,16 +109,28 @@ export function LearnDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{many ? "Learn every stop" : "Learn a stop"}</DialogTitle>
+          <DialogTitle>
+            {many ? "Learn every stop" : "Learn a stop"}
+          </DialogTitle>
           <DialogDescription>
             {many
               ? `Stop ${index + 1} of ${stopIds.length}. Work along the stop jambs at the console.`
               : "Cecilia listens to the organ's Organ in port."}
           </DialogDescription>
         </DialogHeader>
-        {many && <Progress value={(index / stopIds.length) * 100} aria-label="Progress" />}
-        <div className="flex flex-col items-center gap-4 py-6 text-center" aria-live="polite">
-          <p className="font-display text-3xl font-semibold text-balance">{label}</p>
+        {many && (
+          <Progress
+            value={(index / stopIds.length) * 100}
+            aria-label="Progress"
+          />
+        )}
+        <div
+          className="flex flex-col items-center gap-4 py-6 text-center"
+          aria-live="polite"
+        >
+          <p className="font-display text-3xl font-semibold text-balance">
+            {label}
+          </p>
           {step === "on" && (
             <p className="flex items-center gap-2 text-lg">
               <Spinner /> Pull it out now
@@ -125,17 +144,25 @@ export function LearnDialog({
           {step === "done" &&
             (result ? (
               <p className="flex items-center gap-2 text-lg text-primary">
-                <CheckCircle2Icon /> Learned: <span className="font-mono text-base">{describeBinding(result)}</span>
+                <CheckCircle2Icon /> Learned:{" "}
+                <span className="font-mono text-base">
+                  {describeBinding(result)}
+                </span>
               </p>
             ) : (
-              <p className="text-lg text-destructive">That didn&apos;t look like a stop. Try again.</p>
+              <p className="text-lg text-destructive">
+                That didn&apos;t look like a stop. Try again.
+              </p>
             ))}
           <p className="max-w-sm text-sm text-muted-foreground">
-            No organ to hand? Choose the simulator as Organ in and press its stops on the Simulator page.
+            No organ to hand? Choose the simulator as Organ in and press its
+            stops on the Simulator page.
           </p>
         </div>
         <DialogFooter className="sm:justify-between">
-          <span className="text-sm text-muted-foreground">{many && `${learned} learned`}</span>
+          <span className="text-sm text-muted-foreground">
+            {many && `${learned} learned`}
+          </span>
           <div className="flex gap-2">
             <Button
               variant="outline"
@@ -153,7 +180,9 @@ export function LearnDialog({
                 {index + 1 >= stopIds.length ? "Finish" : "Skip"}
               </Button>
             ) : (
-              <Button onClick={() => onOpenChange(false)}>{step === "done" && result ? "Done" : "Cancel"}</Button>
+              <Button onClick={() => onOpenChange(false)}>
+                {step === "done" && result ? "Done" : "Cancel"}
+              </Button>
             )}
           </div>
         </DialogFooter>

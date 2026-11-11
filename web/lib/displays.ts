@@ -8,10 +8,22 @@ export const PANELS = ["order", "music", "now", "console"] as const
 export type PanelId = (typeof PANELS)[number]
 
 export const PANEL_INFO: Record<PanelId, { label: string; hint: string }> = {
-  order: { label: "Order of service", hint: "The pieces in order, with Play, Next and Stop" },
-  music: { label: "Music", hint: "The score of the piece, following along as it plays" },
-  now: { label: "Now playing", hint: "Large title, verse and time left, readable from a distance" },
-  console: { label: "Organ console", hint: "The stops and keys of the organ, live" },
+  order: {
+    label: "Order of service",
+    hint: "The pieces in order, with Play, Next and Stop",
+  },
+  music: {
+    label: "Music",
+    hint: "The score of the piece, following along as it plays",
+  },
+  now: {
+    label: "Now playing",
+    hint: "Large title, verse and time left, readable from a distance",
+  },
+  console: {
+    label: "Organ console",
+    hint: "The stops and keys of the organ, live",
+  },
 }
 
 export type Layout = "single" | "split"
@@ -39,7 +51,9 @@ export function isPanel(v: unknown): v is PanelId {
 }
 
 function pair(v: unknown, fallback: [PanelId, PanelId]): [PanelId, PanelId] {
-  return Array.isArray(v) && isPanel(v[0]) && isPanel(v[1]) ? [v[0], v[1]] : fallback
+  return Array.isArray(v) && isPanel(v[0]) && isPanel(v[1])
+    ? [v[0], v[1]]
+    : fallback
 }
 
 function layout(v: unknown, fallback: Layout): Layout {
@@ -116,7 +130,9 @@ export function saveDisplays(d: Displays) {
 
 /** The panels a screen actually shows. */
 export function shown(layout: Layout, panels: [PanelId, PanelId]): PanelId[] {
-  return layout === "split" && panels[0] !== panels[1] ? [...panels] : [panels[0]]
+  return layout === "split" && panels[0] !== panels[1]
+    ? [...panels]
+    : [panels[0]]
 }
 
 /** Panels for a display window, from its address (`?panels=console,music`). */

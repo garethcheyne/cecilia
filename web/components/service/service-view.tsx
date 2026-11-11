@@ -7,7 +7,11 @@ import { PageHeader } from "@/components/page-header"
 import { DisplaysDialog } from "@/components/service/displays-dialog"
 import { ServiceScreen } from "@/components/service/service-screen"
 import { Button } from "@/components/ui/button"
-import { useFullscreen, useScreenCount, useServiceChannel } from "@/hooks/use-screens"
+import {
+  useFullscreen,
+  useScreenCount,
+  useServiceChannel,
+} from "@/hooks/use-screens"
 import {
   type Displays,
   getDisplays,
@@ -23,7 +27,11 @@ import {
  * side, and send other panels to a second screen.
  */
 export function ServiceView() {
-  const displays = React.useSyncExternalStore(subscribeDisplays, getDisplays, getServerDisplays)
+  const displays = React.useSyncExternalStore(
+    subscribeDisplays,
+    getDisplays,
+    getServerDisplays
+  )
   const screens = useScreenCount()
   const fullscreen = useFullscreen()
   const [secondOpen, setSecondOpen] = React.useState(false)
@@ -54,7 +62,12 @@ export function ServiceView() {
   return (
     <>
       <PageHeader title="Service">
-        <DisplaysDialog displays={displays} onChange={change} screens={screens} secondOpen={secondOpen} />
+        <DisplaysDialog
+          displays={displays}
+          onChange={change}
+          screens={screens}
+          secondOpen={secondOpen}
+        />
         {fullscreen.supported && (
           <Button
             variant="outline"
@@ -62,8 +75,14 @@ export function ServiceView() {
             onClick={fullscreen.toggle}
             aria-label={fullscreen.on ? "Leave full screen" : "Full screen"}
           >
-            {fullscreen.on ? <MinimizeIcon data-icon="inline-start" /> : <MaximizeIcon data-icon="inline-start" />}
-            <span className="hidden sm:inline">{fullscreen.on ? "Leave full screen" : "Full screen"}</span>
+            {fullscreen.on ? (
+              <MinimizeIcon data-icon="inline-start" />
+            ) : (
+              <MaximizeIcon data-icon="inline-start" />
+            )}
+            <span className="hidden sm:inline">
+              {fullscreen.on ? "Leave full screen" : "Full screen"}
+            </span>
           </Button>
         )}
       </PageHeader>
