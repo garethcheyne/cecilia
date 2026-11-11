@@ -53,12 +53,7 @@ impl Pattern {
 
     /// Could some message match both patterns?
     pub fn overlaps(&self, other: &Pattern) -> bool {
-        self.0.len() == other.0.len()
-            && self
-                .0
-                .iter()
-                .zip(&other.0)
-                .all(|(a, b)| a.is_none() || b.is_none() || a == b)
+        self.0.len() == other.0.len() && self.0.iter().zip(&other.0).all(|(a, b)| a.is_none() || b.is_none() || a == b)
     }
 
     /// Build the message, filling the slot (if any) with `value`.
@@ -129,9 +124,7 @@ impl PartialSchema for Pattern {
     fn schema() -> RefOr<Schema> {
         ObjectBuilder::new()
             .schema_type(Type::String)
-            .description(Some(
-                "MIDI message as hex bytes, optionally with one `vv` value slot, e.g. \"B1 0B vv\"",
-            ))
+            .description(Some("MIDI message as hex bytes, optionally with one `vv` value slot, e.g. \"B1 0B vv\""))
             .build()
             .into()
     }
@@ -145,9 +138,7 @@ impl ToSchema for Pattern {}
 
 /// The role of a keyboard, independent of its local name (Great, Hauptwerk,
 /// Grand Orgue...). Order follows the English convention.
-#[derive(
-    Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize, ToSchema,
-)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize, ToSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum DivisionRole {
     Pedal,
@@ -292,7 +283,10 @@ pub enum Equivalent {
         tag: String,
     },
     /// Plays `source` division's stops from this stop's keyboard.
-    Coupler { source: DivisionRole, pitch: CouplerPitch },
+    Coupler {
+        source: DivisionRole,
+        pitch: CouplerPitch,
+    },
     Tremulant,
     /// Unison off for this division.
     UnisonOff,
@@ -358,9 +352,7 @@ pub struct Stop {
 
 impl Stop {
     pub fn display_name(&self) -> String {
-        self.full_name
-            .clone()
-            .unwrap_or_else(|| self.names.join(" "))
+        self.full_name.clone().unwrap_or_else(|| self.names.join(" "))
     }
 }
 
@@ -380,10 +372,7 @@ fn default_margin() -> u32 {
 
 impl Default for OrganDefaults {
     fn default() -> Self {
-        Self {
-            margin_start_ms: default_margin(),
-            margin_end_ms: default_margin(),
-        }
+        Self { margin_start_ms: default_margin(), margin_end_ms: default_margin() }
     }
 }
 
@@ -475,12 +464,7 @@ impl OrganDefinition {
         if self.schema != SCHEMA_VERSION {
             return bad(format!("unsupported schema version {}", self.schema));
         }
-        if self.id.is_empty()
-            || !self
-                .id
-                .chars()
-                .all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_')
-        {
+        if self.id.is_empty() || !self.id.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_') {
             return bad(format!("id {:?} must be letters, digits, '-' or '_'", self.id));
         }
 
@@ -517,10 +501,7 @@ impl OrganDefinition {
                 }
             }
             if !equivalents.insert((s.division, &s.equivalent)) {
-                return bad(format!(
-                    "stop {:?} has the same division and equivalent as another stop",
-                    s.id
-                ));
+                return bad(format!("stop {:?} has the same division and equivalent as another stop", s.id));
             }
             if s.midi.len() > MAX_BINDINGS_PER_STOP {
                 return bad(format!("stop {:?} has more than {MAX_BINDINGS_PER_STOP} bindings", s.id));
@@ -574,10 +555,7 @@ impl OrganDefinition {
             for d in &self.divisions {
                 let ch = d.channel - 1;
                 if a.0.len() == 3 && matches!(a.0[0], Some(s) if s == 0x80 | ch || s == 0x90 | ch) {
-                    return Err(OrganError::Invalid(format!(
-                        "{a_owner} uses {}'s note channel",
-                        d.name
-                    )));
+                    return Err(OrganError::Invalid(format!("{a_owner} uses {}'s note channel", d.name)));
                 }
             }
             for (b_owner, b) in &patterns[i + 1..] {
@@ -594,10 +572,7 @@ impl OrganDefinition {
 
 /// Organs shipped inside the binary.
 pub fn builtin_organs() -> Vec<OrganDefinition> {
-    [
-        include_str!("../organs/demo.organ.json"),
-        include_str!("../organs/makin-2m.organ.json"),
-    ]
+    [include_str!("../organs/demo.organ.json"), include_str!("../organs/makin-2m.organ.json")]
         .into_iter()
         .map(|text| OrganDefinition::from_json(text).expect("built-in organ is valid"))
         .collect()

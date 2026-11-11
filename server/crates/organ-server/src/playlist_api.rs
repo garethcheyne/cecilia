@@ -5,8 +5,8 @@ use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use axum::routing::{get, post};
 use axum::{Json, Router};
-use organ_core::playlist::{parse_verses, Playlist, PlaylistRow, PlaylistSummary, PLAYLIST_SCHEMA};
 use organ_core::player::VersePlan;
+use organ_core::playlist::{parse_verses, Playlist, PlaylistRow, PlaylistSummary, PLAYLIST_SCHEMA};
 use organ_core::recorder::unix_ms;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -51,7 +51,10 @@ pub struct NewPlaylist {
 /// Create an empty playlist.
 #[utoipa::path(post, path = "/api/v1/playlists", tag = "playlists", request_body = NewPlaylist,
     responses((status = 200, body = Playlist), (status = 400, body = ApiErrorBody)))]
-pub async fn create_playlist(State(s): State<AppState>, Json(req): Json<NewPlaylist>) -> Result<Json<Playlist>, Response> {
+pub async fn create_playlist(
+    State(s): State<AppState>,
+    Json(req): Json<NewPlaylist>,
+) -> Result<Json<Playlist>, Response> {
     let name = req.name.trim().to_string();
     let now = unix_ms();
     let p = Playlist {
@@ -150,9 +153,7 @@ pub struct ParsedVerses {
 #[utoipa::path(post, path = "/api/v1/verses/parse", tag = "playlists", request_body = VerseText,
     responses((status = 200, body = ParsedVerses), (status = 400, body = ApiErrorBody)))]
 pub async fn verses_parse(Json(req): Json<VerseText>) -> Result<Json<ParsedVerses>, Response> {
-    parse_verses(&req.text)
-        .map(|verses| Json(ParsedVerses { verses }))
-        .map_err(|e| error(StatusCode::BAD_REQUEST, e))
+    parse_verses(&req.text).map(|verses| Json(ParsedVerses { verses })).map_err(|e| error(StatusCode::BAD_REQUEST, e))
 }
 
 // ---------------------------------------------------------------------------
@@ -179,7 +180,10 @@ pub struct StartService {
 /// Run a playlist.
 #[utoipa::path(post, path = "/api/v1/service/start", tag = "service", request_body = StartService,
     responses((status = 200, body = ServiceStatus), (status = 404, body = ApiErrorBody), (status = 409, body = ApiErrorBody)))]
-pub async fn service_start(State(s): State<AppState>, Json(req): Json<StartService>) -> Result<Json<ServiceStatus>, Response> {
+pub async fn service_start(
+    State(s): State<AppState>,
+    Json(req): Json<StartService>,
+) -> Result<Json<ServiceStatus>, Response> {
     let p = s.playlists.get(&req.playlist_id).ok_or_else(|| no_playlist(&req.playlist_id))?;
     let status = s.hub.status().await.map_err(|e| error(StatusCode::SERVICE_UNAVAILABLE, e.to_string()))?;
     if status.output.is_none() {
@@ -210,7 +214,10 @@ pub struct SelectRow {
 /// Get a row ready to play.
 #[utoipa::path(post, path = "/api/v1/service/select", tag = "service", request_body = SelectRow,
     responses((status = 200, body = ServiceStatus), (status = 409, body = ApiErrorBody)))]
-pub async fn service_select(State(s): State<AppState>, Json(req): Json<SelectRow>) -> Result<Json<ServiceStatus>, Response> {
+pub async fn service_select(
+    State(s): State<AppState>,
+    Json(req): Json<SelectRow>,
+) -> Result<Json<ServiceStatus>, Response> {
     s.service.select(req.row).map(Json).map_err(|e| error(StatusCode::CONFLICT, e))
 }
 

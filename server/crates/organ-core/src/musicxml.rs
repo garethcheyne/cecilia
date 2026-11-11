@@ -12,7 +12,9 @@ use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
 use crate::organ::{CouplerPitch, DivisionRole, Equivalent, Family};
-use crate::track::{Meter, Mode, Registration, StopRef, TimedEvent, Track, TrackEvent, TrackInfo, TrackSource, TRACK_SCHEMA};
+use crate::track::{
+    Meter, Mode, Registration, StopRef, TimedEvent, Track, TrackEvent, TrackInfo, TrackSource, TRACK_SCHEMA,
+};
 
 const START_MARGIN_MS: f64 = 1000.0;
 const END_MARGIN_MS: u32 = 2500;
@@ -169,7 +171,8 @@ fn parse(xml: &str) -> Result<Parsed, XmlError> {
     let mut meter_set = false;
     for (pi, part) in root.children().filter(|n| n.has_tag_name("part")).enumerate() {
         let pid = part.attribute("id").unwrap_or("P").to_string();
-        let pname = part_names.get(&pid).cloned().filter(|n| !n.is_empty()).unwrap_or_else(|| format!("Part {}", pi + 1));
+        let pname =
+            part_names.get(&pid).cloned().filter(|n| !n.is_empty()).unwrap_or_else(|| format!("Part {}", pi + 1));
         let mut divisions = 1.0f64;
         let mut staves = 1u8;
         let mut measure_start = 0.0f64;
@@ -203,20 +206,23 @@ fn parse(xml: &str) -> Result<Parsed, XmlError> {
                     }
                     "direction" | "sound" => {
                         let sound = if el.has_tag_name("sound") { Some(el) } else { child(el, "sound") };
-                        let tempo = sound.and_then(|s| s.attribute("tempo")).and_then(|v| v.parse::<f64>().ok()).or_else(|| {
-                            el.descendants().find(|n| n.has_tag_name("metronome")).and_then(|m| {
-                                let per = num::<f64>(m, "per-minute")?;
-                                let unit = text_of(m, "beat-unit").unwrap_or_else(|| "quarter".into());
-                                let dotted = child(m, "beat-unit-dot").is_some();
-                                let q = match unit.as_str() {
-                                    "half" => 2.0,
-                                    "eighth" => 0.5,
-                                    "whole" => 4.0,
-                                    _ => 1.0,
-                                } * if dotted { 1.5 } else { 1.0 };
-                                Some(per * q)
-                            })
-                        });
+                        let tempo = sound
+                            .and_then(|s| s.attribute("tempo"))
+                            .and_then(|v| v.parse::<f64>().ok())
+                            .or_else(|| {
+                                el.descendants().find(|n| n.has_tag_name("metronome")).and_then(|m| {
+                                    let per = num::<f64>(m, "per-minute")?;
+                                    let unit = text_of(m, "beat-unit").unwrap_or_else(|| "quarter".into());
+                                    let dotted = child(m, "beat-unit-dot").is_some();
+                                    let q = match unit.as_str() {
+                                        "half" => 2.0,
+                                        "eighth" => 0.5,
+                                        "whole" => 4.0,
+                                        _ => 1.0,
+                                    } * if dotted { 1.5 } else { 1.0 };
+                                    Some(per * q)
+                                })
+                            });
                         if p.bpm.is_none() {
                             p.bpm = tempo.filter(|b| *b > 10.0 && *b < 400.0);
                         }
@@ -267,7 +273,11 @@ fn parse(xml: &str) -> Result<Parsed, XmlError> {
                             };
                             format!("{pname}{staff_name}, voice {voice}")
                         });
-                        let ties: Vec<&str> = el.children().filter(|c| c.has_tag_name("tie")).filter_map(|c| c.attribute("type")).collect();
+                        let ties: Vec<&str> = el
+                            .children()
+                            .filter(|c| c.has_tag_name("tie"))
+                            .filter_map(|c| c.attribute("type"))
+                            .collect();
                         let abs = measure_start + start;
                         let tie_key = (stream.clone(), key);
                         let idx = match (ties.contains(&"stop"), open_ties.remove(&tie_key)) {
@@ -387,7 +397,10 @@ pub fn hymn_registration() -> Registration {
         division,
         equivalent: Equivalent::Voice { family, footage: footage.into(), ranks: None, tag: String::new() },
     };
-    let coupler = |division, source| StopRef { division, equivalent: Equivalent::Coupler { source, pitch: CouplerPitch::Unison } };
+    let coupler = |division, source| StopRef {
+        division,
+        equivalent: Equivalent::Coupler { source, pitch: CouplerPitch::Unison },
+    };
     use DivisionRole::*;
     let mut r = Registration::default();
     r.stops.extend([
@@ -426,7 +439,9 @@ pub fn import(xml: &str, options: &XmlImportOptions, fallback_title: &str) -> Re
         for n in &p.notes {
             let Some(&division) = map.get(&n.stream) else { continue };
             let on = ms(offset + n.start);
-            let off = (START_MARGIN_MS + (offset + n.start + n.beats) * ms_per_beat - RELEASE_MS).round().max(on as f64 + 1.0) as u32;
+            let off = (START_MARGIN_MS + (offset + n.start + n.beats) * ms_per_beat - RELEASE_MS)
+                .round()
+                .max(on as f64 + 1.0) as u32;
             events.push(TimedEvent { t: on, event: TrackEvent::Note { division, key: n.key, velocity: VELOCITY } });
             events.push(TimedEvent { t: off, event: TrackEvent::Note { division, key: n.key, velocity: 0 } });
         }
@@ -510,7 +525,8 @@ mod tests {
         assert_eq!(ids, ["P1:1:1", "P1:2:2", "P1:2:3"]);
         assert_eq!(a.streams[0].label, "Organ, upper staff, voice 1");
         // The lowest voice (the bass) goes to the pedal.
-        let pedal: Vec<&str> = a.streams.iter().filter(|s| s.suggested == DivisionRole::Pedal).map(|s| s.id.as_str()).collect();
+        let pedal: Vec<&str> =
+            a.streams.iter().filter(|s| s.suggested == DivisionRole::Pedal).map(|s| s.id.as_str()).collect();
         assert!(pedal == ["P1:2:2"] || pedal == ["P1:2:3"], "{pedal:?}");
     }
 

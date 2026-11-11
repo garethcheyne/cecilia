@@ -1,21 +1,25 @@
 //! Cecilia server library: builds the HTTP/WebSocket app around the organ
 //! engine. `main.rs` runs it; integration tests start it on a spare port.
 
+// Handlers return `Result<_, Response>`: axum's Response is large, and boxing
+// every error would only add noise.
+#![allow(clippy::result_large_err)]
+
 pub mod api;
 pub mod community_api;
-pub mod organists_api;
-pub mod sharing_api;
 pub mod files_api;
 pub mod library;
 pub mod library_cli;
 pub mod mcp;
 pub mod music;
 pub mod organ_api;
+pub mod organists_api;
 pub mod organs;
 pub mod playlist_api;
 pub mod playlists;
 pub mod services;
 pub mod settings;
+pub mod sharing_api;
 pub mod system_api;
 
 use std::path::PathBuf;
@@ -170,13 +174,18 @@ pub async fn build(config: Config) -> anyhow::Result<App> {
         community: crate::community_api::Community::new(config.library_url.clone()),
     };
     let mut router = Router::new()
-        .nest("/api/v1", api::router().merge(music::router()).merge(playlist_api::router())
+        .nest(
+            "/api/v1",
+            api::router()
+                .merge(music::router())
+                .merge(playlist_api::router())
                 .merge(organ_api::router())
                 .merge(community_api::router())
                 .merge(sharing_api::router())
                 .merge(organists_api::router())
                 .merge(system_api::router().layer(axum::extract::DefaultBodyLimit::max(200 * 1024 * 1024)))
-                .merge(files_api::router().layer(axum::extract::DefaultBodyLimit::max(files_api::MAX_IMPORT_BYTES))))
+                .merge(files_api::router().layer(axum::extract::DefaultBodyLimit::max(files_api::MAX_IMPORT_BYTES))),
+        )
         .route("/mcp", post(mcp::post).get(mcp::get))
         .with_state(state.clone())
         .layer(axum::middleware::from_fn_with_state(state.clone(), system_api::require_session))
@@ -209,11 +218,7 @@ fn start_audio() -> Option<organ_core::synth::SynthHandle> {
 /// Only listed origins may call the API from a browser, so an arbitrary web
 /// page can't drive the organ through a user's local server.
 pub fn parse_origins(list: &str) -> Vec<HeaderValue> {
-    list.split(',')
-        .map(str::trim)
-        .filter(|o| !o.is_empty())
-        .filter_map(|o| HeaderValue::from_str(o).ok())
-        .collect()
+    list.split(',').map(str::trim).filter(|o| !o.is_empty()).filter_map(|o| HeaderValue::from_str(o).ok()).collect()
 }
 
 fn cors_layer(origins: Vec<HeaderValue>) -> CorsLayer {
@@ -253,9 +258,7 @@ fn reconnect_when_plugged_in(hub: MidiHub, settings: Arc<SettingsStore>) {
 /// A setting from `CECILIA_<name>`, or the older `REGISTRA_<name>` (the
 /// project's working name), so existing setups keep working.
 pub fn env(name: &str) -> Option<String> {
-    std::env::var(format!("CECILIA_{name}"))
-        .or_else(|_| std::env::var(format!("REGISTRA_{name}")))
-        .ok()
+    std::env::var(format!("CECILIA_{name}")).or_else(|_| std::env::var(format!("REGISTRA_{name}"))).ok()
 }
 
 /// `<OS data dir>/Cecilia`. A folder left by an older build under the
@@ -290,11 +293,6 @@ fn web_dir() -> Option<PathBuf> {
     if let Some(dir) = env("WEB_DIR") {
         return Some(PathBuf::from(dir));
     }
-    let beside_exe = std::env::current_exe()
-        .ok()
-        .and_then(|exe| exe.parent().map(|p| p.join("web")));
-    [beside_exe, Some(PathBuf::from("../web/out"))]
-        .into_iter()
-        .flatten()
-        .find(|d| d.join("index.html").is_file())
+    let beside_exe = std::env::current_exe().ok().and_then(|exe| exe.parent().map(|p| p.join("web")));
+    [beside_exe, Some(PathBuf::from("../web/out"))].into_iter().flatten().find(|d| d.join("index.html").is_file())
 }

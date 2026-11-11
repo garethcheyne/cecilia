@@ -59,7 +59,7 @@ impl PlaylistStore {
 
     pub fn list(&self) -> Vec<PlaylistSummary> {
         let mut v: Vec<_> = self.all.read().unwrap().values().map(Playlist::summary).collect();
-        v.sort_by(|a, b| b.modified.cmp(&a.modified));
+        v.sort_by_key(|p| std::cmp::Reverse(p.modified));
         v
     }
 
@@ -237,9 +237,7 @@ impl Service {
             name: Some(s.playlist.name.clone()),
             row: s.order.get(s.pos).copied(),
             next_row: next.and_then(|p| s.order.get(p).copied()),
-            countdown: s
-                .auto_start
-                .map(|t| t.saturating_duration_since(Instant::now()).as_secs_f32().ceil() as u32),
+            countdown: s.auto_start.map(|t| t.saturating_duration_since(Instant::now()).as_secs_f32().ceil() as u32),
         }
     }
 

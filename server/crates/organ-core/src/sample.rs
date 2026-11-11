@@ -177,24 +177,45 @@ pub fn parse_key(s: &str) -> Result<(i8, Mode), String> {
         None => (s, Mode::Major),
     };
     const MAJOR: [(&str, i8); 15] = [
-        ("Cb", -7), ("Gb", -6), ("Db", -5), ("Ab", -4), ("Eb", -3), ("Bb", -2), ("F", -1), ("C", 0),
-        ("G", 1), ("D", 2), ("A", 3), ("E", 4), ("B", 5), ("F#", 6), ("C#", 7),
+        ("Cb", -7),
+        ("Gb", -6),
+        ("Db", -5),
+        ("Ab", -4),
+        ("Eb", -3),
+        ("Bb", -2),
+        ("F", -1),
+        ("C", 0),
+        ("G", 1),
+        ("D", 2),
+        ("A", 3),
+        ("E", 4),
+        ("B", 5),
+        ("F#", 6),
+        ("C#", 7),
     ];
     const MINOR: [(&str, i8); 15] = [
-        ("Ab", -7), ("Eb", -6), ("Bb", -5), ("F", -4), ("C", -3), ("G", -2), ("D", -1), ("A", 0),
-        ("E", 1), ("B", 2), ("F#", 3), ("C#", 4), ("G#", 5), ("D#", 6), ("A#", 7),
+        ("Ab", -7),
+        ("Eb", -6),
+        ("Bb", -5),
+        ("F", -4),
+        ("C", -3),
+        ("G", -2),
+        ("D", -1),
+        ("A", 0),
+        ("E", 1),
+        ("B", 2),
+        ("F#", 3),
+        ("C#", 4),
+        ("G#", 5),
+        ("D#", 6),
+        ("A#", 7),
     ];
     let table = if mode == Mode::Major { &MAJOR } else { &MINOR };
-    table
-        .iter()
-        .find(|(n, _)| *n == tonic)
-        .map(|(_, f)| (*f, mode))
-        .ok_or_else(|| format!("unknown key {s:?}"))
+    table.iter().find(|(n, _)| *n == tonic).map(|(_, f)| (*f, mode)).ok_or_else(|| format!("unknown key {s:?}"))
 }
 
 fn parse_division(s: &str) -> Result<DivisionRole, String> {
-    serde_json::from_value(serde_json::Value::String(s.to_lowercase()))
-        .map_err(|_| format!("unknown division {s:?}"))
+    serde_json::from_value(serde_json::Value::String(s.to_lowercase())).map_err(|_| format!("unknown division {s:?}"))
 }
 
 /// "great principal 8", "swell tremulant", "swell to great".
@@ -242,10 +263,7 @@ fn parse_part(part: &Part, bar_beats: f64, pickup: f64) -> Result<(Vec<ScoreNote
             let expected = pickup + (bar as f64 - if pickup > 0.0 { 1.0 } else { 0.0 }) * bar_beats;
             let expected = if pickup > 0.0 && bar == 1 { pickup } else { expected };
             if (t - expected).abs() > 1e-6 {
-                return Err(format!(
-                    "{:?} part: bar line {bar} at beat {t}, expected {expected}",
-                    part.division
-                ));
+                return Err(format!("{:?} part: bar line {bar} at beat {t}, expected {expected}", part.division));
             }
             continue;
         }
@@ -329,9 +347,8 @@ impl Score {
         let (notes, verse_beats) = self.notes()?;
         let ms_per_beat = 60_000.0 / self.bpm;
 
-        let stops = |list: &[String]| -> Result<BTreeSet<StopRef>, String> {
-            list.iter().map(|s| parse_stop(s)).collect()
-        };
+        let stops =
+            |list: &[String]| -> Result<BTreeSet<StopRef>, String> { list.iter().map(|s| parse_stop(s)).collect() };
         let initial = Registration {
             stops: stops(&self.registration)?,
             expression: self.expression.clone(),
@@ -360,12 +377,16 @@ impl Score {
             for n in &notes {
                 let start = verse_start + n.start;
                 let on = ms(start);
-                let off = (START_MARGIN_MS + (start + n.beats) * ms_per_beat - RELEASE_MS).round().max(on as f64 + 1.0) as u32;
+                let off = (START_MARGIN_MS + (start + n.beats) * ms_per_beat - RELEASE_MS).round().max(on as f64 + 1.0)
+                    as u32;
                 events.push(TimedEvent {
                     t: on,
                     event: TrackEvent::Note { division: n.division, key: n.key, velocity: VELOCITY },
                 });
-                events.push(TimedEvent { t: off, event: TrackEvent::Note { division: n.division, key: n.key, velocity: 0 } });
+                events.push(TimedEvent {
+                    t: off,
+                    event: TrackEvent::Note { division: n.division, key: n.key, velocity: 0 },
+                });
             }
         }
         let end = ms(self.verses as f64 * verse_beats + (self.verses - 1) as f64 * self.gap);
@@ -426,9 +447,7 @@ pub fn sample_tracks() -> Vec<Track> {
     SAMPLES
         .iter()
         .map(|(name, text)| {
-            Score::from_json(text)
-                .and_then(|s| s.compile())
-                .unwrap_or_else(|e| panic!("sample {name} is invalid: {e}"))
+            Score::from_json(text).and_then(|s| s.compile()).unwrap_or_else(|e| panic!("sample {name} is invalid: {e}"))
         })
         .collect()
 }
@@ -464,7 +483,9 @@ mod tests {
         assert_eq!(parse_key("Bb"), Ok((-2, Mode::Major)));
         assert_eq!(parse_key("Dm"), Ok((-1, Mode::Minor)));
         let s = parse_stop("great mutation 2 2/3 Twelfth").unwrap();
-        assert!(matches!(&s.equivalent, Equivalent::Voice { footage, tag, .. } if footage == "2 2/3" && tag == "Twelfth"));
+        assert!(
+            matches!(&s.equivalent, Equivalent::Voice { footage, tag, .. } if footage == "2 2/3" && tag == "Twelfth")
+        );
         let c = parse_stop("swell to great").unwrap();
         assert_eq!(c.division, DivisionRole::Great);
         assert!(parse_stop("great kazoo 8").is_err());

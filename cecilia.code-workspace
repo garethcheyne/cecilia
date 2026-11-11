@@ -1,12 +1,14 @@
 {
-  // Cecilia, its shared library and its website, side by side. Clone all
-  // three into the same parent folder:
+  // Cecilia, its shared library, the community service and the website, side
+  // by side. Clone all four into the same parent folder:
   //   git clone https://github.com/garethcheyne/cecilia
   //   git clone https://github.com/garethcheyne/cecilia-library
+  //   git clone https://github.com/garethcheyne/cecilia-community
   //   git clone https://github.com/garethcheyne/cecilia-site
   "folders": [
     { "name": "cecilia", "path": "." },
     { "name": "cecilia-library", "path": "../cecilia-library" },
+    { "name": "cecilia-community", "path": "../cecilia-community" },
     { "name": "cecilia-site", "path": "../cecilia-site" }
   ],
   "settings": {
@@ -24,8 +26,10 @@
     "search.exclude": {
       "**/node_modules": true,
       "**/target": true,
-      "web/out": true,
-      "web/.next": true
+      "**/.next": true,
+      "**/out": true,
+      "**/.wrangler": true,
+      "**/test-results": true
     }
   },
   "extensions": {
@@ -51,6 +55,17 @@
         "problemMatcher": []
       },
       {
+        "label": "Cecilia: run server with the local community service",
+        "type": "shell",
+        "command": "cargo run",
+        "options": {
+          "cwd": "${workspaceFolder:cecilia}/server",
+          "env": { "CECILIA_LIBRARY_URL": "http://127.0.0.1:8787/" }
+        },
+        "isBackground": true,
+        "problemMatcher": []
+      },
+      {
         "label": "Cecilia: web UI (dev)",
         "type": "shell",
         "command": "npm run dev",
@@ -63,6 +78,22 @@
         "type": "shell",
         "command": "node scripts/test-all.mjs",
         "options": { "cwd": "${workspaceFolder:cecilia}" },
+        "group": "test",
+        "problemMatcher": []
+      },
+      {
+        "label": "Community: run locally",
+        "type": "shell",
+        "command": "npx wrangler dev --ip 127.0.0.1 --port 8787",
+        "options": { "cwd": "${workspaceFolder:cecilia-community}" },
+        "isBackground": true,
+        "problemMatcher": []
+      },
+      {
+        "label": "Community: tests",
+        "type": "shell",
+        "command": "npm test",
+        "options": { "cwd": "${workspaceFolder:cecilia-community}" },
         "group": "test",
         "problemMatcher": []
       },

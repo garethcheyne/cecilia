@@ -74,9 +74,7 @@ fn guard(s: &AppState, headers: &HeaderMap) -> Option<Response> {
             .and_then(|v| v.strip_prefix("Bearer "))
             .unwrap_or("");
         if !constant_time_eq(given.as_bytes(), token.as_bytes()) {
-            return Some(
-                (StatusCode::UNAUTHORIZED, [(header::WWW_AUTHENTICATE, "Bearer")]).into_response(),
-            );
+            return Some((StatusCode::UNAUTHORIZED, [(header::WWW_AUTHENTICATE, "Bearer")]).into_response());
         }
     }
     None
@@ -87,8 +85,7 @@ fn constant_time_eq(a: &[u8], b: &[u8]) -> bool {
 }
 
 fn rpc_error(id: Value, code: i32, message: &str) -> Response {
-    Json(json!({ "jsonrpc": "2.0", "id": id, "error": { "code": code, "message": message } }))
-        .into_response()
+    Json(json!({ "jsonrpc": "2.0", "id": id, "error": { "code": code, "message": message } })).into_response()
 }
 
 type RpcResult = Result<Value, (i32, String)>;
@@ -97,9 +94,7 @@ async fn dispatch(s: &AppState, method: &str, params: &Value) -> RpcResult {
     match method {
         "initialize" => {
             let asked = params.get("protocolVersion").and_then(Value::as_str);
-            let version = asked
-                .filter(|v| PROTOCOL_VERSIONS.contains(v))
-                .unwrap_or(PROTOCOL_VERSIONS[0]);
+            let version = asked.filter(|v| PROTOCOL_VERSIONS.contains(v)).unwrap_or(PROTOCOL_VERSIONS[0]);
             let name = assistant_name(s);
             Ok(json!({
                 "protocolVersion": version,
@@ -129,11 +124,7 @@ async fn dispatch(s: &AppState, method: &str, params: &Value) -> RpcResult {
 }
 
 pub fn assistant_name(s: &AppState) -> String {
-    s.settings
-        .get()
-        .assistant_name
-        .filter(|n| !n.trim().is_empty())
-        .unwrap_or_else(|| DEFAULT_ASSISTANT_NAME.into())
+    s.settings.get().assistant_name.filter(|n| !n.trim().is_empty()).unwrap_or_else(|| DEFAULT_ASSISTANT_NAME.into())
 }
 
 fn instructions(name: &str) -> String {
@@ -237,13 +228,9 @@ async fn call_tool(s: &AppState, name: &str, args: &Value) -> ToolResult {
                 Err(e) => Err(midi_message(e)),
             }
         }
-        "list_organs" => Ok(s
-            .organs
-            .list()
-            .iter()
-            .map(|o| format!("{} ({} stops)", o.name, o.stops))
-            .collect::<Vec<_>>()
-            .join("\n")),
+        "list_organs" => {
+            Ok(s.organs.list().iter().map(|o| format!("{} ({} stops)", o.name, o.stops)).collect::<Vec<_>>().join("\n"))
+        }
         "select_organ" => select_organ(s, args.get("organ").and_then(Value::as_str).unwrap_or_default()),
         "start_recording" => {
             s.hub.test_record().await.map_err(midi_message)?;
@@ -301,10 +288,7 @@ fn seconds(ms: u64) -> String {
 }
 
 fn state_name<T: serde::Serialize>(state: &T) -> String {
-    serde_json::to_value(state)
-        .ok()
-        .and_then(|v| v.as_str().map(str::to_owned))
-        .unwrap_or_default()
+    serde_json::to_value(state).ok().and_then(|v| v.as_str().map(str::to_owned)).unwrap_or_default()
 }
 
 async fn send_event(s: &AppState, event: &OrganEvent) -> Result<(), String> {
@@ -326,17 +310,9 @@ async fn organ_status(s: &AppState) -> ToolResult {
     if !st.inputs.is_empty() {
         lines.push(format!("Listening to {}.", st.inputs.join(", ")));
     }
-    let drawn: Vec<String> = organ
-        .stops
-        .iter()
-        .filter(|st| console.is_on(&st.id))
-        .map(|st| stop_label(&organ, st))
-        .collect();
-    lines.push(if drawn.is_empty() {
-        "No stops drawn.".into()
-    } else {
-        format!("Drawn: {}.", drawn.join(", "))
-    });
+    let drawn: Vec<String> =
+        organ.stops.iter().filter(|st| console.is_on(&st.id)).map(|st| stop_label(&organ, st)).collect();
+    lines.push(if drawn.is_empty() { "No stops drawn.".into() } else { format!("Drawn: {}.", drawn.join(", ")) });
     for (role, value) in &console.expression {
         if let Some(d) = organ.division(*role) {
             lines.push(format!("{} pedal {}% open.", d.name, percent(*value)));
@@ -374,7 +350,11 @@ fn list_stops(s: &AppState, division: Option<&str>) -> ToolResult {
                 .filter(|st| st.division == d.role)
                 .map(|st| {
                     let name = st.names.join(" ");
-                    if console.is_on(&st.id) { format!("{name} (drawn)") } else { name }
+                    if console.is_on(&st.id) {
+                        format!("{name} (drawn)")
+                    } else {
+                        name
+                    }
                 })
                 .collect();
             format!("{}: {}", d.name, stops.join(", "))
@@ -392,9 +372,7 @@ async fn set_stops(s: &AppState, names: &[String], on: bool) -> ToolResult {
             Resolved::One(id) => {
                 ids.insert(id);
             }
-            Resolved::Several(options) => {
-                problems.push(format!("\"{q}\" could be {}", or_list(&options)))
-            }
+            Resolved::Several(options) => problems.push(format!("\"{q}\" could be {}", or_list(&options))),
             Resolved::None => problems.push(format!("there's no stop called \"{q}\"")),
         }
     }
@@ -429,18 +407,10 @@ async fn set_stops(s: &AppState, names: &[String], on: bool) -> ToolResult {
 
 async fn set_swell(s: &AppState, args: &Value) -> ToolResult {
     let organ = s.live.organ();
-    let pct = args
-        .get("percent")
-        .and_then(Value::as_f64)
-        .ok_or("Say how far open, from 0 to 100.")?
-        .clamp(0.0, 100.0);
+    let pct = args.get("percent").and_then(Value::as_f64).ok_or("Say how far open, from 0 to 100.")?.clamp(0.0, 100.0);
     let division = match args.get("division").and_then(Value::as_str) {
         Some(q) => find_division(&organ, q).ok_or_else(|| format!("This organ has no division called {q:?}."))?,
-        None => organ
-            .divisions
-            .iter()
-            .find(|d| d.expression.is_some())
-            .ok_or("This organ has no swell pedal.")?,
+        None => organ.divisions.iter().find(|d| d.expression.is_some()).ok_or("This organ has no swell pedal.")?,
     };
     if division.expression.is_none() {
         return Err(format!("The {} has no swell pedal.", division.name));
@@ -457,7 +427,8 @@ fn select_organ(s: &AppState, query: &str) -> ToolResult {
         .iter()
         .filter(|o| {
             let have = [tokens(&o.name), tokens(&o.id)].concat();
-            !q.is_empty() && q.iter().all(|t| have.iter().any(|h| h == t || (t.len() >= 3 && h.starts_with(t.as_str()))))
+            !q.is_empty()
+                && q.iter().all(|t| have.iter().any(|h| h == t || (t.len() >= 3 && h.starts_with(t.as_str()))))
         })
         .collect();
     let organ = match matches.as_slice() {

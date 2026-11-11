@@ -158,10 +158,7 @@ pub fn parse_verses(text: &str) -> Result<Option<VersePlan>, String> {
     }
     let bad = || format!("can't read the verses {t:?}");
     let list: Vec<usize> = if t.contains([',', ' ']) {
-        t.split([',', ' '])
-            .filter(|s| !s.is_empty())
-            .map(|s| s.parse().map_err(|_| bad()))
-            .collect::<Result<_, _>>()?
+        t.split([',', ' ']).filter(|s| !s.is_empty()).map(|s| s.parse().map_err(|_| bad())).collect::<Result<_, _>>()?
     } else {
         let n: usize = t.parse().map_err(|_| bad())?;
         if n < 20 {

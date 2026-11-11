@@ -12,7 +12,8 @@ const here = path.dirname(fileURLToPath(import.meta.url))
 // (`npm run build` first). Each run gets an empty data folder and no sound.
 const PORT = Number(process.env.E2E_PORT ?? 7090)
 const exe = process.platform === "win32" ? "cecilia.exe" : "cecilia"
-const bin = process.env.CECILIA_BIN ?? path.resolve(here, "../server/target/debug", exe)
+const bin =
+  process.env.CECILIA_BIN ?? path.resolve(here, "../server/target/debug", exe)
 const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), "cecilia-e2e-"))
 
 export default defineConfig({
@@ -25,7 +26,9 @@ export default defineConfig({
     baseURL: `http://127.0.0.1:${PORT}`,
     trace: "retain-on-failure",
     // Use the installed Edge or Chrome rather than downloading a browser.
-    channel: process.env.E2E_CHANNEL ?? (process.platform === "win32" ? "msedge" : "chrome"),
+    channel:
+      process.env.E2E_CHANNEL ??
+      (process.platform === "win32" ? "msedge" : "chrome"),
   },
   projects: [
     { name: "desktop", use: { viewport: { width: 1280, height: 900 } } },

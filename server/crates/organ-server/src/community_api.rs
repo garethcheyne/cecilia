@@ -113,7 +113,8 @@ impl Community {
         }
         let cat = if self.is_web() {
             let text = self.fetch("index.json").await?;
-            serde_json::from_str::<Catalogue>(&text).map_err(|e| format!("the library's catalogue is unreadable: {e}"))?
+            serde_json::from_str::<Catalogue>(&text)
+                .map_err(|e| format!("the library's catalogue is unreadable: {e}"))?
         } else {
             // A local clone: build the catalogue from its files.
             let base = self.base.clone();
@@ -219,7 +220,8 @@ pub async fn add_organ(State(s): State<AppState>, Path(id): Path<String>) -> Res
         .find(|o| o.id == id)
         .ok_or_else(|| error(StatusCode::NOT_FOUND, format!("the shared library has no organ called {id:?}")))?;
     let text = s.community.fetch(&entry.path).await.map_err(|e| error(StatusCode::SERVICE_UNAVAILABLE, e))?;
-    let mut organ = OrganDefinition::from_json(&text).map_err(|e| error(StatusCode::UNPROCESSABLE_ENTITY, e.to_string()))?;
+    let mut organ =
+        OrganDefinition::from_json(&text).map_err(|e| error(StatusCode::UNPROCESSABLE_ENTITY, e.to_string()))?;
     organ.id = s.organs.unique_id(&format!("{} {}", entry.meta.maker, entry.meta.model));
     organ.name = format!("{} {}", entry.meta.maker, entry.meta.model);
     let mut notes = organ.connection.clone().unwrap_or_default();

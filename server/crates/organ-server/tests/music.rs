@@ -38,9 +38,8 @@ async fn recording_needs_an_input_and_playing_needs_an_output() {
     let s = TestServer::start().await;
     let (code, body) = s.request(Method::POST, "/recorder/start", None).await;
     assert_eq!(code, 409, "{body}");
-    let (code, body) = s
-        .request(Method::POST, "/player/load", Some(json!({ "track_id": "sample-old-hundredth" })))
-        .await;
+    let (code, body) =
+        s.request(Method::POST, "/player/load", Some(json!({ "track_id": "sample-old-hundredth" }))).await;
     assert_eq!(code, 409, "{body}");
     let (code, _) = s.request(Method::POST, "/player/load", Some(json!({ "track_id": "nope" }))).await;
     assert_eq!(code, 404);
@@ -90,10 +89,7 @@ async fn a_hymn_plays_with_verse_control_and_tempo() {
     let s = TestServer::with_simulator().await;
     // One verse, very fast: enough to hear it all and finish quickly.
     let p = s
-        .post(
-            "/player/load",
-            json!({ "track_id": "sample-old-hundredth", "options": { "verses": [4], "tempo": 400 } }),
-        )
+        .post("/player/load", json!({ "track_id": "sample-old-hundredth", "options": { "verses": [4], "tempo": 400 } }))
         .await;
     assert_eq!(p["verses"], 1);
     assert_eq!(p["plan"], json!([4]));
@@ -151,9 +147,8 @@ async fn transport_pause_seek_tempo_and_stop() {
 async fn library_edits() {
     let s = TestServer::start().await;
     let id = "sample-old-hundredth";
-    let t = s
-        .patch(&format!("/library/{id}"), json!({ "title": "  Old 100th  ", "volume": 80, "performer": "Dad" }))
-        .await;
+    let t =
+        s.patch(&format!("/library/{id}"), json!({ "title": "  Old 100th  ", "volume": 80, "performer": "Dad" })).await;
     assert_eq!(t["info"]["title"], "Old 100th");
     assert_eq!(t["info"]["volume"], 80);
     let (code, _) = s.request(Method::PATCH, &format!("/library/{id}"), Some(json!({ "volume": 0 }))).await;

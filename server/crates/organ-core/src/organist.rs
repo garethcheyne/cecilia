@@ -32,14 +32,7 @@ pub fn division_map(organ: &OrganDefinition) -> BTreeMap<DivisionRole, DivisionR
     let first_manual = organ.divisions.iter().map(|d| d.role).find(|r| *r != Pedal);
     fallbacks
         .into_iter()
-        .filter_map(|(from, order)| {
-            order
-                .iter()
-                .copied()
-                .find(|d| has(*d))
-                .or(first_manual)
-                .map(|to| (from, to))
-        })
+        .filter_map(|(from, order)| order.iter().copied().find(|d| has(*d)).or(first_manual).map(|to| (from, to)))
         .collect()
 }
 
@@ -163,9 +156,7 @@ impl Organist {
             .collect();
         for d in wanted_voices {
             let speaks = out.iter().any(|id| {
-                self.organ
-                    .stop(id)
-                    .is_some_and(|s| s.division == d && matches!(s.equivalent, Equivalent::Voice { .. }))
+                self.organ.stop(id).is_some_and(|s| s.division == d && matches!(s.equivalent, Equivalent::Voice { .. }))
             });
             if !speaks {
                 if let Some(s) = self.quiet_foundation(d) {
@@ -288,9 +279,8 @@ mod tests {
     fn demo_tracks_play_on_the_makin() {
         let demo = organ("demo");
         let vo = Organist::new(organ("makin-2m"));
-        let report = vo.report(
-            demo.stops.iter().map(|s| StopRef::of(&demo, &s.id).unwrap()).collect::<Vec<_>>().iter(),
-        );
+        let report =
+            vo.report(demo.stops.iter().map(|s| StopRef::of(&demo, &s.id).unwrap()).collect::<Vec<_>>().iter());
         let mapped = report.iter().filter(|m| m.stop.is_some()).count();
         assert!(mapped * 10 >= report.len() * 8, "most stops have a stand-in: {mapped}/{}", report.len());
     }

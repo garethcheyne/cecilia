@@ -299,11 +299,7 @@ impl Engine {
             missing: Vec::new(),
             simulator,
             simulator_input: false,
-            recorder: Arc::new(Mutex::new(Recorder {
-                recording: false,
-                start: now,
-                events: Vec::new(),
-            })),
+            recorder: Arc::new(Mutex::new(Recorder { recording: false, start: now, events: Vec::new() })),
             playback: None,
         }
     }
@@ -445,9 +441,7 @@ impl Engine {
         midi_in.ignore(Ignore::TimeAndActiveSense);
         let ports = midi_in.ports();
         let names: Vec<String> = ports.iter().map(|p| midi_in.port_name(p).unwrap_or_default()).collect();
-        let port = find_port(&names, name)
-            .map(|i| ports[i].clone())
-            .ok_or_else(|| "port not found".to_string())?;
+        let port = find_port(&names, name).map(|i| ports[i].clone()).ok_or_else(|| "port not found".to_string())?;
 
         let recorder = Arc::clone(&self.recorder);
         let events = self.events.clone();
@@ -471,8 +465,7 @@ impl Engine {
             Output::Device(conn) => conn.send(bytes).map_err(|e| MidiError::Send(e.to_string()))?,
             Output::Simulator => {
                 let sim = self.simulator.as_ref().ok_or(MidiError::NoOutput)?;
-                sim.send(bytes.to_vec())
-                    .map_err(|_| MidiError::Send("simulator stopped".into()))?;
+                sim.send(bytes.to_vec()).map_err(|_| MidiError::Send("simulator stopped".into()))?;
             }
         }
         let _ = self.events.send(EngineEvent::Midi {
@@ -536,11 +529,7 @@ impl Engine {
         if events.is_empty() {
             return Err(MidiError::Empty);
         }
-        self.playback = Some(Playback {
-            start: Instant::now(),
-            next: 0,
-            events,
-        });
+        self.playback = Some(Playback { start: Instant::now(), next: 0, events });
         Ok(self.broadcast_status())
     }
 
@@ -599,10 +588,7 @@ impl Engine {
             };
             (rec.events.len(), duration)
         };
-        let position_ms = self
-            .playback
-            .as_ref()
-            .map_or(0, |pb| pb.start.elapsed().as_millis() as u64);
+        let position_ms = self.playback.as_ref().map_or(0, |pb| pb.start.elapsed().as_millis() as u64);
         let mut inputs: Vec<String> = self.inputs.iter().map(|(n, _)| n.clone()).collect();
         if self.simulator_input {
             inputs.push(SIMULATOR_PORT.into());
@@ -611,12 +597,7 @@ impl Engine {
             inputs,
             output: self.output.as_ref().map(|(n, _)| n.clone()),
             missing: self.missing.clone(),
-            test: TestStatus {
-                state,
-                events,
-                duration_ms,
-                position_ms,
-            },
+            test: TestStatus { state, events, duration_ms, position_ms },
         }
     }
 
@@ -634,18 +615,9 @@ impl Engine {
 fn list_ports() -> Result<PortList, MidiError> {
     let midi_in = MidiInput::new(CLIENT_NAME).map_err(|e| MidiError::Init(e.to_string()))?;
     let midi_out = MidiOutput::new(CLIENT_NAME).map_err(|e| MidiError::Init(e.to_string()))?;
-    let inputs = midi_in
-        .ports()
-        .iter()
-        .filter_map(|p| midi_in.port_name(p).ok())
-        .filter(|n| useful_port(n))
-        .collect();
-    let outputs = midi_out
-        .ports()
-        .iter()
-        .filter_map(|p| midi_out.port_name(p).ok())
-        .filter(|n| useful_port(n))
-        .collect();
+    let inputs = midi_in.ports().iter().filter_map(|p| midi_in.port_name(p).ok()).filter(|n| useful_port(n)).collect();
+    let outputs =
+        midi_out.ports().iter().filter_map(|p| midi_out.port_name(p).ok()).filter(|n| useful_port(n)).collect();
     Ok(PortList { inputs, outputs })
 }
 
@@ -657,7 +629,10 @@ pub fn port_key(name: &str) -> &str {
     match name.rsplit_once(' ') {
         Some((head, tail))
             if tail.split_once(':').is_some_and(|(a, b)| {
-                !a.is_empty() && !b.is_empty() && a.bytes().all(|c| c.is_ascii_digit()) && b.bytes().all(|c| c.is_ascii_digit())
+                !a.is_empty()
+                    && !b.is_empty()
+                    && a.bytes().all(|c| c.is_ascii_digit())
+                    && b.bytes().all(|c| c.is_ascii_digit())
             }) =>
         {
             head
@@ -668,10 +643,7 @@ pub fn port_key(name: &str) -> &str {
 
 /// The saved port: exactly, or else the same device with different numbers.
 fn find_port(names: &[String], wanted: &str) -> Option<usize> {
-    names
-        .iter()
-        .position(|n| n == wanted)
-        .or_else(|| names.iter().position(|n| port_key(n) == port_key(wanted)))
+    names.iter().position(|n| n == wanted).or_else(|| names.iter().position(|n| port_key(n) == port_key(wanted)))
 }
 
 /// Hide Linux's "Midi Through" loopback, which is never what an organist wants.
@@ -683,12 +655,18 @@ fn open_output(name: &str) -> Result<MidiOutputConnection, String> {
     let midi_out = MidiOutput::new(CLIENT_NAME).map_err(|e| e.to_string())?;
     let ports = midi_out.ports();
     let names: Vec<String> = ports.iter().map(|p| midi_out.port_name(p).unwrap_or_default()).collect();
-    let port = find_port(&names, name)
-        .map(|i| ports[i].clone())
-        .ok_or_else(|| "port not found".to_string())?;
-    midi_out
-        .connect(&port, "cecilia-out")
-        .map_err(|e| e.to_string())
+    let port = find_port(&names, name).map(|i| ports[i].clone()).ok_or_else(|| "port not found".to_string())?;
+    midi_out.connect(&port, "cecilia-out").map_err(|e| e.to_string())
+}
+
+/// Windows' default scheduler tick is ~15.6 ms, far too coarse for MIDI
+/// playback. Ask for 1 ms for the lifetime of the process.
+fn raise_timer_resolution() {
+    #[cfg(windows)]
+    // SAFETY: timeBeginPeriod has no memory-safety preconditions.
+    unsafe {
+        windows_sys::Win32::Media::timeBeginPeriod(1);
+    }
 }
 
 #[cfg(test)]
@@ -704,15 +682,5 @@ mod tests {
         assert_eq!(find_port(&names, "UM-ONE:UM-ONE MIDI 1 20:0"), Some(1), "renumbered after a reboot");
         assert_eq!(find_port(&names, "Gone 20:0"), None);
         assert!(!useful_port("Midi Through:Midi Through Port-0 14:0"));
-    }
-}
-
-/// Windows' default scheduler tick is ~15.6 ms, far too coarse for MIDI
-/// playback. Ask for 1 ms for the lifetime of the process.
-fn raise_timer_resolution() {
-    #[cfg(windows)]
-    // SAFETY: timeBeginPeriod has no memory-safety preconditions.
-    unsafe {
-        windows_sys::Win32::Media::timeBeginPeriod(1);
     }
 }

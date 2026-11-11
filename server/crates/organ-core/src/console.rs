@@ -26,12 +26,7 @@ impl ConsoleState {
         Self {
             stops: BTreeSet::new(),
             notes: BTreeMap::new(),
-            expression: organ
-                .divisions
-                .iter()
-                .filter(|d| d.expression.is_some())
-                .map(|d| (d.role, 127))
-                .collect(),
+            expression: organ.divisions.iter().filter(|d| d.expression.is_some()).map(|d| (d.role, 127)).collect(),
             master_volume: 127,
         }
     }
@@ -64,12 +59,8 @@ impl ConsoleState {
                 }
                 true
             }
-            OrganEvent::Expression { division, value } => {
-                self.expression.insert(*division, *value) != Some(*value)
-            }
-            OrganEvent::MasterVolume { value } => {
-                std::mem::replace(&mut self.master_volume, *value) != *value
-            }
+            OrganEvent::Expression { division, value } => self.expression.insert(*division, *value) != Some(*value),
+            OrganEvent::MasterVolume { value } => std::mem::replace(&mut self.master_volume, *value) != *value,
             OrganEvent::AllStopsOff => {
                 let changed = !self.stops.is_empty();
                 self.stops.clear();
@@ -111,9 +102,7 @@ impl ConsoleState {
             }
             for (division, offset) in sources {
                 for s in &organ.stops {
-                    if s.division != division
-                        || !self.is_on(&s.id)
-                        || !matches!(s.equivalent, Equivalent::Voice { .. })
+                    if s.division != division || !self.is_on(&s.id) || !matches!(s.equivalent, Equivalent::Voice { .. })
                     {
                         continue;
                     }

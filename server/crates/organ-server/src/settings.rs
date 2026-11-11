@@ -90,7 +90,11 @@ impl Organist {
             return "A Cecilia organist".into();
         }
         let c = self.credit_as.trim();
-        if c.is_empty() { self.name.clone() } else { c.to_string() }
+        if c.is_empty() {
+            self.name.clone()
+        } else {
+            c.to_string()
+        }
     }
 }
 
@@ -125,10 +129,7 @@ impl SettingsStore {
                 *name = organ_core::SIMULATOR_PORT.to_string();
             }
         }
-        Ok(Self {
-            path,
-            current: Mutex::new(current),
-        })
+        Ok(Self { path, current: Mutex::new(current) })
     }
 
     pub fn get(&self) -> Settings {

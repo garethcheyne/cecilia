@@ -84,11 +84,8 @@ fn parse_key(text: &str) -> Result<(i8, bool), String> {
         _ => ("", rest.clone()),
     };
     let tonic = format!("{letter}{acc}");
-    let mode_word = if mode_inline.is_empty() {
-        text.split_whitespace().nth(1).unwrap_or("").to_string()
-    } else {
-        mode_inline
-    };
+    let mode_word =
+        if mode_inline.is_empty() { text.split_whitespace().nth(1).unwrap_or("").to_string() } else { mode_inline };
     let mode = mode_word.to_ascii_lowercase();
     let m3: String = mode.chars().take(3).collect();
     let offset = match m3.as_str() {
@@ -102,11 +99,7 @@ fn parse_key(text: &str) -> Result<(i8, bool), String> {
         _ if mode.starts_with('m') => -3,
         _ => 0,
     };
-    let base = MAJOR
-        .iter()
-        .position(|k| *k == tonic)
-        .ok_or_else(|| format!("unknown key {text:?}"))? as i8
-        - 7;
+    let base = MAJOR.iter().position(|k| *k == tonic).ok_or_else(|| format!("unknown key {text:?}"))? as i8 - 7;
     let fifths = (base + offset).clamp(-7, 7);
     Ok((fifths, offset == -3))
 }
@@ -259,7 +252,9 @@ pub fn parse(text: &str) -> Result<AbcTune, String> {
                     let meter = match m {
                         "C" => Some((4, 4)),
                         "C|" => Some((2, 2)),
-                        _ => m.split_once('/').and_then(|(a, b)| Some((a.trim().parse().ok()?, b.trim().parse().ok()?))),
+                        _ => {
+                            m.split_once('/').and_then(|(a, b)| Some((a.trim().parse().ok()?, b.trim().parse().ok()?)))
+                        }
                     };
                     if in_body {
                         if meter != tune.meter {
@@ -353,7 +348,8 @@ fn parse_music(line: &str, tune: &mut AbcTune, states: &mut [VoiceState], mut v:
     let ch: Vec<char> = line.chars().collect();
     let n = ch.len();
     let mut i = 0;
-    let skip_to = |i: usize, end: char| -> usize { ch[i + 1..].iter().position(|c| *c == end).map_or(n, |p| i + 2 + p) };
+    let skip_to =
+        |i: usize, end: char| -> usize { ch[i + 1..].iter().position(|c| *c == end).map_or(n, |p| i + 2 + p) };
 
     while i < n {
         let c = ch[i];
@@ -361,7 +357,8 @@ fn parse_music(line: &str, tune: &mut AbcTune, states: &mut [VoiceState], mut v:
             // A dotted tie (".-") ties in some verses only. The tune follows
             // the words, so it plays the note again; lower parts hold on.
             '.' if ch.get(i + 1) == Some(&'-') && v == 0 => i += 2,
-            ' ' | '\t' | '`' | '\\' | '$' | 'y' | ')' | '.' | '~' | 'H' | 'L' | 'M' | 'O' | 'P' | 'S' | 'T' | 'u' | 'v' => i += 1,
+            ' ' | '\t' | '`' | '\\' | '$' | 'y' | ')' | '.' | '~' | 'H' | 'L' | 'M' | 'O' | 'P' | 'S' | 'T' | 'u'
+            | 'v' => i += 1,
             '"' => i = skip_to(i, '"'),
             '!' => i = skip_to(i, '!'),
             '+' => i = skip_to(i, '+'),
@@ -519,7 +516,13 @@ fn push_bar(items: &mut Vec<Item>, state: &mut VoiceState) {
     }
 }
 
-fn inline_field(k: char, body: &str, tune: &mut AbcTune, states: &mut [VoiceState], v: &mut usize) -> Result<(), String> {
+fn inline_field(
+    k: char,
+    body: &str,
+    tune: &mut AbcTune,
+    states: &mut [VoiceState],
+    v: &mut usize,
+) -> Result<(), String> {
     match k {
         'K' => states[*v].fifths = parse_key(body)?.0,
         'L' => {
@@ -908,10 +911,46 @@ fn people(field: &str) -> String {
 
 fn is_traditional(field: &str) -> bool {
     let f = field.trim().to_ascii_lowercase();
-    let words = ["traditional", "unknown", "none", "english", "german", "french", "latin", "welsh", "dutch", "silesian",
-        "yoruba", "irish", "scottish", "swedish", "czech", "polish", "american", "plainsong", "gaelic", "italian",
-        "spanish", "danish", "norwegian", "finnish", "hebrew", "russian", "bohemian", "basque", "catalan",
-        "african-american", "negro spiritual", "spiritual", "shaker", "folk", "genevan", "medieval", "plainchant", "gregorian"];
+    let words = [
+        "traditional",
+        "unknown",
+        "none",
+        "english",
+        "german",
+        "french",
+        "latin",
+        "welsh",
+        "dutch",
+        "silesian",
+        "yoruba",
+        "irish",
+        "scottish",
+        "swedish",
+        "czech",
+        "polish",
+        "american",
+        "plainsong",
+        "gaelic",
+        "italian",
+        "spanish",
+        "danish",
+        "norwegian",
+        "finnish",
+        "hebrew",
+        "russian",
+        "bohemian",
+        "basque",
+        "catalan",
+        "african-american",
+        "negro spiritual",
+        "spiritual",
+        "shaker",
+        "folk",
+        "genevan",
+        "medieval",
+        "plainchant",
+        "gregorian",
+    ];
     f.is_empty() || words.iter().any(|w| f == *w || f.starts_with(&format!("{w} ")))
 }
 
@@ -967,16 +1006,21 @@ fn credit_problem(who: &str, field: &str, cutoff: i32) -> Option<String> {
         }
         for g in groups {
             let parts: Vec<&str> = g.split(['-', '–']).collect();
-            let died = parts.last().and_then(|p| p.split(|c: char| !c.is_ascii_digit()).filter(|w| w.len() == 4).last());
+            let died = parts.last().and_then(|p| p.split(|c: char| !c.is_ascii_digit()).rfind(|w| w.len() == 4));
             match died.and_then(|d| d.parse::<i32>().ok()) {
                 Some(y) if parts.len() > 1 || g.contains("d.") => {
                     if y > cutoff {
-                        return Some(format!("{who}: {} died in {y}, in copyright in some countries until {}", person(field), y + 71));
+                        return Some(format!(
+                            "{who}: {} died in {y}, in copyright in some countries until {}",
+                            person(field),
+                            y + 71
+                        ));
                     }
                 }
                 _ => {
                     // Born long enough ago that they can't have died since the cutoff.
-                    let born = parts.first().and_then(|p| p.split(|c: char| !c.is_ascii_digit()).find(|w| w.len() == 4));
+                    let born =
+                        parts.first().and_then(|p| p.split(|c: char| !c.is_ascii_digit()).find(|w| w.len() == 4));
                     match born.and_then(|b| b.parse::<i32>().ok()) {
                         Some(b) if b + 105 <= cutoff => {}
                         _ => return Some(format!("{who}: can't tell when {} died", person(field))),
@@ -1065,7 +1109,8 @@ pub fn from_open_hymnal(text: &str, file_stem: &str, cutoff: i32) -> Result<Scor
     };
     score.copyright = "Public domain".into();
     score.licence = "public-domain".into();
-    score.publication = tune.source.first().map(|s| s.trim_start_matches("Music source:").trim().to_string()).unwrap_or_default();
+    score.publication =
+        tune.source.first().map(|s| s.trim_start_matches("Music source:").trim().to_string()).unwrap_or_default();
     score.source = OPEN_HYMNAL.into();
     score.source_url = OPEN_HYMNAL_URL.into();
     score.tags = tags_for(tune.fields.get("OHCATEGORY").map(String::as_str).unwrap_or(""));
@@ -1154,12 +1199,17 @@ W: 3.I need Thy presence every passing hour.
         assert_eq!(s.publication, "Hymns Ancient and Modern, 1869 hymn 14.");
         assert_eq!(s.source, "Open Hymnal Project");
 
-        let vw = EVENTIDE.replace("%OHARRANGER Monk, William Henry (1823-1889)", "%OHARRANGER Vaughan Williams, Ralph (1872-1958)");
+        let vw = EVENTIDE
+            .replace("%OHARRANGER Monk, William Henry (1823-1889)", "%OHARRANGER Vaughan Williams, Ralph (1872-1958)");
         let err = from_open_hymnal(&vw, "x-y", 1955).unwrap_err();
         assert!(err.contains("1958"), "{err}");
-        let book = EVENTIDE.replace("Monk, William Henry (1823-1889)\n%OHARRANGER", "from Klug's Geistliche Lieder, Wittenberg, 1533\n%OHARRANGER");
+        let book = EVENTIDE.replace(
+            "Monk, William Henry (1823-1889)\n%OHARRANGER",
+            "from Klug's Geistliche Lieder, Wittenberg, 1533\n%OHARRANGER",
+        );
         assert!(from_open_hymnal(&book, "x-y", 1955).is_ok());
-        let living = EVENTIDE.replace("%OHARRANGER Monk, William Henry (1823-1889)", "%OHARRANGER Dumont, Brian James (1971-)");
+        let living =
+            EVENTIDE.replace("%OHARRANGER Monk, William Henry (1823-1889)", "%OHARRANGER Dumont, Brian James (1971-)");
         assert!(from_open_hymnal(&living, "x-y", 1955).is_err());
     }
 
@@ -1192,7 +1242,10 @@ W: 3.I need Thy presence every passing hour.
     fn repeats_endings_tuplets_and_broken_rhythm() {
         let t = parse("X:1\nL:1/4\nM:2/4\nK:G\n|: G A |1 B2 :|2 c2 |] (3d/e/f/ g | a>b |\n").unwrap();
         let s = to_score(&t, "x").unwrap();
-        assert_eq!(s.parts[0].notes, "G4:1 A4:1 | B4:2 | G4:1 A4:1 | C5:2 | D5:1/3 E5:1/3 F#5:1/3 G5:1 | A5:1.5 B5:0.5");
+        assert_eq!(
+            s.parts[0].notes,
+            "G4:1 A4:1 | B4:2 | G4:1 A4:1 | C5:2 | D5:1/3 E5:1/3 F#5:1/3 G5:1 | A5:1.5 B5:0.5"
+        );
     }
 
     #[test]

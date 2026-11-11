@@ -2,7 +2,12 @@
 
 import * as React from "react"
 
-import { CHANNEL, type ChannelMessage, displayUrl, type PanelId } from "@/lib/displays"
+import {
+  CHANNEL,
+  type ChannelMessage,
+  displayUrl,
+  type PanelId,
+} from "@/lib/displays"
 
 /** Window Management API (Chromium), not yet in the DOM typings. */
 type ScreenDetailed = {
@@ -13,9 +18,14 @@ type ScreenDetailed = {
   isPrimary: boolean
   label?: string
 }
-type ScreenDetails = { screens: ScreenDetailed[]; currentScreen: ScreenDetailed }
+type ScreenDetails = {
+  screens: ScreenDetailed[]
+  currentScreen: ScreenDetailed
+}
 type ExtendedScreen = Screen & { isExtended?: boolean } & EventTarget
-type WindowWithScreens = Window & { getScreenDetails?: () => Promise<ScreenDetails> }
+type WindowWithScreens = Window & {
+  getScreenDetails?: () => Promise<ScreenDetails>
+}
 
 /** "many": more than one screen; "one": just this one; "unknown": the browser can't say. */
 export type ScreenCount = "many" | "one" | "unknown"
@@ -37,7 +47,11 @@ function screenCount(): ScreenCount {
 
 /** Whether this computer has more than one screen, kept up to date. */
 export function useScreenCount(): ScreenCount {
-  return React.useSyncExternalStore(subscribeScreens, screenCount, () => "unknown")
+  return React.useSyncExternalStore(
+    subscribeScreens,
+    screenCount,
+    () => "unknown"
+  )
 }
 
 function subscribeFullscreen(onChange: () => void) {
@@ -53,10 +67,13 @@ export function useFullscreen() {
     () => false
   )
   const toggle = React.useCallback(() => {
-    const done = on ? document.exitFullscreen() : document.documentElement.requestFullscreen()
+    const done = on
+      ? document.exitFullscreen()
+      : document.documentElement.requestFullscreen()
     done.catch(() => {})
   }, [on])
-  const supported = typeof document !== "undefined" && !!document.fullscreenEnabled
+  const supported =
+    typeof document !== "undefined" && !!document.fullscreenEnabled
   return { on, toggle, supported }
 }
 
@@ -90,8 +107,9 @@ export async function openDisplay(panels: PanelId[]): Promise<OpenResult> {
     try {
       const details = await w.getScreenDetails()
       const other =
-        details.screens.find((s) => s !== details.currentScreen && !s.isPrimary) ??
-        details.screens.find((s) => s !== details.currentScreen)
+        details.screens.find(
+          (s) => s !== details.currentScreen && !s.isPrimary
+        ) ?? details.screens.find((s) => s !== details.currentScreen)
       if (other) {
         features = `popup=yes,left=${other.availLeft},top=${other.availTop},width=${other.availWidth},height=${other.availHeight}`
         placed = true
@@ -106,7 +124,9 @@ export async function openDisplay(panels: PanelId[]): Promise<OpenResult> {
 }
 
 /** Talk to the Service page and its display windows on this device. */
-export function useServiceChannel(onMessage: (m: ChannelMessage, reply: (m: ChannelMessage) => void) => void) {
+export function useServiceChannel(
+  onMessage: (m: ChannelMessage, reply: (m: ChannelMessage) => void) => void
+) {
   const handler = React.useRef(onMessage)
   React.useEffect(() => {
     handler.current = onMessage
@@ -115,12 +135,16 @@ export function useServiceChannel(onMessage: (m: ChannelMessage, reply: (m: Chan
   React.useEffect(() => {
     if (typeof BroadcastChannel === "undefined") return
     const c = new BroadcastChannel(CHANNEL)
-    c.onmessage = (e: MessageEvent<ChannelMessage>) => handler.current(e.data, (m) => c.postMessage(m))
+    c.onmessage = (e: MessageEvent<ChannelMessage>) =>
+      handler.current(e.data, (m) => c.postMessage(m))
     channel.current = c
     return () => {
       c.close()
       channel.current = null
     }
   }, [])
-  return React.useCallback((m: ChannelMessage) => channel.current?.postMessage(m), [])
+  return React.useCallback(
+    (m: ChannelMessage) => channel.current?.postMessage(m),
+    []
+  )
 }

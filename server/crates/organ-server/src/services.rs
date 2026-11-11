@@ -26,7 +26,9 @@ use crate::settings::{PlaybackSettings, RecordingSettings, SettingsStore};
 pub enum AppEvent {
     Recorder(RecorderStatus),
     /// The library changed; `saved` is a newly recorded track, if any.
-    Library { saved: Option<TrackSummary> },
+    Library {
+        saved: Option<TrackSummary>,
+    },
     /// The service runner moved on.
     Service(crate::playlists::ServiceStatus),
 }
@@ -66,13 +68,7 @@ impl Recorder {
         events: broadcast::Sender<AppEvent>,
         settings: Arc<crate::settings::SettingsStore>,
     ) -> Self {
-        let r = Self {
-            inner: Arc::new(Mutex::new(AutoRecorder::new(organ, config))),
-            hub,
-            library,
-            events,
-            settings,
-        };
+        let r = Self { inner: Arc::new(Mutex::new(AutoRecorder::new(organ, config))), hub, library, events, settings };
         let task = r.clone();
         tokio::spawn(async move { task.run().await });
         r

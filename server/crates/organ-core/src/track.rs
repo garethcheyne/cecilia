@@ -26,9 +26,7 @@ pub struct StopRef {
 impl StopRef {
     /// The track's view of a stop on `organ`.
     pub fn of(organ: &OrganDefinition, stop_id: &str) -> Option<Self> {
-        organ
-            .stop(stop_id)
-            .map(|s| Self { division: s.division, equivalent: s.equivalent.clone() })
+        organ.stop(stop_id).map(|s| Self { division: s.division, equivalent: s.equivalent.clone() })
     }
 
     /// The stop on `organ` that is exactly this one, if any.
@@ -274,10 +272,7 @@ impl Track {
     }
 
     pub fn note_count(&self) -> usize {
-        self.events
-            .iter()
-            .filter(|e| matches!(e.event, TrackEvent::Note { velocity, .. } if velocity > 0))
-            .count()
+        self.events.iter().filter(|e| matches!(e.event, TrackEvent::Note { velocity, .. } if velocity > 0)).count()
     }
 
     /// Sort events by time, settings before notes at the same instant so a
@@ -352,9 +347,7 @@ impl Track {
 }
 
 pub fn valid_id(id: &str) -> bool {
-    !id.is_empty()
-        && id.len() <= 100
-        && id.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_')
+    !id.is_empty() && id.len() <= 100 && id.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_')
 }
 
 /// The organ-neutral form of a console event (`None` for things a track
@@ -364,9 +357,9 @@ pub fn to_track_event(organ: &OrganDefinition, console: &ConsoleState, e: &Organ
         OrganEvent::Note { division, key, velocity } => {
             vec![TrackEvent::Note { division: *division, key: *key, velocity: *velocity }]
         }
-        OrganEvent::Stop { stop, on } => StopRef::of(organ, stop)
-            .map(|s| vec![TrackEvent::Stop { stop: s, on: *on }])
-            .unwrap_or_default(),
+        OrganEvent::Stop { stop, on } => {
+            StopRef::of(organ, stop).map(|s| vec![TrackEvent::Stop { stop: s, on: *on }]).unwrap_or_default()
+        }
         // Resolve a toggle against the state before it was applied.
         OrganEvent::StopToggle { stop } => StopRef::of(organ, stop)
             .map(|s| vec![TrackEvent::Stop { stop: s, on: !console.is_on(stop) }])

@@ -80,10 +80,7 @@ impl Driver {
         for div in &self.organ.divisions {
             if let Some(binding) = &div.expression {
                 if let Some(Some(raw)) = binding.pattern.capture(msg) {
-                    out.push(OrganEvent::Expression {
-                        division: div.role,
-                        value: binding.normalise(raw),
-                    });
+                    out.push(OrganEvent::Expression { division: div.role, value: binding.normalise(raw) });
                 }
             }
         }
@@ -106,16 +103,12 @@ impl Driver {
                             None
                         }
                     }
-                    StopBinding::Toggle { msg: m } => m
-                        .capture(msg)
-                        .map(|_| OrganEvent::StopToggle { stop: stop.id.clone() }),
+                    StopBinding::Toggle { msg: m } => {
+                        m.capture(msg).map(|_| OrganEvent::StopToggle { stop: stop.id.clone() })
+                    }
                     StopBinding::Switch { pattern, on, off } => match pattern.capture(msg) {
-                        Some(Some(v)) if v == *on => {
-                            Some(OrganEvent::Stop { stop: stop.id.clone(), on: true })
-                        }
-                        Some(Some(v)) if v == *off => {
-                            Some(OrganEvent::Stop { stop: stop.id.clone(), on: false })
-                        }
+                        Some(Some(v)) if v == *on => Some(OrganEvent::Stop { stop: stop.id.clone(), on: true }),
+                        Some(Some(v)) if v == *off => Some(OrganEvent::Stop { stop: stop.id.clone(), on: false }),
                         _ => None,
                     },
                 };
@@ -194,9 +187,7 @@ impl Driver {
                     .stops
                     .iter()
                     .filter(|s| currently_on(&s.id))
-                    .flat_map(|s| {
-                        self.encode_dyn(&OrganEvent::Stop { stop: s.id.clone(), on: false }, currently_on)
-                    })
+                    .flat_map(|s| self.encode_dyn(&OrganEvent::Stop { stop: s.id.clone(), on: false }, currently_on))
                     .collect(),
             },
         }
@@ -252,10 +243,7 @@ mod tests {
     fn makin_stops_toggle_by_program_change() {
         let d = makin();
         // Program Change 0x12 on channel 12 = the 19th stop in console order.
-        assert_eq!(
-            d.decode(&[0xCB, 0x12]),
-            vec![OrganEvent::StopToggle { stop: "gt-opendiap".into() }]
-        );
+        assert_eq!(d.decode(&[0xCB, 0x12]), vec![OrganEvent::StopToggle { stop: "gt-opendiap".into() }]);
         // Asking for a stop that's already on sends nothing (it would flip it off).
         let on = OrganEvent::Stop { stop: "gt-opendiap".into(), on: true };
         assert_eq!(d.encode(&on, |_| false), vec![vec![0xCB, 0x12]]);
@@ -296,8 +284,6 @@ mod tests {
         assert_eq!(msgs, vec![vec![0xB1, 0x0B, 90]]);
         assert_eq!(d.decode(&msgs[0]), vec![e]);
         // Great has no expression pedal
-        assert!(d
-            .encode(&OrganEvent::Expression { division: DivisionRole::Great, value: 1 }, |_| false)
-            .is_empty());
+        assert!(d.encode(&OrganEvent::Expression { division: DivisionRole::Great, value: 1 }, |_| false).is_empty());
     }
 }

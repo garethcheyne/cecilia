@@ -19,7 +19,8 @@ fn fixture() -> tempfile::TempDir {
     v["licence"] = "public-domain".into();
     v["tags"] = json!(["hymn", "psalm"]);
     std::fs::write(music.join("crimond.score.json"), v.to_string()).unwrap();
-    std::fs::write(organs.join("makin-2m.organ.json"), include_str!("../../organ-core/organs/makin-2m.organ.json")).unwrap();
+    std::fs::write(organs.join("makin-2m.organ.json"), include_str!("../../organ-core/organs/makin-2m.organ.json"))
+        .unwrap();
     std::fs::write(
         organs.join("makin-2m.meta.json"),
         r#"{"maker":"Makin","model":"Westmorland","confidence":"learned","notes":["Set MIDI to mode B"],"licence":"CC0-1.0"}"#,

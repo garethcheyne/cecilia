@@ -25,7 +25,13 @@ async fn upload(s: &TestServer, path: &str, name: &str, options: Option<Value>, 
 
 fn urlencode(s: &str) -> String {
     s.bytes()
-        .map(|b| if b.is_ascii_alphanumeric() || b"-_.~".contains(&b) { (b as char).to_string() } else { format!("%{b:02X}") })
+        .map(|b| {
+            if b.is_ascii_alphanumeric() || b"-_.~".contains(&b) {
+                (b as char).to_string()
+            } else {
+                format!("%{b:02X}")
+            }
+        })
         .collect()
 }
 
@@ -47,7 +53,14 @@ async fn organ_midi_round_trips_through_the_library() {
     assert_eq!(t["info"]["title"], "old 100th");
     assert_eq!(t["source"], "imported");
     let original = s.get("/library/sample-old-hundredth").await;
-    let notes = |t: &Value| t["events"].as_array().unwrap().iter().filter(|e| e["type"] == "note" && e["velocity"].as_u64() > Some(0)).count();
+    let notes = |t: &Value| {
+        t["events"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|e| e["type"] == "note" && e["velocity"].as_u64() > Some(0))
+            .count()
+    };
     let back = s.get(&format!("/library/{}", t["id"].as_str().unwrap())).await;
     assert_eq!(notes(&back), notes(&original));
 }
@@ -57,7 +70,8 @@ async fn general_midi_and_bad_files() {
     let s = TestServer::start().await;
     let (_, mid) = bytes(&s, "/library/sample-old-hundredth/midi?format=general_midi").await;
     let (_, a) = upload(&s, "/import/analyse", "hymn.mid", None, mid).await;
-    let chans: Vec<u64> = a["midi"]["channels"].as_array().unwrap().iter().map(|c| c["channel"].as_u64().unwrap()).collect();
+    let chans: Vec<u64> =
+        a["midi"]["channels"].as_array().unwrap().iter().map(|c| c["channel"].as_u64().unwrap()).collect();
     assert_eq!(chans, [1, 3]);
 
     let (code, body) = upload(&s, "/import/analyse", "photo.jpg", None, b"\xFF\xD8\xFF".to_vec()).await;
@@ -83,7 +97,8 @@ async fn musicxml_imports_as_a_notated_track() {
     assert_eq!(code, 200, "{a}");
     assert_eq!(a["title"], "Little Tune");
     assert_eq!(a["musicxml"]["beats"], 3);
-    let (code, saved) = upload(&s, "/import", "tune.musicxml", Some(json!({ "verses": 3 })), xml.as_bytes().to_vec()).await;
+    let (code, saved) =
+        upload(&s, "/import", "tune.musicxml", Some(json!({ "verses": 3 })), xml.as_bytes().to_vec()).await;
     assert_eq!(code, 200, "{saved}");
     assert_eq!(saved[0]["verses"], 3);
     let t = s.get(&format!("/library/{}", saved[0]["id"].as_str().unwrap())).await;

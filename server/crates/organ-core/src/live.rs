@@ -30,10 +30,7 @@ pub struct LiveOrgan {
 impl LiveOrgan {
     pub fn start(hub: &MidiHub, organ: OrganDefinition) -> Self {
         let live = Self {
-            inner: Arc::new(Mutex::new(Inner {
-                console: ConsoleState::new(&organ),
-                driver: Driver::new(organ),
-            })),
+            inner: Arc::new(Mutex::new(Inner { console: ConsoleState::new(&organ), driver: Driver::new(organ) })),
             changes: broadcast::channel(256).0,
         };
         let mut rx = hub.subscribe();

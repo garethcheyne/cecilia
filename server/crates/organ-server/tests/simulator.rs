@@ -49,9 +49,7 @@ async fn switching_organ_starts_a_fresh_console() {
     let snap = s.put("/simulator/organ", json!({ "organ_id": "makin-2m" })).await;
     assert_eq!(snap["organ_id"], "makin-2m");
     assert!(stops(&snap).is_empty());
-    let (code, _) = s
-        .request(Method::PUT, "/simulator/organ", Some(json!({ "organ_id": "nope" })))
-        .await;
+    let (code, _) = s.request(Method::PUT, "/simulator/organ", Some(json!({ "organ_id": "nope" }))).await;
     assert_eq!(code, 404);
 }
 
@@ -106,9 +104,8 @@ async fn foreign_websocket_origins_are_refused() {
 #[tokio::test]
 async fn the_console_page_operates_the_connected_organ() {
     let s = TestServer::start().await;
-    let (code, _) = s
-        .request(Method::POST, "/live/act", Some(json!({ "type": "stop", "stop": "gt-opendiap", "on": true })))
-        .await;
+    let (code, _) =
+        s.request(Method::POST, "/live/act", Some(json!({ "type": "stop", "stop": "gt-opendiap", "on": true }))).await;
     assert_eq!(code, 409, "no Organ out yet");
 
     s.route_simulator().await;

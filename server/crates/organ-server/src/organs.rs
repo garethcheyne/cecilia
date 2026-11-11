@@ -23,10 +23,7 @@ impl OrganStore {
 
     /// Re-scan the organs folder.
     pub fn reload(&self) {
-        let mut organs: BTreeMap<_, _> = builtin_organs()
-            .into_iter()
-            .map(|o| (o.id.clone(), (o, true)))
-            .collect();
+        let mut organs: BTreeMap<_, _> = builtin_organs().into_iter().map(|o| (o.id.clone(), (o, true))).collect();
         if let Ok(entries) = std::fs::read_dir(&self.dir) {
             for path in entries.flatten().map(|e| e.path()) {
                 if !path.to_string_lossy().ends_with(".organ.json") {
@@ -47,12 +44,7 @@ impl OrganStore {
     }
 
     pub fn list(&self) -> Vec<OrganSummary> {
-        self.organs
-            .read()
-            .unwrap()
-            .values()
-            .map(|(o, builtin)| o.summary(*builtin))
-            .collect()
+        self.organs.read().unwrap().values().map(|(o, builtin)| o.summary(*builtin)).collect()
     }
 
     pub fn get(&self, id: &str) -> Option<OrganDefinition> {

@@ -37,7 +37,10 @@ pub async fn get_organists(State(s): State<AppState>) -> Json<OrganistsBody> {
 /// Replace the list of organists (new ones may have an empty id).
 #[utoipa::path(put, path = "/api/v1/organists", tag = "organists", request_body = OrganistsBody,
     responses((status = 200, body = OrganistsBody), (status = 400, body = ApiErrorBody)))]
-pub async fn put_organists(State(s): State<AppState>, Json(mut b): Json<OrganistsBody>) -> Result<Json<OrganistsBody>, Response> {
+pub async fn put_organists(
+    State(s): State<AppState>,
+    Json(mut b): Json<OrganistsBody>,
+) -> Result<Json<OrganistsBody>, Response> {
     if b.organists.len() > 100 {
         return Err(error(StatusCode::BAD_REQUEST, "That's more organists than Cecilia keeps."));
     }

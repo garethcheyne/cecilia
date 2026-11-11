@@ -57,7 +57,10 @@ pub async fn get_settings(State(s): State<AppState>) -> Json<SettingsBody> {
 /// Change recording and playback settings (they apply straight away).
 #[utoipa::path(put, path = "/api/v1/settings", tag = "system", request_body = SettingsBody,
     responses((status = 200, body = SettingsBody), (status = 400, body = ApiErrorBody)))]
-pub async fn put_settings(State(s): State<AppState>, Json(mut b): Json<SettingsBody>) -> Result<Json<SettingsBody>, Response> {
+pub async fn put_settings(
+    State(s): State<AppState>,
+    Json(mut b): Json<SettingsBody>,
+) -> Result<Json<SettingsBody>, Response> {
     // Keep values in sensible ranges rather than refusing them.
     b.recording.silence_ms = b.recording.silence_ms.clamp(2000, 60_000);
     b.recording.margin_start_ms = b.recording.margin_start_ms.min(15_000);
@@ -151,7 +154,8 @@ pub async fn restore(State(s): State<AppState>, body: Bytes) -> Result<Json<Rest
 }
 
 fn apply_backup(dir: &FsPath, bytes: &[u8]) -> anyhow::Result<RestoreResult> {
-    let mut zip = zip::ZipArchive::new(std::io::Cursor::new(bytes)).map_err(|_| anyhow::anyhow!("that isn't a Cecilia backup (.zip)"))?;
+    let mut zip = zip::ZipArchive::new(std::io::Cursor::new(bytes))
+        .map_err(|_| anyhow::anyhow!("that isn't a Cecilia backup (.zip)"))?;
     // Read and check everything before writing anything.
     let mut files: Vec<(String, Vec<u8>)> = Vec::new();
     let mut counts = RestoreResult { tracks: 0, organs: 0, playlists: 0 };
@@ -161,7 +165,9 @@ fn apply_backup(dir: &FsPath, bytes: &[u8]) -> anyhow::Result<RestoreResult> {
         let mut data = Vec::new();
         f.read_to_end(&mut data)?;
         let (sub, file) = match name.split_once('/') {
-            Some((sub, file)) if BACKUP_DIRS.contains(&sub) && !file.contains('/') && !file.starts_with('.') => (sub, file),
+            Some((sub, file)) if BACKUP_DIRS.contains(&sub) && !file.contains('/') && !file.starts_with('.') => {
+                (sub, file)
+            }
             None if name == "settings.json" => ("", name.as_str()),
             _ => continue, // ignore anything unexpected
         };
@@ -359,7 +365,8 @@ pub async fn set_password(State(s): State<AppState>, headers: HeaderMap, Json(re
         // Keep this browser signed in.
         let token = random_hex(24);
         sessions.insert(token.clone());
-        return (StatusCode::NO_CONTENT, [(header::SET_COOKIE, session_cookie(&token, 60 * 60 * 24 * 365))]).into_response();
+        return (StatusCode::NO_CONTENT, [(header::SET_COOKIE, session_cookie(&token, 60 * 60 * 24 * 365))])
+            .into_response();
     }
     StatusCode::NO_CONTENT.into_response()
 }
@@ -392,11 +399,10 @@ pub async fn omr(State(s): State<AppState>, Query(q): Query<OmrQuery>, body: Byt
     }
     let result = tokio::task::spawn_blocking(move || run_omr(&command, &ext, &body)).await;
     match result {
-        Ok(Ok(xml)) => (
-            [(header::CONTENT_TYPE, HeaderValue::from_static("application/vnd.recordare.musicxml"))],
-            Body::from(xml),
-        )
-            .into_response(),
+        Ok(Ok(xml)) => {
+            ([(header::CONTENT_TYPE, HeaderValue::from_static("application/vnd.recordare.musicxml"))], Body::from(xml))
+                .into_response()
+        }
         Ok(Err(e)) => error(StatusCode::UNPROCESSABLE_ENTITY, e.to_string()),
         Err(e) => error(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()),
     }
@@ -426,7 +432,11 @@ fn run_omr(command: &str, ext: &str, scan: &[u8]) -> anyhow::Result<Vec<u8>> {
             Some(p) => Ok(std::fs::read(p)?),
             None => anyhow::bail!(
                 "No music could be read from that image. Try a straighter, sharper scan of printed music.{}",
-                if status.status.success() { String::new() } else { format!(" ({})", String::from_utf8_lossy(&status.stderr).lines().last().unwrap_or("")) }
+                if status.status.success() {
+                    String::new()
+                } else {
+                    format!(" ({})", String::from_utf8_lossy(&status.stderr).lines().last().unwrap_or(""))
+                }
             ),
         }
     })();

@@ -18,3 +18,10 @@
 # Tests
 /web/test-results/
 /web/playwright-report/
+
+# Personal files dropped into the workspace (photos, screenshots); never commit
+/artifacts/
+
+# Claude Code: local settings and agent worktrees
+/.claude/settings.local.json
+/.claude/worktrees/

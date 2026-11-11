@@ -48,10 +48,7 @@ const BEST_KNOWN: [(&str, &str); 10] = [
 
 /// The latest year of death that's out of copyright everywhere we know of.
 fn cutoff_year() -> i32 {
-    let secs = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map(|d| d.as_secs())
-        .unwrap_or(0);
+    let secs = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
     1970 + (secs / 31_556_952) as i32 - 71
 }
 
@@ -118,7 +115,8 @@ fn existing(library: &Path) -> (BTreeSet<String>, BTreeSet<String>) {
         for suffix in [".score.json", ".track.json"] {
             if let Some(id) = name.strip_suffix(suffix) {
                 ids.insert(id.to_string());
-                if let Ok(s) = std::fs::read_to_string(p).map_err(|e| e.to_string()).and_then(|t| Score::from_json(&t)) {
+                if let Ok(s) = std::fs::read_to_string(p).map_err(|e| e.to_string()).and_then(|t| Score::from_json(&t))
+                {
                     tunes.insert(abc::slug(&s.melody));
                 }
             }
@@ -172,7 +170,9 @@ pub fn import_open_hymnal(source: &Path, library: &Path, write: bool) -> anyhow:
         if let Some(s) = accepted.get_mut(id) {
             if s.title != best {
                 let old = std::mem::replace(&mut s.title, best.to_string());
-                s.other_titles.retain(|t| !t.eq_ignore_ascii_case(best) && !t.to_ascii_lowercase().ends_with(&best.to_ascii_lowercase()));
+                s.other_titles.retain(|t| {
+                    !t.eq_ignore_ascii_case(best) && !t.to_ascii_lowercase().ends_with(&best.to_ascii_lowercase())
+                });
                 s.other_titles.insert(0, old);
             }
         }

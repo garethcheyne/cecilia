@@ -14,10 +14,7 @@ use organ_core::driver::OrganEvent;
 use organ_core::live::LiveOrgan;
 use organ_core::organ::{OrganDefinition, OrganSummary};
 use organ_core::simulator::{SimSnapshot, Simulator};
-use organ_core::{
-    Direction, EngineEvent, MidiConfig, MidiError, MidiHub, MidiStatus, PortList, TestState,
-    TestStatus,
-};
+use organ_core::{Direction, EngineEvent, MidiConfig, MidiError, MidiHub, MidiStatus, PortList, TestState, TestStatus};
 use serde::{Deserialize, Serialize};
 use tokio::sync::broadcast::error::RecvError;
 use utoipa::{OpenApi, ToSchema};
@@ -96,69 +93,177 @@ pub fn router() -> Router<AppState> {
                        `/api/v1/events` as JSON `EngineEvent` messages."
     ),
     paths(
-        health, ports, get_config, put_config, status, panic, test_record, test_stop, test_play,
-        list_organs, get_organ, sim_state, sim_load_organ, sim_act, sim_reset, get_assistant,
-        put_assistant, live_state, live_act,
-        crate::music::list_tracks, crate::music::get_track, crate::music::put_track,
-        crate::music::patch_track, crate::music::delete_track, crate::music::duplicate_track,
-        crate::music::track_mapping, crate::music::recorder_status, crate::music::recorder_start,
-        crate::music::recorder_stop, crate::music::player_status, crate::music::player_load,
-        crate::music::player_play, crate::music::player_pause, crate::music::player_stop,
-        crate::music::player_seek, crate::music::player_tempo, crate::music::player_verses,
+        health,
+        ports,
+        get_config,
+        put_config,
+        status,
+        panic,
+        test_record,
+        test_stop,
+        test_play,
+        list_organs,
+        get_organ,
+        sim_state,
+        sim_load_organ,
+        sim_act,
+        sim_reset,
+        get_assistant,
+        put_assistant,
+        live_state,
+        live_act,
+        crate::music::list_tracks,
+        crate::music::get_track,
+        crate::music::put_track,
+        crate::music::patch_track,
+        crate::music::delete_track,
+        crate::music::duplicate_track,
+        crate::music::track_mapping,
+        crate::music::recorder_status,
+        crate::music::recorder_start,
+        crate::music::recorder_stop,
+        crate::music::player_status,
+        crate::music::player_load,
+        crate::music::player_play,
+        crate::music::player_pause,
+        crate::music::player_stop,
+        crate::music::player_seek,
+        crate::music::player_tempo,
+        crate::music::player_verses,
         crate::music::player_fade,
-        crate::playlist_api::list_playlists, crate::playlist_api::create_playlist,
-        crate::playlist_api::get_playlist, crate::playlist_api::put_playlist,
-        crate::playlist_api::delete_playlist, crate::playlist_api::duplicate_playlist,
-        crate::playlist_api::verses_parse, crate::playlist_api::service_status,
-        crate::playlist_api::service_start, crate::playlist_api::service_next,
-        crate::playlist_api::service_previous, crate::playlist_api::service_select,
+        crate::playlist_api::list_playlists,
+        crate::playlist_api::create_playlist,
+        crate::playlist_api::get_playlist,
+        crate::playlist_api::put_playlist,
+        crate::playlist_api::delete_playlist,
+        crate::playlist_api::duplicate_playlist,
+        crate::playlist_api::verses_parse,
+        crate::playlist_api::service_status,
+        crate::playlist_api::service_start,
+        crate::playlist_api::service_next,
+        crate::playlist_api::service_previous,
+        crate::playlist_api::service_select,
         crate::playlist_api::service_end,
-        crate::files_api::analyse, crate::files_api::import, crate::files_api::export_midi,
-        crate::files_api::export_csv, crate::files_api::export_zip,
-        crate::organ_api::copy_organ, crate::organ_api::save_organ, crate::organ_api::delete_organ,
-        crate::system_api::get_settings, crate::system_api::put_settings, crate::system_api::backup,
-        crate::system_api::restore, crate::system_api::auth_status, crate::system_api::login,
-        crate::system_api::logout, crate::system_api::set_password, crate::system_api::omr,
-        crate::community_api::catalogue, crate::community_api::refresh,
-        crate::community_api::add_music, crate::community_api::get_organ, crate::community_api::add_organ,
-        crate::sharing_api::account, crate::sharing_api::start, crate::sharing_api::verify,
-        crate::sharing_api::sign_out, crate::sharing_api::profile, crate::sharing_api::shared,
-        crate::sharing_api::share_organ, crate::sharing_api::share_music,
-        crate::organists_api::get_organists, crate::organists_api::put_organists
+        crate::files_api::analyse,
+        crate::files_api::import,
+        crate::files_api::export_midi,
+        crate::files_api::export_csv,
+        crate::files_api::export_zip,
+        crate::organ_api::copy_organ,
+        crate::organ_api::save_organ,
+        crate::organ_api::delete_organ,
+        crate::system_api::get_settings,
+        crate::system_api::put_settings,
+        crate::system_api::backup,
+        crate::system_api::restore,
+        crate::system_api::auth_status,
+        crate::system_api::login,
+        crate::system_api::logout,
+        crate::system_api::set_password,
+        crate::system_api::omr,
+        crate::community_api::catalogue,
+        crate::community_api::refresh,
+        crate::community_api::add_music,
+        crate::community_api::get_organ,
+        crate::community_api::add_organ,
+        crate::sharing_api::account,
+        crate::sharing_api::start,
+        crate::sharing_api::verify,
+        crate::sharing_api::sign_out,
+        crate::sharing_api::profile,
+        crate::sharing_api::shared,
+        crate::sharing_api::share_organ,
+        crate::sharing_api::share_music,
+        crate::organists_api::get_organists,
+        crate::organists_api::put_organists
     ),
     components(schemas(
-        Health, ApiErrorBody, PortList, MidiConfig, MidiStatus, TestStatus, TestState,
-        EngineEvent, Direction, OrganSummary, OrganDefinition, OrganEvent, SimSnapshot,
-        ConsoleState, LoadOrgan, Assistant, LiveSnapshot,
-        crate::sharing_api::CommunityAccountStatus, crate::sharing_api::SignInStart, crate::sharing_api::SignInStarted,
-        crate::sharing_api::SignInVerify, crate::sharing_api::CommunityProfile, crate::sharing_api::ShareOrgan,
-        crate::sharing_api::ShareMusic, crate::sharing_api::ShareResult,
-        crate::organists_api::OrganistsBody, crate::settings::Organist,
-        organ_core::track::Track, organ_core::track::TrackSummary, organ_core::track::TrackInfo,
-        organ_core::track::TrackEvent, organ_core::track::TimedEvent, organ_core::track::StopRef,
-        organ_core::track::Registration, organ_core::track::Meter, organ_core::track::Mode,
-        organ_core::track::TrackSource, organ_core::organist::StopMapping,
-        organ_core::recorder::RecorderStatus, organ_core::recorder::RecorderState,
-        organ_core::player::PlayerStatus, organ_core::player::PlayerState,
-        organ_core::player::PlayOptions, organ_core::player::VersePlan,
-        organ_core::player::PlayerEvent, crate::services::AppEvent,
-        crate::music::LoadTrack, crate::music::TrackPatch, crate::music::Seek, crate::music::Tempo,
-        crate::music::VerseControl, crate::music::FadeRequest,
-        organ_core::playlist::Playlist, organ_core::playlist::PlaylistRow,
-        organ_core::playlist::PlaylistSummary, organ_core::playlist::Delay,
-        crate::playlists::ServiceStatus, crate::playlists::ServiceState,
-        crate::playlist_api::NewPlaylist, crate::playlist_api::StartService,
-        crate::playlist_api::SelectRow, crate::playlist_api::VerseText, crate::playlist_api::ParsedVerses,
-        crate::files_api::FileKind, crate::files_api::ImportAnalysis,
-        organ_core::smf::MidiAnalysis, organ_core::smf::ChannelInfo, organ_core::smf::ImportOptions,
-        organ_core::smf::ExportFormat, organ_core::musicxml::XmlAnalysis, organ_core::musicxml::Stream,
-        organ_core::musicxml::XmlImportOptions, crate::organ_api::CopyOrgan,
-        crate::system_api::SettingsBody, crate::system_api::RestoreResult, crate::system_api::AuthStatus,
-        crate::system_api::Login, crate::system_api::NewPassword,
-        crate::settings::RecordingSettings, crate::settings::PlaybackSettings,
-        organ_core::community::Catalogue, organ_core::community::MusicEntry,
-        organ_core::community::OrganEntry, organ_core::community::OrganMeta,
-        organ_core::community::Confidence, organ_core::community::MusicKind
+        Health,
+        ApiErrorBody,
+        PortList,
+        MidiConfig,
+        MidiStatus,
+        TestStatus,
+        TestState,
+        EngineEvent,
+        Direction,
+        OrganSummary,
+        OrganDefinition,
+        OrganEvent,
+        SimSnapshot,
+        ConsoleState,
+        LoadOrgan,
+        Assistant,
+        LiveSnapshot,
+        crate::sharing_api::CommunityAccountStatus,
+        crate::sharing_api::SignInStart,
+        crate::sharing_api::SignInStarted,
+        crate::sharing_api::SignInVerify,
+        crate::sharing_api::CommunityProfile,
+        crate::sharing_api::ShareOrgan,
+        crate::sharing_api::ShareMusic,
+        crate::sharing_api::ShareResult,
+        crate::organists_api::OrganistsBody,
+        crate::settings::Organist,
+        organ_core::track::Track,
+        organ_core::track::TrackSummary,
+        organ_core::track::TrackInfo,
+        organ_core::track::TrackEvent,
+        organ_core::track::TimedEvent,
+        organ_core::track::StopRef,
+        organ_core::track::Registration,
+        organ_core::track::Meter,
+        organ_core::track::Mode,
+        organ_core::track::TrackSource,
+        organ_core::organist::StopMapping,
+        organ_core::recorder::RecorderStatus,
+        organ_core::recorder::RecorderState,
+        organ_core::player::PlayerStatus,
+        organ_core::player::PlayerState,
+        organ_core::player::PlayOptions,
+        organ_core::player::VersePlan,
+        organ_core::player::PlayerEvent,
+        crate::services::AppEvent,
+        crate::music::LoadTrack,
+        crate::music::TrackPatch,
+        crate::music::Seek,
+        crate::music::Tempo,
+        crate::music::VerseControl,
+        crate::music::FadeRequest,
+        organ_core::playlist::Playlist,
+        organ_core::playlist::PlaylistRow,
+        organ_core::playlist::PlaylistSummary,
+        organ_core::playlist::Delay,
+        crate::playlists::ServiceStatus,
+        crate::playlists::ServiceState,
+        crate::playlist_api::NewPlaylist,
+        crate::playlist_api::StartService,
+        crate::playlist_api::SelectRow,
+        crate::playlist_api::VerseText,
+        crate::playlist_api::ParsedVerses,
+        crate::files_api::FileKind,
+        crate::files_api::ImportAnalysis,
+        organ_core::smf::MidiAnalysis,
+        organ_core::smf::ChannelInfo,
+        organ_core::smf::ImportOptions,
+        organ_core::smf::ExportFormat,
+        organ_core::musicxml::XmlAnalysis,
+        organ_core::musicxml::Stream,
+        organ_core::musicxml::XmlImportOptions,
+        crate::organ_api::CopyOrgan,
+        crate::system_api::SettingsBody,
+        crate::system_api::RestoreResult,
+        crate::system_api::AuthStatus,
+        crate::system_api::Login,
+        crate::system_api::NewPassword,
+        crate::settings::RecordingSettings,
+        crate::settings::PlaybackSettings,
+        organ_core::community::Catalogue,
+        organ_core::community::MusicEntry,
+        organ_core::community::OrganEntry,
+        organ_core::community::OrganMeta,
+        organ_core::community::Confidence,
+        organ_core::community::MusicKind
     ))
 )]
 pub struct ApiDoc;
@@ -219,10 +324,7 @@ pub struct Health {
 #[utoipa::path(get, path = "/api/v1/health", tag = "system",
     responses((status = 200, body = Health)))]
 async fn health() -> Json<Health> {
-    Json(Health {
-        name: "cecilia",
-        version: env!("CARGO_PKG_VERSION"),
-    })
+    Json(Health { name: "cecilia", version: env!("CARGO_PKG_VERSION") })
 }
 
 async fn openapi() -> Json<utoipa::openapi::OpenApi> {
@@ -391,10 +493,7 @@ async fn get_assistant(State(s): State<AppState>) -> Json<Assistant> {
 async fn put_assistant(State(s): State<AppState>, Json(req): Json<Assistant>) -> Result<Json<Assistant>, Response> {
     let name = req.name.trim().to_string();
     if name.is_empty() || name.chars().count() > 40 {
-        return Err((
-            StatusCode::BAD_REQUEST,
-            Json(ApiErrorBody { error: "the name must be 1-40 characters".into() }),
-        )
+        return Err((StatusCode::BAD_REQUEST, Json(ApiErrorBody { error: "the name must be 1-40 characters".into() }))
             .into_response());
     }
     s.settings
@@ -430,14 +529,12 @@ pub fn origin_allowed(headers: &HeaderMap, allowed: &[HeaderValue]) -> bool {
     let Some(origin) = headers.get(header::ORIGIN) else {
         return true;
     };
-    let same_origin = headers
-        .get(header::HOST)
-        .and_then(|h| h.to_str().ok())
-        .is_some_and(|host| {
-            origin.to_str().ok().is_some_and(|o| {
-                o.strip_prefix("http://").or_else(|| o.strip_prefix("https://")) == Some(host)
-            })
-        });
+    let same_origin = headers.get(header::HOST).and_then(|h| h.to_str().ok()).is_some_and(|host| {
+        origin
+            .to_str()
+            .ok()
+            .is_some_and(|o| o.strip_prefix("http://").or_else(|| o.strip_prefix("https://")) == Some(host))
+    });
     same_origin || allowed.contains(origin)
 }
 

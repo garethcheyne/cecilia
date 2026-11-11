@@ -116,7 +116,9 @@ pub struct PlayOptions {
 pub enum PlayerEvent {
     Status(PlayerStatus),
     /// A track played to its end (not stopped by hand).
-    Finished { track_id: String },
+    Finished {
+        track_id: String,
+    },
 }
 
 enum Cmd {
@@ -366,9 +368,9 @@ impl Engine {
 
     fn time_to_next(&self) -> Duration {
         match self.state {
-            PlayerState::Starting => self
-                .start_at
-                .map_or(Duration::ZERO, |t| t.saturating_duration_since(Instant::now())),
+            PlayerState::Starting => {
+                self.start_at.map_or(Duration::ZERO, |t| t.saturating_duration_since(Instant::now()))
+            }
             PlayerState::Playing => {
                 let Some(track) = &self.track else { return Duration::from_millis(50) };
                 let span_end = self.span().map_or(0, |s| s.end) as f64;
@@ -462,11 +464,7 @@ impl Engine {
         self.stop_after_verse = false;
         self.skip_to_last = false;
         self.clear_organ();
-        let toggles = self
-            .organ()
-            .stops
-            .iter()
-            .any(|s| matches!(s.midi.first(), Some(StopBinding::Toggle { .. })));
+        let toggles = self.organ().stops.iter().any(|s| matches!(s.midi.first(), Some(StopBinding::Toggle { .. })));
         let settle = if toggles { self.settings.toggle_settle_ms } else { 30 };
         self.start_at = Some(Instant::now() + Duration::from_millis(settle as u64));
         self.set_position(pos as f64);
@@ -828,7 +826,7 @@ mod tests {
     #[derive(Clone)]
     struct Probe {
         start: Instant,
-        sent: Arc<Mutex<Vec<(u64, Vec<u8>)>>>,
+        sent: Arc<Mutex<crate::smf::Timed<u64>>>,
         console: Arc<Mutex<ConsoleState>>,
         driver: Arc<Driver>,
     }
@@ -883,7 +881,8 @@ mod tests {
 
     /// Three notes 100 ms apart, in two "verses".
     fn track(o: &OrganDefinition) -> Track {
-        let note = |t, key, v| TimedEvent { t, event: TrackEvent::Note { division: DivisionRole::Great, key, velocity: v } };
+        let note =
+            |t, key, v| TimedEvent { t, event: TrackEvent::Note { division: DivisionRole::Great, key, velocity: v } };
         let mut initial = Registration::default();
         initial.stops.insert(sref(o, "gt-opendiap"));
         let mut t = Track {
@@ -1015,8 +1014,14 @@ mod tests {
         probe.send(vec![0xCB, 0x0F]);
         let mut t = track(&o);
         t.events.clear();
-        t.events.push(TimedEvent { t: 10, event: TrackEvent::Note { division: DivisionRole::Great, key: 60, velocity: 80 } });
-        t.events.push(TimedEvent { t: 20, event: TrackEvent::Note { division: DivisionRole::Great, key: 60, velocity: 0 } });
+        t.events.push(TimedEvent {
+            t: 10,
+            event: TrackEvent::Note { division: DivisionRole::Great, key: 60, velocity: 80 },
+        });
+        t.events.push(TimedEvent {
+            t: 20,
+            event: TrackEvent::Note { division: DivisionRole::Great, key: 60, velocity: 0 },
+        });
         p.load(t, PlayOptions::default(), true);
         wait_until(&p, 3.0, |s| s.state == PlayerState::Stopped && s.track_id.is_some());
         let sent = probe.sent.lock().unwrap().clone();

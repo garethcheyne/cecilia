@@ -42,7 +42,12 @@ fn kind_of(name: &str, bytes: &[u8]) -> Option<FileKind> {
     let lower = name.to_lowercase();
     if bytes.starts_with(b"MThd") || lower.ends_with(".mid") || lower.ends_with(".midi") {
         Some(FileKind::Midi)
-    } else if lower.ends_with(".musicxml") || lower.ends_with(".xml") || lower.ends_with(".mxl") || bytes.starts_with(b"PK") || bytes.starts_with(b"<?xml") {
+    } else if lower.ends_with(".musicxml")
+        || lower.ends_with(".xml")
+        || lower.ends_with(".mxl")
+        || bytes.starts_with(b"PK")
+        || bytes.starts_with(b"<?xml")
+    {
         Some(FileKind::Musicxml)
     } else {
         None
@@ -54,7 +59,11 @@ fn title_from(name: &str) -> String {
     let stem = name.rsplit(['/', '\\']).next().unwrap_or(name);
     let stem = stem.rsplit_once('.').map_or(stem, |(s, _)| s);
     let t = stem.replace(['_', '-'], " ").trim().to_string();
-    if t.is_empty() { "Imported".into() } else { t }
+    if t.is_empty() {
+        "Imported".into()
+    } else {
+        t
+    }
 }
 
 #[derive(Debug, Deserialize, IntoParams)]
@@ -79,9 +88,14 @@ pub struct ImportAnalysis {
 #[utoipa::path(post, path = "/api/v1/import/analyse", tag = "files", params(FileQuery),
     request_body(content = Vec<u8>, content_type = "application/octet-stream"),
     responses((status = 200, body = ImportAnalysis), (status = 400, body = ApiErrorBody)))]
-pub async fn analyse(State(s): State<AppState>, Query(q): Query<FileQuery>, body: Bytes) -> Result<Json<ImportAnalysis>, Response> {
+pub async fn analyse(
+    State(s): State<AppState>,
+    Query(q): Query<FileQuery>,
+    body: Bytes,
+) -> Result<Json<ImportAnalysis>, Response> {
     let bad = |e: String| error(StatusCode::BAD_REQUEST, e);
-    let kind = kind_of(&q.name, &body).ok_or_else(|| bad("Use a MIDI (.mid) or MusicXML (.musicxml, .mxl) file.".into()))?;
+    let kind =
+        kind_of(&q.name, &body).ok_or_else(|| bad("Use a MIDI (.mid) or MusicXML (.musicxml, .mxl) file.".into()))?;
     let title = title_from(&q.name);
     Ok(Json(match kind {
         FileKind::Midi => ImportAnalysis {
@@ -93,7 +107,12 @@ pub async fn analyse(State(s): State<AppState>, Query(q): Query<FileQuery>, body
         FileKind::Musicxml => {
             let xml = musicxml::read_text(&body).map_err(|e| bad(e.to_string()))?;
             let a = musicxml::analyse(&xml).map_err(|e| bad(e.to_string()))?;
-            ImportAnalysis { kind, title: if a.title.is_empty() { title } else { a.title.clone() }, midi: None, musicxml: Some(a) }
+            ImportAnalysis {
+                kind,
+                title: if a.title.is_empty() { title } else { a.title.clone() },
+                midi: None,
+                musicxml: Some(a),
+            }
         }
     }))
 }
@@ -102,9 +121,14 @@ pub async fn analyse(State(s): State<AppState>, Query(q): Query<FileQuery>, body
 #[utoipa::path(post, path = "/api/v1/import", tag = "files", params(FileQuery),
     request_body(content = Vec<u8>, content_type = "application/octet-stream"),
     responses((status = 200, body = Vec<TrackSummary>), (status = 400, body = ApiErrorBody)))]
-pub async fn import(State(s): State<AppState>, Query(q): Query<FileQuery>, body: Bytes) -> Result<Json<Vec<TrackSummary>>, Response> {
+pub async fn import(
+    State(s): State<AppState>,
+    Query(q): Query<FileQuery>,
+    body: Bytes,
+) -> Result<Json<Vec<TrackSummary>>, Response> {
     let bad = |e: String| error(StatusCode::BAD_REQUEST, e);
-    let kind = kind_of(&q.name, &body).ok_or_else(|| bad("Use a MIDI (.mid) or MusicXML (.musicxml, .mxl) file.".into()))?;
+    let kind =
+        kind_of(&q.name, &body).ok_or_else(|| bad("Use a MIDI (.mid) or MusicXML (.musicxml, .mxl) file.".into()))?;
     let title = title_from(&q.name);
     let options = q.options.as_deref().unwrap_or("{}");
     let tracks: Vec<Track> = match kind {
@@ -139,7 +163,10 @@ fn download(bytes: Vec<u8>, mime: &'static str, name: &str) -> Response {
     (
         [
             (header::CONTENT_TYPE, HeaderValue::from_static(mime)),
-            (header::CONTENT_DISPOSITION, HeaderValue::from_str(&disposition).unwrap_or(HeaderValue::from_static("attachment"))),
+            (
+                header::CONTENT_DISPOSITION,
+                HeaderValue::from_str(&disposition).unwrap_or(HeaderValue::from_static("attachment")),
+            ),
         ],
         bytes,
     )
@@ -158,14 +185,19 @@ pub async fn export_midi(State(s): State<AppState>, Path(id): Path<String>, Quer
 }
 
 fn csv_field(s: &str) -> String {
-    if s.contains([',', '"', '\n']) { format!("\"{}\"", s.replace('"', "\"\"")) } else { s.to_string() }
+    if s.contains([',', '"', '\n']) {
+        format!("\"{}\"", s.replace('"', "\"\""))
+    } else {
+        s.to_string()
+    }
 }
 
 /// The library as a spreadsheet (CSV).
 #[utoipa::path(get, path = "/api/v1/export/library.csv", tag = "files",
     responses((status = 200, content_type = "text/csv")))]
 pub async fn export_csv(State(s): State<AppState>) -> Response {
-    let mut out = String::from("Title,Composer,Tune,Performer,Publication,Copyright,Volume,Length (s),Verses,Organ,Source\r\n");
+    let mut out =
+        String::from("Title,Composer,Tune,Performer,Publication,Copyright,Volume,Length (s),Verses,Organ,Source\r\n");
     for t in s.library.list() {
         let i = &t.info;
         let row = [

@@ -4,14 +4,30 @@ import * as React from "react"
 
 /** Piano-style layout: the home row is the white keys, the row above the black keys. */
 const KEY_OFFSETS: Record<string, number> = {
-  a: 0, w: 1, s: 2, e: 3, d: 4, f: 5, t: 6, g: 7, y: 8, h: 9, u: 10, j: 11,
-  k: 12, o: 13, l: 14, p: 15, ";": 16,
+  a: 0,
+  w: 1,
+  s: 2,
+  e: 3,
+  d: 4,
+  f: 5,
+  t: 6,
+  g: 7,
+  y: 8,
+  h: 9,
+  u: 10,
+  j: 11,
+  k: 12,
+  o: 13,
+  l: 14,
+  p: 15,
+  ";": 16,
 }
 
 function isTyping(target: EventTarget | null) {
   return (
     target instanceof HTMLElement &&
-    (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName))
+    (target.isContentEditable ||
+      ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName))
   )
 }
 
@@ -35,7 +51,8 @@ export function useComputerKeyboard(
     const pressed = held.current
 
     const down = (e: KeyboardEvent) => {
-      if (e.repeat || e.metaKey || e.ctrlKey || e.altKey || isTyping(e.target)) return
+      if (e.repeat || e.metaKey || e.ctrlKey || e.altKey || isTyping(e.target))
+        return
       const k = e.key.toLowerCase()
       if (k === "z") return setBase((b) => Math.max(24, b - 12))
       if (k === "x") return setBase((b) => Math.min(96, b + 12))

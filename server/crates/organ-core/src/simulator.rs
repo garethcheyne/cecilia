@@ -51,12 +51,8 @@ impl Simulator {
     ) -> Self {
         let console = ConsoleState::new(&organ);
         let (events, _) = broadcast::channel(1024);
-        let sim = Self {
-            inner: Arc::new(Mutex::new(Inner { driver: Driver::new(organ), console })),
-            events,
-            hub,
-            synth,
-        };
+        let sim =
+            Self { inner: Arc::new(Mutex::new(Inner { driver: Driver::new(organ), console })), events, hub, synth };
         let worker = sim.clone();
         std::thread::Builder::new()
             .name("simulator".into())
@@ -132,12 +128,7 @@ impl Simulator {
     pub fn release_keys(&self) {
         let keys: Vec<_> = {
             let inner = self.lock();
-            inner
-                .console
-                .notes
-                .iter()
-                .flat_map(|(d, ks)| ks.iter().map(move |k| (*d, *k)))
-                .collect()
+            inner.console.notes.iter().flat_map(|(d, ks)| ks.iter().map(move |k| (*d, *k))).collect()
         };
         for (division, key) in keys {
             self.act(OrganEvent::Note { division, key, velocity: 0 });

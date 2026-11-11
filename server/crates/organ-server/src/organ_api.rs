@@ -33,7 +33,10 @@ pub struct CopyOrgan {
 /// your own instrument, e.g. from the Makin template).
 #[utoipa::path(post, path = "/api/v1/organs/copy", tag = "organs", request_body = CopyOrgan,
     responses((status = 200, body = OrganDefinition), (status = 404, body = ApiErrorBody)))]
-pub async fn copy_organ(State(s): State<AppState>, Json(req): Json<CopyOrgan>) -> Result<Json<OrganDefinition>, Response> {
+pub async fn copy_organ(
+    State(s): State<AppState>,
+    Json(req): Json<CopyOrgan>,
+) -> Result<Json<OrganDefinition>, Response> {
     let mut organ = s
         .organs
         .get(&req.from)

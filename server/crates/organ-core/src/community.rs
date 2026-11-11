@@ -282,7 +282,8 @@ pub fn build_catalogue(root: &Path) -> (Catalogue, Vec<String>) {
             problems.push(format!("{path}: organ definitions are shared as CC0-1.0"));
             continue;
         }
-        let toggles = organ.stops.iter().any(|s| matches!(s.midi.first(), Some(crate::organ::StopBinding::Toggle { .. })));
+        let toggles =
+            organ.stops.iter().any(|s| matches!(s.midi.first(), Some(crate::organ::StopBinding::Toggle { .. })));
         if toggles && organ.all_stops_off.is_none() {
             problems.push(format!("{path}: its stops toggle, so it needs all_stops_off (the general cancel message)"));
             continue;

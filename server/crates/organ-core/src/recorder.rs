@@ -117,9 +117,10 @@ impl AutoRecorder {
     pub fn status(&self) -> RecorderStatus {
         RecorderStatus {
             state: self.state(),
-            elapsed_ms: self.take.as_ref().map_or(0, |t| {
-                ((self.last_us.saturating_sub(t.first_us)) / 1000) as u32 + self.config.margin_start_ms
-            }),
+            elapsed_ms: self
+                .take
+                .as_ref()
+                .map_or(0, |t| ((self.last_us.saturating_sub(t.first_us)) / 1000) as u32 + self.config.margin_start_ms),
             notes: self.take.as_ref().map_or(0, |t| t.notes),
             saved: self.saved,
         }
@@ -150,9 +151,8 @@ impl AutoRecorder {
 
     /// Feed an already-decoded console event (used by imports).
     pub fn on_event(&mut self, t_us: u64, e: &OrganEvent) {
-        let starts_piece = self.armed
-            && self.take.is_none()
-            && matches!(e, OrganEvent::Note { velocity, .. } if *velocity > 0);
+        let starts_piece =
+            self.armed && self.take.is_none() && matches!(e, OrganEvent::Note { velocity, .. } if *velocity > 0);
         if starts_piece {
             self.take = Some(Take {
                 first_us: t_us,
@@ -201,8 +201,7 @@ impl AutoRecorder {
         // Release anything still held so the track never leaves a note on.
         let last_sound = if take.held > 0 { now_us.max(take.last_sound_us) } else { take.last_sound_us };
         let end_of_sound = to_ms(last_sound);
-        let mut events: Vec<TimedEvent> =
-            take.events.into_iter().filter(|e| e.t <= end_of_sound).collect();
+        let mut events: Vec<TimedEvent> = take.events.into_iter().filter(|e| e.t <= end_of_sound).collect();
         let mut held = std::collections::BTreeSet::new();
         for e in &events {
             if let TrackEvent::Note { division, key, velocity } = e.event {
@@ -242,9 +241,7 @@ impl AutoRecorder {
 }
 
 pub fn unix_ms() -> u64 {
-    std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map_or(0, |d| d.as_millis() as u64)
+    std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_or(0, |d| d.as_millis() as u64)
 }
 
 /// "Recording 11 Nov 2026 10:32" in UTC (the UI shows local times from
@@ -302,7 +299,7 @@ mod tests {
         r.arm();
         assert_eq!(r.state(), RecorderState::Waiting);
         let m = encode(&r, OrganEvent::Stop { stop: "gt-principal".into(), on: true });
-        r.on_midi(1 * S, &m);
+        r.on_midi(S, &m);
         assert_eq!(r.state(), RecorderState::Waiting, "stop changes don't start a piece");
 
         key(&mut r, 2 * S, 60, 90);

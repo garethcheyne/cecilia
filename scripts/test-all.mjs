@@ -6,6 +6,7 @@
 // when a `cargo run` you started elsewhere has the binary locked).
 
 import { spawnSync } from "node:child_process"
+import { existsSync } from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 
@@ -25,7 +26,10 @@ function run(title, cmd, args, cwd, env = {}) {
   }
 }
 
+run("Rust format", "cargo", ["fmt", "--check"], server)
+run("Rust lint", "cargo", ["clippy", "--all-targets", "--", "-D", "warnings"], server)
 run("Rust tests", "cargo", ["test", "--workspace"], server)
+run("Web format", "npx", ["prettier", "--check", "**/*.{ts,tsx}"], web)
 run("Web type check", "npx", ["tsc", "--noEmit"], web)
 run("Web lint", "npx", ["eslint", "."], web)
 run("Web unit tests", "npx", ["vitest", "run"], web)
@@ -35,5 +39,11 @@ if (!skipE2e) {
   run("Browser tests", "npx", ["playwright", "test"], web, {
     CECILIA_BIN: path.join(targetDir, "debug", exe),
   })
+}
+// The community service, when it's cloned alongside.
+const community = path.join(root, "..", "cecilia-community")
+if (existsSync(path.join(community, "node_modules"))) {
+  run("Community type check", "npx", ["tsc", "--noEmit"], community)
+  run("Community tests", "npm", ["test"], community)
 }
 console.log("\n✓ All tests passed")

@@ -62,7 +62,13 @@ pub struct CommunityAccountStatus {
     responses((status = 200, body = CommunityAccountStatus)))]
 pub async fn account(State(s): State<AppState>) -> Result<Json<CommunityAccountStatus>, Response> {
     let Some(acc) = s.settings.get().community else {
-        return Ok(Json(CommunityAccountStatus { signed_in: false, email: None, name: None, church: None, role: None }));
+        return Ok(Json(CommunityAccountStatus {
+            signed_in: false,
+            email: None,
+            name: None,
+            church: None,
+            role: None,
+        }));
     };
     match s.community.service(Method::GET, "/me", Some(&acc.token), None).await {
         Ok(me) => {
@@ -82,7 +88,13 @@ pub async fn account(State(s): State<AppState>) -> Result<Json<CommunityAccountS
                 Ok(Json(CommunityAccountStatus { signed_in: false, email: None, name: None, church: None, role: None }))
             } else {
                 // Offline: still signed in, details unknown.
-                Ok(Json(CommunityAccountStatus { signed_in: true, email: Some(acc.email), name: None, church: None, role: None }))
+                Ok(Json(CommunityAccountStatus {
+                    signed_in: true,
+                    email: Some(acc.email),
+                    name: None,
+                    church: None,
+                    role: None,
+                }))
             }
         }
     }
@@ -105,7 +117,11 @@ pub struct SignInStarted {
 #[utoipa::path(post, path = "/api/v1/community/account/start", tag = "community", request_body = SignInStart,
     responses((status = 200, body = SignInStarted), (status = 400, body = ApiErrorBody)))]
 pub async fn start(State(s): State<AppState>, Json(b): Json<SignInStart>) -> Result<Json<SignInStarted>, Response> {
-    let r = s.community.service(Method::POST, "/auth/start", None, Some(json!({ "email": b.email }))).await.map_err(error)?;
+    let r = s
+        .community
+        .service(Method::POST, "/auth/start", None, Some(json!({ "email": b.email })))
+        .await
+        .map_err(error)?;
     Ok(Json(SignInStarted {
         minutes: r["minutes"].as_u64().unwrap_or(15) as u32,
         code: r["code"].as_str().map(str::to_string),
@@ -121,8 +137,12 @@ pub struct SignInVerify {
 /// Sign in with the emailed code.
 #[utoipa::path(post, path = "/api/v1/community/account/verify", tag = "community", request_body = SignInVerify,
     responses((status = 200, body = CommunityAccountStatus), (status = 401, body = ApiErrorBody)))]
-pub async fn verify(State(s): State<AppState>, Json(b): Json<SignInVerify>) -> Result<Json<CommunityAccountStatus>, Response> {
-    let host = std::env::var("COMPUTERNAME").or_else(|_| std::env::var("HOSTNAME")).unwrap_or_else(|_| "this computer".into());
+pub async fn verify(
+    State(s): State<AppState>,
+    Json(b): Json<SignInVerify>,
+) -> Result<Json<CommunityAccountStatus>, Response> {
+    let host =
+        std::env::var("COMPUTERNAME").or_else(|_| std::env::var("HOSTNAME")).unwrap_or_else(|_| "this computer".into());
     let r = s
         .community
         .service(
@@ -160,7 +180,10 @@ pub struct CommunityProfile {
 /// Your name and church, as other churches see them.
 #[utoipa::path(put, path = "/api/v1/community/account/profile", tag = "community", request_body = CommunityProfile,
     responses((status = 200, body = CommunityAccountStatus), (status = 401, body = ApiErrorBody)))]
-pub async fn profile(State(s): State<AppState>, Json(b): Json<CommunityProfile>) -> Result<Json<CommunityAccountStatus>, Response> {
+pub async fn profile(
+    State(s): State<AppState>,
+    Json(b): Json<CommunityProfile>,
+) -> Result<Json<CommunityAccountStatus>, Response> {
     let t = token(&s)?;
     s.community
         .service(Method::PUT, "/me", Some(&t), Some(json!({ "name": b.name, "church": b.church })))
@@ -214,7 +237,10 @@ fn share_result(r: &Value) -> ShareResult {
     ShareResult {
         id: r["id"].as_str().unwrap_or_default().to_string(),
         status: r["status"].as_str().unwrap_or("pending").to_string(),
-        checks: r["checks"].as_array().map(|a| a.iter().filter_map(|c| c.as_str().map(str::to_string)).collect()).unwrap_or_default(),
+        checks: r["checks"]
+            .as_array()
+            .map(|a| a.iter().filter_map(|c| c.as_str().map(str::to_string)).collect())
+            .unwrap_or_default(),
     }
 }
 
@@ -222,7 +248,11 @@ fn share_result(r: &Value) -> ShareResult {
 #[utoipa::path(post, path = "/api/v1/community/share/organ/{id}", tag = "community", request_body = ShareOrgan,
     params(("id" = String, Path, description = "Organ id")),
     responses((status = 200, body = ShareResult), (status = 401, body = ApiErrorBody), (status = 404, body = ApiErrorBody), (status = 422, body = ApiErrorBody)))]
-pub async fn share_organ(State(s): State<AppState>, Path(id): Path<String>, Json(b): Json<ShareOrgan>) -> Result<Json<ShareResult>, Response> {
+pub async fn share_organ(
+    State(s): State<AppState>,
+    Path(id): Path<String>,
+    Json(b): Json<ShareOrgan>,
+) -> Result<Json<ShareResult>, Response> {
     let t = token(&s)?;
     let organ = s.organs.get(&id).ok_or_else(|| error((StatusCode::NOT_FOUND, "No such organ.".into())))?;
     let learned = organ.stops.iter().filter(|st| !st.midi.is_empty()).count();
@@ -233,7 +263,12 @@ pub async fn share_organ(State(s): State<AppState>, Path(id): Path<String>, Json
     });
     let r = s
         .community
-        .service(Method::POST, "/submissions/organ", Some(&t), Some(json!({ "organ": organ, "meta": meta, "note": b.note })))
+        .service(
+            Method::POST,
+            "/submissions/organ",
+            Some(&t),
+            Some(json!({ "organ": organ, "meta": meta, "note": b.note })),
+        )
         .await
         .map_err(|e| {
             forget_if_refused(&s, &e);
@@ -257,7 +292,11 @@ pub struct ShareMusic {
 #[utoipa::path(post, path = "/api/v1/community/share/music/{id}", tag = "community", request_body = ShareMusic,
     params(("id" = String, Path, description = "Piece id")),
     responses((status = 200, body = ShareResult), (status = 401, body = ApiErrorBody), (status = 404, body = ApiErrorBody), (status = 422, body = ApiErrorBody)))]
-pub async fn share_music(State(s): State<AppState>, Path(id): Path<String>, Json(b): Json<ShareMusic>) -> Result<Json<ShareResult>, Response> {
+pub async fn share_music(
+    State(s): State<AppState>,
+    Path(id): Path<String>,
+    Json(b): Json<ShareMusic>,
+) -> Result<Json<ShareResult>, Response> {
     let t = token(&s)?;
     let track = s.library.get(&id).ok_or_else(|| error((StatusCode::NOT_FOUND, "No such piece.".into())))?;
     let st = s.settings.get();

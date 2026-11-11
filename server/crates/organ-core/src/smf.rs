@@ -30,6 +30,12 @@ const TEMPO_US: u32 = 500_000;
 /// General MIDI "Church Organ" (program 20, zero-based 19).
 const GM_CHURCH_ORGAN: u8 = 19;
 
+/// MIDI messages, each with its time (ticks or microseconds).
+pub type Timed<T> = Vec<(T, Vec<u8>)>;
+
+/// Sends one organ event, recording the MIDI it produces.
+type Push<'a> = dyn FnMut(u32, OrganEvent, &mut ConsoleState, &mut Timed<u32>) + 'a;
+
 #[derive(Debug, thiserror::Error)]
 pub enum SmfError {
     #[error("this isn't a MIDI file that can be read: {0}")]
@@ -60,7 +66,12 @@ fn ms_to_ticks(ms: u32) -> u64 {
 }
 
 /// Write `track` as a Standard MIDI File.
-pub fn export(track: &Track, format: ExportFormat, organ: &OrganDefinition, channels: &BTreeMap<DivisionRole, u8>) -> Vec<u8> {
+pub fn export(
+    track: &Track,
+    format: ExportFormat,
+    organ: &OrganDefinition,
+    channels: &BTreeMap<DivisionRole, u8>,
+) -> Vec<u8> {
     let mut timed: Vec<(u32, Vec<u8>)> = Vec::new();
     match format {
         ExportFormat::Organ => organ_messages(track, organ, &mut timed),
@@ -119,16 +130,17 @@ fn organ_messages(track: &Track, organ: &OrganDefinition, out: &mut Vec<(u32, Ve
         }
     }
     let mut reg = track.initial.clone();
-    let set_reg = |t: u32, reg: &Registration, console: &mut ConsoleState, out: &mut Vec<(u32, Vec<u8>)>, push: &mut dyn FnMut(u32, OrganEvent, &mut ConsoleState, &mut Vec<(u32, Vec<u8>)>)| {
-        let target = organist.stops_for(reg);
-        let drawn: BTreeSet<String> = console.stops.clone();
-        for id in drawn.difference(&target) {
-            push(t, OrganEvent::Stop { stop: id.clone(), on: false }, console, out);
-        }
-        for id in target.difference(&drawn) {
-            push(t, OrganEvent::Stop { stop: id.clone(), on: true }, console, out);
-        }
-    };
+    let set_reg =
+        |t: u32, reg: &Registration, console: &mut ConsoleState, out: &mut Timed<u32>, push: &mut Push<'_>| {
+            let target = organist.stops_for(reg);
+            let drawn: BTreeSet<String> = console.stops.clone();
+            for id in drawn.difference(&target) {
+                push(t, OrganEvent::Stop { stop: id.clone(), on: false }, console, out);
+            }
+            for id in target.difference(&drawn) {
+                push(t, OrganEvent::Stop { stop: id.clone(), on: true }, console, out);
+            }
+        };
     // Registration a moment after the cancel, so a toggle organ settles.
     let start = if organ.all_stops_off.is_some() { 1 } else { 0 };
     set_reg(start, &reg, &mut console, out, &mut push);
@@ -139,7 +151,12 @@ fn organ_messages(track: &Track, organ: &OrganDefinition, out: &mut Vec<(u32, Ve
     }
     let volume = |v: u8| (v as u32 * track.info.volume as u32 / 100) as u8;
     if organ.master_volume.is_some() {
-        push(start, OrganEvent::MasterVolume { value: volume(track.initial.master_volume.unwrap_or(127)) }, &mut console, out);
+        push(
+            start,
+            OrganEvent::MasterVolume { value: volume(track.initial.master_volume.unwrap_or(127)) },
+            &mut console,
+            out,
+        );
     }
     let mut i = 0;
     while i < track.events.len() {
@@ -207,7 +224,10 @@ fn gm_messages(track: &Track, channels: &BTreeMap<DivisionRole, u8>, out: &mut V
         match &e.event {
             TEvent::Note { division, key, velocity } => {
                 if let Some(c) = ch(division) {
-                    out.push((e.t, if *velocity > 0 { vec![0x90 | c, *key, *velocity] } else { vec![0x80 | c, *key, 0] }));
+                    out.push((
+                        e.t,
+                        if *velocity > 0 { vec![0x90 | c, *key, *velocity] } else { vec![0x80 | c, *key, 0] },
+                    ));
                 }
             }
             TEvent::Expression { division, value } => {
@@ -247,12 +267,14 @@ pub fn library_zip(tracks: &[Track], organ: &OrganDefinition) -> Vec<u8> {
 
 /// A title made safe for a file name on any system.
 pub fn file_name(title: &str) -> String {
-    let s: String = title
-        .chars()
-        .map(|c| if c.is_alphanumeric() || " -_.,()'".contains(c) { c } else { '_' })
-        .collect();
+    let s: String =
+        title.chars().map(|c| if c.is_alphanumeric() || " -_.,()'".contains(c) { c } else { '_' }).collect();
     let s = s.trim().trim_matches('.').to_string();
-    if s.is_empty() { "track".into() } else { s.chars().take(80).collect() }
+    if s.is_empty() {
+        "track".into()
+    } else {
+        s.chars().take(80).collect()
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -261,7 +283,7 @@ pub fn file_name(title: &str) -> String {
 
 /// Every channel/SysEx message in the file with its time in µs, all tracks
 /// merged and the tempo map applied.
-pub fn read_messages(bytes: &[u8]) -> Result<(Vec<(u64, Vec<u8>)>, BTreeMap<u8, String>), SmfError> {
+pub fn read_messages(bytes: &[u8]) -> Result<(Timed<u64>, BTreeMap<u8, String>), SmfError> {
     let smf = Smf::parse(bytes).map_err(|e| SmfError::Parse(e.to_string()))?;
     let ppq = match smf.header.timing {
         Timing::Metrical(t) => t.as_int().max(1) as u64,
@@ -351,7 +373,9 @@ pub fn analyse(bytes: &[u8], organ: &OrganDefinition) -> Result<MidiAnalysis, Sm
         let status = m[0];
         if matches!(status & 0xF0, 0x80 | 0x90) && m.len() == 3 {
             per.entry((status & 0x0F) + 1).or_default().push((*t, m[1], status & 0xF0 == 0x90 && m[2] > 0));
-        } else if !(status & 0xF0 == 0xB0 && matches!(m.get(1), Some(7 | 10 | 91 | 93 | 121 | 0 | 32))) && status & 0xF0 != 0xC0 {
+        } else if !(status & 0xF0 == 0xB0 && matches!(m.get(1), Some(7 | 10 | 91 | 93 | 121 | 0 | 32)))
+            && status & 0xF0 != 0xC0
+        {
             other += 1;
             if !driver.decode(m).is_empty() {
                 understood += 1;
@@ -424,7 +448,8 @@ fn suggest_divisions(infos: &mut [ChannelInfo], organ: &OrganDefinition) {
             }
         }
     }
-    let unassigned: Vec<usize> = (0..infos.len()).filter(|&i| infos[i].suggested.is_none() && infos[i].duplicate_of.is_none()).collect();
+    let unassigned: Vec<usize> =
+        (0..infos.len()).filter(|&i| infos[i].suggested.is_none() && infos[i].duplicate_of.is_none()).collect();
     if unassigned.is_empty() {
         return;
     }
@@ -490,7 +515,12 @@ pub struct ImportOptions {
 }
 
 /// Turn a MIDI file into tracks for `organ`.
-pub fn import(bytes: &[u8], organ: &OrganDefinition, options: &ImportOptions, title: &str) -> Result<Vec<Track>, SmfError> {
+pub fn import(
+    bytes: &[u8],
+    organ: &OrganDefinition,
+    options: &ImportOptions,
+    title: &str,
+) -> Result<Vec<Track>, SmfError> {
     let (msgs, _) = read_messages(bytes)?;
     let config = RecorderConfig {
         silence_ms: options.split_ms.unwrap_or(u32::MAX / 2).max(1000),
@@ -574,18 +604,17 @@ fn default_registration(organ: &OrganDefinition, divisions: BTreeSet<DivisionRol
             reg.stops.insert(voice(*d, Family::Principal, "8"));
             reg.stops.insert(StopRef {
                 division: *d,
-                equivalent: Equivalent::Coupler { source: DivisionRole::Great, pitch: crate::organ::CouplerPitch::Unison },
+                equivalent: Equivalent::Coupler {
+                    source: DivisionRole::Great,
+                    pitch: crate::organ::CouplerPitch::Unison,
+                },
             });
         } else {
             reg.stops.insert(voice(*d, Family::Principal, "8"));
             reg.stops.insert(voice(*d, Family::Principal, "4"));
         }
     }
-    Organist::new(organ.clone())
-        .stops_for(&reg)
-        .into_iter()
-        .map(|stop| OrganEvent::Stop { stop, on: true })
-        .collect()
+    Organist::new(organ.clone()).stops_for(&reg).into_iter().map(|stop| OrganEvent::Stop { stop, on: true }).collect()
 }
 
 #[cfg(test)]
@@ -666,7 +695,8 @@ mod tests {
         let bytes = export(&hymn, ExportFormat::GeneralMidi, &demo, &default_channels());
         let a = analyse(&bytes, &demo).unwrap();
         assert_eq!(a.gaps.len(), 1);
-        let pieces = import(&bytes, &demo, &ImportOptions { split_ms: Some(5000), ..Default::default() }, "Set").unwrap();
+        let pieces =
+            import(&bytes, &demo, &ImportOptions { split_ms: Some(5000), ..Default::default() }, "Set").unwrap();
         assert_eq!(pieces.len(), 2);
         assert_eq!(pieces[1].info.title, "Set (2)");
     }

@@ -52,7 +52,11 @@ async fn main() -> anyhow::Result<()> {
         }
         ["library", "import", "openhymnal", source, dir, rest @ ..] => {
             let write = !rest.contains(&"--dry-run");
-            organ_server::library_cli::import_open_hymnal(std::path::Path::new(source), std::path::Path::new(dir), write)?;
+            organ_server::library_cli::import_open_hymnal(
+                std::path::Path::new(source),
+                std::path::Path::new(dir),
+                write,
+            )?;
             return Ok(());
         }
         _ => {}
@@ -70,9 +74,7 @@ async fn main() -> anyhow::Result<()> {
         .unwrap_or_else(|| "127.0.0.1:7070".into())
         .parse()
         .context("CECILIA_ADDR must look like 127.0.0.1:7070")?;
-    let listener = tokio::net::TcpListener::bind(addr)
-        .await
-        .with_context(|| format!("could not listen on {addr}"))?;
+    let listener = tokio::net::TcpListener::bind(addr).await.with_context(|| format!("could not listen on {addr}"))?;
     tracing::info!("listening on http://{addr} (MCP at /mcp)");
     if mcp_open && !addr.ip().is_loopback() {
         tracing::warn!(

@@ -163,7 +163,10 @@ pub async fn delete_track(State(s): State<AppState>, Path(id): Path<String>) -> 
 #[utoipa::path(post, path = "/api/v1/library/{id}/duplicate", tag = "library",
     params(("id" = String, Path, description = "Track id")),
     responses((status = 200, body = TrackSummary), (status = 404, body = ApiErrorBody)))]
-pub async fn duplicate_track(State(s): State<AppState>, Path(id): Path<String>) -> Result<Json<TrackSummary>, Response> {
+pub async fn duplicate_track(
+    State(s): State<AppState>,
+    Path(id): Path<String>,
+) -> Result<Json<TrackSummary>, Response> {
     if !s.library.contains(&id) {
         return Err(no_track(&id));
     }
@@ -176,7 +179,10 @@ pub async fn duplicate_track(State(s): State<AppState>, Path(id): Path<String>) 
 #[utoipa::path(get, path = "/api/v1/library/{id}/mapping", tag = "library",
     params(("id" = String, Path, description = "Track id")),
     responses((status = 200, body = Vec<StopMapping>), (status = 404, body = ApiErrorBody)))]
-pub async fn track_mapping(State(s): State<AppState>, Path(id): Path<String>) -> Result<Json<Vec<StopMapping>>, Response> {
+pub async fn track_mapping(
+    State(s): State<AppState>,
+    Path(id): Path<String>,
+) -> Result<Json<Vec<StopMapping>>, Response> {
     let t = s.library.get(&id).ok_or_else(|| no_track(&id))?;
     let organist = Organist::new(s.live.organ());
     let used: Vec<_> = t
@@ -262,7 +268,10 @@ async fn wait_for_player(s: &AppState, pred: impl Fn(&PlayerStatus) -> bool) -> 
 /// Load a track from the library, and by default start playing it.
 #[utoipa::path(post, path = "/api/v1/player/load", tag = "player", request_body = LoadTrack,
     responses((status = 200, body = PlayerStatus), (status = 404, body = ApiErrorBody), (status = 409, body = ApiErrorBody)))]
-pub async fn player_load(State(s): State<AppState>, Json(req): Json<LoadTrack>) -> Result<Json<PlayerStatus>, Response> {
+pub async fn player_load(
+    State(s): State<AppState>,
+    Json(req): Json<LoadTrack>,
+) -> Result<Json<PlayerStatus>, Response> {
     let track = s.library.get(&req.track_id).ok_or_else(|| no_track(&req.track_id))?;
     let status = s.hub.status().await.map_err(|e| error(StatusCode::SERVICE_UNAVAILABLE, e.to_string()))?;
     if status.output.is_none() {
@@ -276,7 +285,10 @@ pub async fn player_load(State(s): State<AppState>, Json(req): Json<LoadTrack>) 
     let status = wait_for_player(&s, |st| {
         st.track_id.as_deref() == Some(id.as_str())
             && st.tempo == tempo
-            && (before.track_id.as_deref() != Some(id.as_str()) || st.state != before.state || st.tempo != before.tempo || !req.play)
+            && (before.track_id.as_deref() != Some(id.as_str())
+                || st.state != before.state
+                || st.tempo != before.tempo
+                || !req.play)
     })
     .await;
     Ok(Json(status))

@@ -33,8 +33,7 @@ pub struct Pipe {
 /// Work out every pipe that should sound for this console state.
 pub fn pipes_for(organ: &OrganDefinition, console: &ConsoleState) -> Vec<Pipe> {
     let master = console.master_volume as f32 / 127.0;
-    let index: HashMap<&str, usize> =
-        organ.stops.iter().enumerate().map(|(i, s)| (s.id.as_str(), i)).collect();
+    let index: HashMap<&str, usize> = organ.stops.iter().enumerate().map(|(i, s)| (s.id.as_str(), i)).collect();
 
     let mut pipes = Vec::new();
     for (stop_id, note) in console.sounding(organ) {
@@ -47,11 +46,10 @@ pub fn pipes_for(organ: &OrganDefinition, console: &ConsoleState) -> Vec<Pipe> {
         let expression = console.expression.get(&stop.division).copied().unwrap_or(127) as f32 / 127.0;
         // Pedals don't open fully silent; keep a little sound when closed.
         let gain = master * (0.15 + 0.85 * expression);
-        let tremulant = organ.stops.iter().any(|t| {
-            t.division == stop.division
-                && t.equivalent == Equivalent::Tremulant
-                && console.is_on(&t.id)
-        });
+        let tremulant = organ
+            .stops
+            .iter()
+            .any(|t| t.division == stop.division && t.equivalent == Equivalent::Tremulant && console.is_on(&t.id));
         let base = 440.0 * 2f32.powf((note as f32 - 69.0) / 12.0) * (8.0 / feet);
 
         let rank_ratios: &[f32] = match family {
@@ -91,14 +89,17 @@ const HARMONIC_LIMITS: [usize; 3] = [32, 8, 2];
 fn spectrum(family: Family, n: usize) -> f32 {
     let n = n as f32;
     match family {
-        Family::Principal => [1.0, 0.55, 0.35, 0.22, 0.14, 0.1, 0.07, 0.05]
-            .get(n as usize - 1)
-            .copied()
-            .unwrap_or(0.4 / (n * n)),
+        Family::Principal => {
+            [1.0, 0.55, 0.35, 0.22, 0.14, 0.1, 0.07, 0.05].get(n as usize - 1).copied().unwrap_or(0.4 / (n * n))
+        }
         Family::Flute | Family::Mutation => [1.0, 0.12, 0.06, 0.02].get(n as usize - 1).copied().unwrap_or(0.0),
         Family::String | Family::Celeste => 0.7 / n.powf(0.75),
         Family::Reed => {
-            if n == 1.0 { 0.6 } else { 0.9 / n.powf(0.55) }
+            if n == 1.0 {
+                0.6
+            } else {
+                0.9 / n.powf(0.55)
+            }
         }
         Family::Mixture => [1.0, 0.3, 0.12].get(n as usize - 1).copied().unwrap_or(0.0),
         Family::Percussion | Family::Other => 1.0 / (n * n),
@@ -183,12 +184,7 @@ pub struct Voices {
 
 impl Voices {
     pub fn new(sample_rate: f32) -> Self {
-        Self {
-            sample_rate,
-            tables: Arc::new(Tables::build()),
-            voices: HashMap::new(),
-            lfo_phase: 0.0,
-        }
+        Self { sample_rate, tables: Arc::new(Tables::build()), voices: HashMap::new(), lfo_phase: 0.0 }
     }
 
     /// Replace the set of pipes that should be sounding.

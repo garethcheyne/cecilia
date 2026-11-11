@@ -52,11 +52,7 @@ impl TestServer {
     }
 
     pub async fn route_simulator(&self) {
-        self.put(
-            "/midi/config",
-            json!({ "inputs": ["Cecilia Simulator"], "output": "Cecilia Simulator" }),
-        )
-        .await;
+        self.put("/midi/config", json!({ "inputs": ["Cecilia Simulator"], "output": "Cecilia Simulator" })).await;
     }
 
     pub fn url(&self, path: &str) -> String {
@@ -106,8 +102,7 @@ impl TestServer {
     }
 
     pub async fn note(&self, division: &str, key: u8, velocity: u8) {
-        self.act(json!({ "type": "note", "division": division, "key": key, "velocity": velocity }))
-            .await;
+        self.act(json!({ "type": "note", "division": division, "key": key, "velocity": velocity })).await;
     }
 
     pub async fn draw(&self, stop: &str, on: bool) {
@@ -138,12 +133,8 @@ pub async fn sleep_ms(ms: u64) {
 
 /// Drawn stop ids in a simulator snapshot.
 pub fn stops(sim: &Value) -> Vec<String> {
-    let mut v: Vec<String> = sim["console"]["stops"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .map(|s| s.as_str().unwrap().to_string())
-        .collect();
+    let mut v: Vec<String> =
+        sim["console"]["stops"].as_array().unwrap().iter().map(|s| s.as_str().unwrap().to_string()).collect();
     v.sort();
     v
 }

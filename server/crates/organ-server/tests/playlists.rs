@@ -17,10 +17,7 @@ async fn record_short_piece(s: &TestServer) -> String {
     }
     s.post("/recorder/stop", json!(null)).await;
     let list = s.get("/library").await;
-    list.as_array().unwrap().iter().find(|t| t["source"] == "recorded").unwrap()["id"]
-        .as_str()
-        .unwrap()
-        .to_string()
+    list.as_array().unwrap().iter().find(|t| t["source"] == "recorded").unwrap()["id"].as_str().unwrap().to_string()
 }
 
 fn track_row(id: &str, delay: Value) -> Value {
@@ -108,9 +105,7 @@ async fn a_service_runs_through_its_rows() {
 async fn a_service_needs_an_organ() {
     let s = TestServer::start().await;
     s.post("/playlists", json!({ "name": "Matins" })).await;
-    let (code, body) = s
-        .request(Method::POST, "/service/start", Some(json!({ "playlist_id": "matins" })))
-        .await;
+    let (code, body) = s.request(Method::POST, "/service/start", Some(json!({ "playlist_id": "matins" }))).await;
     assert_eq!(code, 409, "{body}");
     let (code, _) = s.request(Method::POST, "/service/next", None).await;
     assert_eq!(code, 409);

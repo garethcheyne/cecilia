@@ -51,7 +51,7 @@ async fn a_password_protects_the_api() {
     assert_eq!(code, 400, "too short");
     s.put("/auth/password", json!({ "password": "magnificat" })).await;
     // This client stays signed in; a new one is locked out.
-    assert_eq!(s.get("/library").await.as_array().unwrap().len() > 0, true);
+    assert!(!s.get("/library").await.as_array().unwrap().is_empty());
     let stranger = reqwest::Client::new();
     assert_eq!(stranger.get(s.url("/library")).send().await.unwrap().status(), 401);
     assert_eq!(stranger.get(s.url("/health")).send().await.unwrap().status(), 200, "health stays open");
@@ -83,7 +83,9 @@ async fn scanned_music_goes_through_the_omr_engine() {
         format!("cp {} {{output}}/scan.musicxml", fixture.display())
     };
     let data = tempfile::tempdir().unwrap();
-    let s = TestServer::start_with(Config { omr_command: Some(command), ..Config::for_tests(data.path().to_path_buf()) }).await;
+    let s =
+        TestServer::start_with(Config { omr_command: Some(command), ..Config::for_tests(data.path().to_path_buf()) })
+            .await;
     let r = s.http.post(format!("{}?name=hymn.png", s.url("/omr"))).body(vec![0u8; 16]).send().await.unwrap();
     assert_eq!(r.status(), 200);
     let xml = r.text().await.unwrap();

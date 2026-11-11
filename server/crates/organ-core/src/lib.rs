@@ -28,6 +28,5 @@ pub mod synth;
 pub mod track;
 
 pub use midi::{
-    Direction, EngineEvent, MidiConfig, MidiError, MidiHub, MidiStatus, PortList, TestState,
-    TestStatus, SIMULATOR_PORT,
+    Direction, EngineEvent, MidiConfig, MidiError, MidiHub, MidiStatus, PortList, TestState, TestStatus, SIMULATOR_PORT,
 };

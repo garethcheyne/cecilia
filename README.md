@@ -31,28 +31,43 @@ Its feature set is modelled on the *publicly documented behaviour* of OrganAssis
   verse"), latching pause, seek and fade-out.
 - **Runs services** from playlists: each piece waits for Play, starts by
   itself after a pause, or is cued at its first note. A large-text Service
-  screen is meant for whoever runs the music on the day.
+  screen is meant for whoever runs the music on the day; double-click a piece
+  to play it at once.
+- **Uses more than one screen.** Choose what each screen shows (order of
+  service, the music following along, now playing, the live console), one
+  panel or two side by side, and open a second-screen window.
 - **Edits recordings** in a piano roll (notes, stop changes, swell pedal,
-  verse markers, sections, undo) and shows them as **staff notation**.
+  verse markers, sections, undo, right-click menus) and shows them as
+  **staff notation** that follows the music as it plays.
 - **Imports and exports** MIDI (including OrganAssist's "Backup Entire Library
   as MIDI"), MusicXML from notation programs, and **scanned printed music**
   through Audiveris (see [docs/OMR.md](docs/OMR.md)).
-- **Learns your organ**: copy a template (Makin, demo), then MIDI-learn
+- **Finds your organ**: choose the maker, model and version from about 200
+  setups built from published stop lists, or copy a template, then MIDI-learn
   every stop, keyboard, swell pedal and the general cancel at the console.
+- **Credits the organist**: organist profiles, "who's playing" on each
+  recording, and consent before a name is shared.
+- **Shares with other churches** through the
+  [Cecilia Community](https://github.com/garethcheyne/cecilia-community)
+  service: browse and add music and organ setups, and share your own (reviewed
+  before publishing).
 - Ships with **eleven sample pieces**: public-domain hymn tunes (Old
-  Hundredth, Eventide, St Anne, Crimond…) and an original prelude.
+  Hundredth, Eventide, St Anne, Crimond…) and an original prelude; the shared
+  library adds over 230 more.
 - A built-in **simulator** with sound, so all of this works without an
   organ.
 
-## Website, guide and shared library
+## The projects
 
-- **Website and user guide:** https://garethcheyne.github.io/cecilia-site/
-  ([cecilia-site](https://github.com/garethcheyne/cecilia-site))
-- **Shared music and organ setups:**
-  [cecilia-library](https://github.com/garethcheyne/cecilia-library)
+| Folder | What it is |
+| --- | --- |
+| [cecilia](https://github.com/garethcheyne/cecilia) (this one) | The app: Rust server and web UI |
+| [cecilia-library](https://github.com/garethcheyne/cecilia-library) | Shared music and organ setups, as files (the public mirror) |
+| [cecilia-community](https://github.com/garethcheyne/cecilia-community) | The community service: accounts, review queue, catalogue (Cloudflare Workers; runs locally for now) |
+| [cecilia-site](https://github.com/garethcheyne/cecilia-site) | Website and user guide, published at [garethcheyne.github.io/cecilia-site](https://garethcheyne.github.io/cecilia-site/) |
 
-Open `cecilia.code-workspace` in VS Code to work on all three together (clone
-them side by side).
+Clone them side by side and open `cecilia.code-workspace` in VS Code to work
+on all four together.
 
 Cecilia is inspired by **OrganAssist** by David Glover
 (https://www.organassist.com). It is an independent, clean-room project: it
@@ -109,21 +124,23 @@ cd web && npm run gen:api        # regenerates lib/api/openapi.json + schema.d.t
 
 ## Configuration (environment variables)
 
-| Variable            | Default                                         | Purpose                                   |
-| ------------------- | ----------------------------------------------- | ----------------------------------------- |
-| `CECILIA_ADDR`     | `127.0.0.1:7070`                                | Listen address. Use `0.0.0.0:7070` for LAN access, after setting a password |
-| `CECILIA_DATA_DIR` | OS data dir + `/Cecilia`                       | Settings, library, playlists, organs, history |
-| `CECILIA_WEB_DIR`  | `./web` beside the binary, else `../web/out`    | Static UI to serve                        |
-| `CECILIA_CORS`     | `http://localhost:3000,http://127.0.0.1:3000`   | Browser origins allowed to call the API   |
-| `CECILIA_AUDIO`    | on                                              | `0` keeps the simulator silent            |
-| `CECILIA_OMR`      | Audiveris on the PATH                           | OMR command with `{input}` and `{output}` |
-| `CECILIA_MCP_TOKEN`| unset                                           | If set, `/mcp` requires `Authorization: Bearer <token>` |
-| `RUST_LOG`          | `info`                                          | Log filter                                |
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `CECILIA_ADDR` | `127.0.0.1:7070` | Listen address. Use `0.0.0.0:7070` for LAN access, after setting a password |
+| `CECILIA_DATA_DIR` | OS data dir + `/Cecilia` | Settings, library, playlists, organs, history |
+| `CECILIA_WEB_DIR` | `./web` beside the binary, else `../web/out` | Static UI to serve |
+| `CECILIA_CORS` | `http://localhost:3000,http://127.0.0.1:3000` | Browser origins allowed to call the API |
+| `CECILIA_AUDIO` | on | `0` keeps the simulator silent |
+| `CECILIA_OMR` | Audiveris on the PATH | OMR command with `{input}` and `{output}` |
+| `CECILIA_MCP_TOKEN` | unset | If set, `/mcp` requires `Authorization: Bearer <token>` |
+| `CECILIA_LIBRARY_URL` | the published library on GitHub Pages | Where the shared library comes from: the Cecilia Community service (`http://127.0.0.1:8787/` locally), the GitHub mirror, or a local folder |
+| `RUST_LOG` | `info` | Log filter |
 
 ## Data folder
 
 ```
-settings.json                  MIDI ports, recording/playback settings, password hash
+settings.json                  MIDI ports, recording/playback settings, password hash,
+                               organists, and the community sign-in (never sent to browsers)
 library/<id>.track.json        recordings, samples and imports (organ-neutral)
 playlists/<id>.playlist.json   orders of service
 organs/<id>.organ.json         your organ definitions
@@ -151,6 +168,9 @@ outline:
 | Service | `/service`, `/service/start`, `/service/next`, `/service/previous`, `/service/select`, `/service/end` |
 | Files | `/import/analyse`, `/import`, `/omr`, `/export/library.csv`, `/export/library-midi.zip`, `/export/backup.zip`, `/import/backup` |
 | System | `/health`, `/settings`, `/auth`, `/auth/login`, `/auth/logout`, `/auth/password`, `/assistant` |
+| Organists | `/organists` (GET/PUT: the list and who's playing now) |
+| Shared library | `/community`, `/community/refresh`, `/community/music/{id}/add`, `/community/organs/{id}`, `/community/organs/{id}/add` |
+| Sharing | `/community/account` (+ `/start`, `/verify`, `/sign-out`, `/profile`), `/community/shared`, `/community/share/organ/{id}`, `/community/share/music/{id}` |
 | Events | `/events` (WebSocket: `status`, `midi`, `simulator`, `live`, `player`, `recorder`, `service`, `library`) |
 | Assistant | `/mcp` (outside `/api/v1`) |
 
@@ -173,7 +193,10 @@ The full feature spec is in [docs/SPEC.md](docs/SPEC.md).
 7. ✅ Organ designer and MIDI learn (combination pistons and more drivers still to come)
 8. ✅ Settings, backups, password, Raspberry Pi packaging (translations still to come)
 9. ✅ Scanned music (OMR) through Audiveris
-10. Assistant: music tools and voice control (paused)
+10. ✅ Shared library: Open Hymnal import, ~200 organ templates, Find my organ
+11. ✅ Organists, sharing and the Cecilia Community service (local; Cloudflare later)
+12. Allen (NRPN) and Rodgers (bitfield SysEx) stop learning; combination pistons
+13. Assistant: music tools and voice control (paused)
 
 ## Simulator
 
