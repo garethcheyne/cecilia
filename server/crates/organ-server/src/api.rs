@@ -120,7 +120,7 @@ pub fn router() -> Router<AppState> {
         crate::system_api::restore, crate::system_api::auth_status, crate::system_api::login,
         crate::system_api::logout, crate::system_api::set_password, crate::system_api::omr,
         crate::community_api::catalogue, crate::community_api::refresh,
-        crate::community_api::add_music, crate::community_api::add_organ
+        crate::community_api::add_music, crate::community_api::get_organ, crate::community_api::add_organ
     ),
     components(schemas(
         Health, ApiErrorBody, PortList, MidiConfig, MidiStatus, TestStatus, TestState,

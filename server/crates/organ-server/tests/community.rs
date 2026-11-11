@@ -49,6 +49,9 @@ async fn browse_and_add_from_the_shared_library() {
     assert_eq!(again["id"], "lib-crimond", "adding twice doesn't make a copy");
     assert!(s.get("/library").await.as_array().unwrap().iter().any(|t| t["id"] == "lib-crimond"));
 
+    let preview = s.get("/community/organs/makin-2m").await;
+    assert!(preview["stops"].as_array().unwrap().len() > 10, "the full stop list, to check before adding");
+
     let o = s.post("/community/organs/makin-2m/add", json!(null)).await;
     assert_eq!(o["name"], "Makin Westmorland");
     assert_eq!(o["builtin"], false, "an organ you can edit");

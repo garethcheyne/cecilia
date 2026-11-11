@@ -38,7 +38,18 @@ pub enum Confidence {
 #[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct OrganMeta {
     pub maker: String,
+    /// The model as the maker names it, e.g. "Studio 170" or "Westmorland 2".
     pub model: String,
+    /// The family the model belongs to, e.g. "Studio" or "Opus", for grouping.
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub series: String,
+    /// What sets this setup apart from others of the same model, e.g.
+    /// "with optional Solo division" or "built 2010 onwards (MIDI channel 16)".
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub variant: String,
+    /// Other names or numbers the same organ is sold under, for searching.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub also_known_as: Vec<String>,
     /// e.g. "1995–2005".
     #[serde(default)]
     pub years: String,

@@ -1,0 +1,14 @@
+{
+  "maker": "Makin",
+  "model": "Two-manual (template)",
+  "years": "",
+  "confidence": "template",
+  "notes": [
+    "Stop numbers are placeholders until learned from a real Makin: copy it in Cecilia and use Learn every stop.",
+    "Record from the organ's MIDI SEQ socket and play back into MIDI IN.",
+    "Press General Cancel on the organ before recording."
+  ],
+  "contributor": "Cecilia",
+  "licence": "CC0-1.0",
+  "variant": "built 2010 onwards (MIDI channel 16)"
+}

@@ -213,6 +213,7 @@ export function OrgansIndex() {
         builtinIds={
           organs ? organs.filter((o) => o.builtin).map((o) => o.id) : null
         }
+        onAdded={() => setVersion((v) => v + 1)}
       />
 
       <Dialog open={!!copying} onOpenChange={(o) => !o && setCopying(null)}>

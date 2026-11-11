@@ -4,4038 +4,4049 @@
  */
 
 export interface paths {
-  "/api/v1/assistant": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** The assistant's name, used by the MCP server (`/mcp`). */
-    get: operations["get_assistant"]
-    /** Rename the assistant (1-40 characters). */
-    put: operations["put_assistant"]
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/auth": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** Whether a password is needed, and whether this browser is signed in. */
-    get: operations["auth_status"]
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/auth/login": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Sign in. */
-    post: operations["login"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/auth/logout": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Sign out. */
-    post: operations["logout"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/auth/password": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    /**
-     * Set, change or remove the password (needs a session if one is set).
-     *     Other signed-in browsers are signed out.
-     */
-    put: operations["set_password"]
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/community": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** What's in the shared library. */
-    get: operations["catalogue"]
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/community/music/{id}/add": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Add a piece from the shared library to this Cecilia's library. */
-    post: operations["add_music"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/community/organs/{id}/add": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Add an organ setup from the shared library (as one you can edit). */
-    post: operations["add_organ"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/community/refresh": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Check the shared library again now. */
-    post: operations["refresh"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/export/backup.zip": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** Everything that matters (library, organs, playlists, settings) in one zip. */
-    get: operations["backup"]
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/export/library-midi.zip": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
-     * Every track as a MIDI file for the current organ, zipped: a backup that
-     *     any MIDI program can open.
-     */
-    get: operations["export_zip"]
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/export/library.csv": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** The library as a spreadsheet (CSV). */
-    get: operations["export_csv"]
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/health": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** Server identity and version. */
-    get: operations["health"]
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/import": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Import a file into the library. MIDI files may become several pieces. */
-    post: operations["import"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/import/analyse": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /**
-     * Look inside a file before importing it: channels or staves, length,
-     *     and whether it was recorded on the current organ.
-     */
-    post: operations["analyse"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/import/backup": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /**
-     * Restore a backup made with `export/backup.zip`. Items with the same name
-     *     are replaced; everything else is kept. This machine's MIDI ports and
-     *     password stay as they are.
-     */
-    post: operations["restore"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/library": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** Every track in the library, newest first. */
-    get: operations["list_tracks"]
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/library/{id}": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** A whole track, with its events. */
-    get: operations["get_track"]
-    /** Save a whole track (from the editor or an import). Creates or replaces. */
-    put: operations["put_track"]
-    post?: never
-    /** Delete a track (a copy is kept in the history folder). */
-    delete: operations["delete_track"]
-    options?: never
-    head?: never
-    /** Edit a track's details (title, composer, volume, verse markers…). */
-    patch: operations["patch_track"]
-    trace?: never
-  }
-  "/api/v1/library/{id}/duplicate": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Copy a track under a new name. */
-    post: operations["duplicate_track"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/library/{id}/mapping": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** How the track's stops map onto the current organ (the virtual organist's plan). */
-    get: operations["track_mapping"]
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/library/{id}/midi": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** Download a track as a MIDI file. */
-    get: operations["export_midi"]
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/live": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** What the connected organ (the Organ out) is doing, as tracked from MIDI. */
-    get: operations["live_state"]
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/live/act": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /**
-     * Operate the connected organ: draw a stop, press a key, move a pedal.
-     *     Toggle-only stops are sent only when they need to change.
-     */
-    post: operations["live_act"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/midi/config": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** The saved port selection. */
-    get: operations["get_config"]
-    /**
-     * Save a new port selection and reconnect. Ports that could not be opened
-     *     are listed in `missing` in the response.
-     */
-    put: operations["put_config"]
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/midi/panic": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Send All Notes Off and All Sound Off on every channel. */
-    post: operations["panic"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/midi/ports": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** MIDI ports currently available on this machine. */
-    get: operations["ports"]
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/midi/status": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** Open connections and test recorder state. */
-    get: operations["status"]
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/midi/test/play": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Play the test recording back, byte-for-byte, to the output port. */
-    post: operations["test_play"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/midi/test/record": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Start the raw test recorder (discards the previous test recording). */
-    post: operations["test_record"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/midi/test/stop": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Stop test recording or playback. */
-    post: operations["test_stop"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/omr": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /**
-     * Read printed music from a scan or photo with the OMR engine and return
-     *     MusicXML, ready for the usual import.
-     */
-    post: operations["omr"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/organs": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** Organ definitions available on this server. */
-    get: operations["list_organs"]
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/organs/copy": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /**
-     * Make a new organ as a copy of another (the way to start a definition for
-     *     your own instrument, e.g. from the Makin template).
-     */
-    post: operations["copy_organ"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/organs/{id}": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** A full organ definition. */
-    get: operations["get_organ"]
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/organs/{id}/delete": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Delete a user organ. If it was in use, the demo organ takes over. */
-    post: operations["delete_organ"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/organs/{id}/save": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    /**
-     * Save changes to a user organ. If it's the organ in use, it's reloaded
-     *     everywhere straight away.
-     */
-    put: operations["save_organ"]
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/player": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** Transport state. */
-    get: operations["player_status"]
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/player/fade": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Fade out and stop (or cancel a fade). */
-    post: operations["player_fade"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/player/load": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Load a track from the library, and by default start playing it. */
-    post: operations["player_load"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/player/pause": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Pause (press again to continue). */
-    post: operations["player_pause"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/player/play": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Play, or resume from pause. */
-    post: operations["player_play"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/player/seek": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Jump to a position; the registration there is re-created. */
-    post: operations["player_seek"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/player/stop": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Stop playback. */
-    post: operations["player_stop"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/player/tempo": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Change the playback speed. */
-    post: operations["player_tempo"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/player/verses": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Verse control for hymns. */
-    post: operations["player_verses"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/playlists": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** All playlists, most recently changed first. */
-    get: operations["list_playlists"]
-    put?: never
-    /** Create an empty playlist. */
-    post: operations["create_playlist"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/playlists/{id}": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** A playlist with all its rows. */
-    get: operations["get_playlist"]
-    /**
-     * Save a playlist. Saving also marks every track as checked, clearing
-     *     "edited since it was added" warnings.
-     */
-    put: operations["put_playlist"]
-    post?: never
-    /** Delete a playlist (the tracks stay in the library). */
-    delete: operations["delete_playlist"]
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/playlists/{id}/duplicate": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Copy a playlist (e.g. last Sunday's as a starting point). */
-    post: operations["duplicate_playlist"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/recorder": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** Auto-recorder state. */
-    get: operations["recorder_status"]
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/recorder/start": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Arm the auto-recorder: each piece played from now on is saved to the library. */
-    post: operations["recorder_start"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/recorder/stop": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Stop recording; a piece in progress is saved. */
-    post: operations["recorder_stop"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/service": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** Which playlist is running and where it's up to. */
-    get: operations["service_status"]
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/service/end": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Stop running the playlist. */
-    post: operations["service_end"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/service/next": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Skip to the next track and play it. */
-    post: operations["service_next"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/service/previous": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Go back to the previous track and play it. */
-    post: operations["service_previous"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/service/select": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Get a row ready to play. */
-    post: operations["service_select"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/service/start": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Run a playlist. */
-    post: operations["service_start"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/settings": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** Recording and playback settings. */
-    get: operations["get_settings"]
-    /** Change recording and playback settings (they apply straight away). */
-    put: operations["put_settings"]
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/simulator": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** The simulator's organ, console state and audio device. */
-    get: operations["sim_state"]
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/simulator/act": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /**
-     * Do something at the simulated console: press a key, draw a stop, move a
-     *     pedal. It sounds, and the organ's MIDI is sent to the engine as input.
-     */
-    post: operations["sim_act"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/simulator/organ": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    /** Choose which organ the simulator plays (saved). */
-    put: operations["sim_load_organ"]
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/simulator/reset": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Release all keys and push in every stop. */
-    post: operations["sim_reset"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/v1/verses/parse": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Check a verse entry ("4" = four verses, "12357" = exactly those). */
-    post: operations["verses_parse"]
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
+    "/api/v1/assistant": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The assistant's name, used by the MCP server (`/mcp`). */
+        get: operations["get_assistant"];
+        /** Rename the assistant (1-40 characters). */
+        put: operations["put_assistant"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Whether a password is needed, and whether this browser is signed in. */
+        get: operations["auth_status"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sign in. */
+        post: operations["login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sign out. */
+        post: operations["logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set, change or remove the password (needs a session if one is set).
+         *     Other signed-in browsers are signed out.
+         */
+        put: operations["set_password"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/community": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** What's in the shared library. */
+        get: operations["catalogue"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/community/music/{id}/add": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add a piece from the shared library to this Cecilia's library. */
+        post: operations["add_music"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/community/organs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A shared organ setup in full, to look at before adding it. */
+        get: operations["get_organ"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/community/organs/{id}/add": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add an organ setup from the shared library (as one you can edit). */
+        post: operations["add_organ"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/community/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Check the shared library again now. */
+        post: operations["refresh"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/export/backup.zip": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Everything that matters (library, organs, playlists, settings) in one zip. */
+        get: operations["backup"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/export/library-midi.zip": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Every track as a MIDI file for the current organ, zipped: a backup that
+         *     any MIDI program can open.
+         */
+        get: operations["export_zip"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/export/library.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The library as a spreadsheet (CSV). */
+        get: operations["export_csv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Server identity and version. */
+        get: operations["health"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Import a file into the library. MIDI files may become several pieces. */
+        post: operations["import"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/import/analyse": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Look inside a file before importing it: channels or staves, length,
+         *     and whether it was recorded on the current organ.
+         */
+        post: operations["analyse"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/import/backup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Restore a backup made with `export/backup.zip`. Items with the same name
+         *     are replaced; everything else is kept. This machine's MIDI ports and
+         *     password stay as they are.
+         */
+        post: operations["restore"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/library": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every track in the library, newest first. */
+        get: operations["list_tracks"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/library/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A whole track, with its events. */
+        get: operations["get_track"];
+        /** Save a whole track (from the editor or an import). Creates or replaces. */
+        put: operations["put_track"];
+        post?: never;
+        /** Delete a track (a copy is kept in the history folder). */
+        delete: operations["delete_track"];
+        options?: never;
+        head?: never;
+        /** Edit a track's details (title, composer, volume, verse markers…). */
+        patch: operations["patch_track"];
+        trace?: never;
+    };
+    "/api/v1/library/{id}/duplicate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Copy a track under a new name. */
+        post: operations["duplicate_track"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/library/{id}/mapping": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** How the track's stops map onto the current organ (the virtual organist's plan). */
+        get: operations["track_mapping"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/library/{id}/midi": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download a track as a MIDI file. */
+        get: operations["export_midi"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/live": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** What the connected organ (the Organ out) is doing, as tracked from MIDI. */
+        get: operations["live_state"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/live/act": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Operate the connected organ: draw a stop, press a key, move a pedal.
+         *     Toggle-only stops are sent only when they need to change.
+         */
+        post: operations["live_act"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/midi/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The saved port selection. */
+        get: operations["get_config"];
+        /**
+         * Save a new port selection and reconnect. Ports that could not be opened
+         *     are listed in `missing` in the response.
+         */
+        put: operations["put_config"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/midi/panic": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send All Notes Off and All Sound Off on every channel. */
+        post: operations["panic"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/midi/ports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** MIDI ports currently available on this machine. */
+        get: operations["ports"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/midi/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Open connections and test recorder state. */
+        get: operations["status"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/midi/test/play": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Play the test recording back, byte-for-byte, to the output port. */
+        post: operations["test_play"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/midi/test/record": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Start the raw test recorder (discards the previous test recording). */
+        post: operations["test_record"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/midi/test/stop": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Stop test recording or playback. */
+        post: operations["test_stop"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/omr": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Read printed music from a scan or photo with the OMR engine and return
+         *     MusicXML, ready for the usual import.
+         */
+        post: operations["omr"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Organ definitions available on this server. */
+        get: operations["list_organs"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organs/copy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Make a new organ as a copy of another (the way to start a definition for
+         *     your own instrument, e.g. from the Makin template).
+         */
+        post: operations["copy_organ"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A full organ definition. */
+        get: operations["get_organ"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organs/{id}/delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Delete a user organ. If it was in use, the demo organ takes over. */
+        post: operations["delete_organ"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organs/{id}/save": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Save changes to a user organ. If it's the organ in use, it's reloaded
+         *     everywhere straight away.
+         */
+        put: operations["save_organ"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/player": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Transport state. */
+        get: operations["player_status"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/player/fade": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Fade out and stop (or cancel a fade). */
+        post: operations["player_fade"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/player/load": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Load a track from the library, and by default start playing it. */
+        post: operations["player_load"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/player/pause": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Pause (press again to continue). */
+        post: operations["player_pause"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/player/play": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Play, or resume from pause. */
+        post: operations["player_play"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/player/seek": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Jump to a position; the registration there is re-created. */
+        post: operations["player_seek"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/player/stop": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Stop playback. */
+        post: operations["player_stop"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/player/tempo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Change the playback speed. */
+        post: operations["player_tempo"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/player/verses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Verse control for hymns. */
+        post: operations["player_verses"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/playlists": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** All playlists, most recently changed first. */
+        get: operations["list_playlists"];
+        put?: never;
+        /** Create an empty playlist. */
+        post: operations["create_playlist"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/playlists/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A playlist with all its rows. */
+        get: operations["get_playlist"];
+        /**
+         * Save a playlist. Saving also marks every track as checked, clearing
+         *     "edited since it was added" warnings.
+         */
+        put: operations["put_playlist"];
+        post?: never;
+        /** Delete a playlist (the tracks stay in the library). */
+        delete: operations["delete_playlist"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/playlists/{id}/duplicate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Copy a playlist (e.g. last Sunday's as a starting point). */
+        post: operations["duplicate_playlist"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/recorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Auto-recorder state. */
+        get: operations["recorder_status"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/recorder/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Arm the auto-recorder: each piece played from now on is saved to the library. */
+        post: operations["recorder_start"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/recorder/stop": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Stop recording; a piece in progress is saved. */
+        post: operations["recorder_stop"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/service": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Which playlist is running and where it's up to. */
+        get: operations["service_status"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/service/end": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Stop running the playlist. */
+        post: operations["service_end"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/service/next": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Skip to the next track and play it. */
+        post: operations["service_next"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/service/previous": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Go back to the previous track and play it. */
+        post: operations["service_previous"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/service/select": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Get a row ready to play. */
+        post: operations["service_select"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/service/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run a playlist. */
+        post: operations["service_start"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Recording and playback settings. */
+        get: operations["get_settings"];
+        /** Change recording and playback settings (they apply straight away). */
+        put: operations["put_settings"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/simulator": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The simulator's organ, console state and audio device. */
+        get: operations["sim_state"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/simulator/act": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Do something at the simulated console: press a key, draw a stop, move a
+         *     pedal. It sounds, and the organ's MIDI is sent to the engine as input.
+         */
+        post: operations["sim_act"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/simulator/organ": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Choose which organ the simulator plays (saved). */
+        put: operations["sim_load_organ"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/simulator/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Release all keys and push in every stop. */
+        post: operations["sim_reset"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/verses/parse": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Check a verse entry ("4" = four verses, "12357" = exactly those). */
+        post: operations["verses_parse"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-export type webhooks = Record<string, never>
+export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    ApiErrorBody: {
-      error: string
-    }
-    /** @description Events for clients besides raw MIDI and simulator snapshots. */
-    AppEvent:
-      | (components["schemas"]["RecorderStatus"] & {
-          /** @enum {string} */
-          type: "recorder"
-        })
-      | {
-          saved?: null | components["schemas"]["TrackSummary"]
-          /** @enum {string} */
-          type: "library"
-        }
-      | (components["schemas"]["ServiceStatus"] & {
-          /** @enum {string} */
-          type: "service"
-        })
-    Assistant: {
-      /** @description What the assistant is called (and, with voice control, its wake word). */
-      name: string
-    }
-    AuthStatus: {
-      /** @description A password is set. */
-      required: boolean
-      signed_in: boolean
-    }
-    Catalogue: {
-      music: components["schemas"]["MusicEntry"][]
-      organs: components["schemas"]["OrganEntry"][]
-      /** Format: int32 */
-      schema: number
-    }
-    ChannelInfo: {
-      /**
-       * Format: int32
-       * @description 1-16.
-       */
-      channel: number
-      /**
-       * Format: int32
-       * @description Same notes at the same times as an earlier channel (a doubled part).
-       */
-      duplicate_of?: number | null
-      /** Format: int32 */
-      high: number
-      /** Format: int32 */
-      low: number
-      name?: string | null
-      notes: number
-      /**
-       * Format: float
-       * @description Average number of notes sounding together while any sound.
-       */
-      polyphony: number
-      suggested?: null | components["schemas"]["DivisionRole"]
-    }
-    /**
-     * @description How far a shared organ definition can be trusted.
-     * @enum {string}
-     */
-    Confidence: "template" | "learned" | "verified"
-    /** @description How to cable the organ, in the words printed beside its sockets. */
-    Connection: {
-      /**
-       * @description Anything else the organist should know before relying on this
-       *     definition (unverified numbers, settings to change on the organ...).
-       */
-      notes?: string[]
-      /** @description The organ's socket to play back into, e.g. "MIDI IN". */
-      play_to?: string | null
-      /** @description The organ's socket to record from, e.g. "MIDI SEQ". */
-      record_from?: string | null
-    }
-    ConsoleState: {
-      /** @description Expression per division, 0-127 (only divisions that have a pedal). */
-      expression: {
-        [key: string]: number
-      }
-      /** Format: int32 */
-      master_volume: number
-      /** @description Held keys per division. */
-      notes: {
-        [key: string]: number[]
-      }
-      /** @description Ids of stops that are on. */
-      stops: string[]
-    }
-    CopyOrgan: {
-      /** @description Organ to start from. */
-      from: string
-      name: string
-    }
-    /** @enum {string} */
-    CouplerPitch: "sub" | "unison" | "super"
-    /** @description What happens after the previous row, before this track plays. */
-    Delay:
-      | {
-          /** @enum {string} */
-          type: "wait"
-        }
-      | {
-          /** Format: int32 */
-          seconds: number
-          /** @enum {string} */
-          type: "after"
-        }
-      | {
-          /** @enum {string} */
-          type: "cue"
-        }
-    /** @enum {string} */
-    Direction: "in" | "out"
-    Division: {
-      /**
-       * Format: int32
-       * @description MIDI channel 1-16 that carries this keyboard's notes.
-       */
-      channel: number
-      expression?: null | components["schemas"]["ValueBinding"]
-      /** Format: int32 */
-      high_key: number
-      /**
-       * Format: int32
-       * @description Lowest and highest MIDI note on the keyboard.
-       */
-      low_key: number
-      /** @description Display name, e.g. "Great", "Hauptwerk", "Grand Orgue". */
-      name: string
-      role: components["schemas"]["DivisionRole"]
-    }
-    /**
-     * @description The role of a keyboard, independent of its local name (Great, Hauptwerk,
-     *     Grand Orgue...). Order follows the English convention.
-     * @enum {string}
-     */
-    DivisionRole: "pedal" | "great" | "swell" | "choir" | "solo" | "echo"
-    /** @description Pushed to every subscriber (e.g. WebSocket clients). */
-    EngineEvent:
-      | {
-          bytes: number[]
-          direction: components["schemas"]["Direction"]
-          port: string
-          /**
-           * Format: int64
-           * @description Microseconds since the engine started.
-           */
-          t_us: number
-          /** @enum {string} */
-          type: "midi"
-        }
-      | (components["schemas"]["MidiStatus"] & {
-          /** @enum {string} */
-          type: "status"
-        })
-    /**
-     * @description What a stop *is*, independent of what it's called on this organ.
-     *     Unique per `(division, equivalent)` within an organ.
-     */
-    Equivalent:
-      | {
-          family: components["schemas"]["Family"]
-          /** @description Footage such as "16", "8", "4", "2 2/3", "1 3/5". */
-          footage: string
-          /**
-           * Format: int32
-           * @description Number of ranks (mixtures, celestes).
-           */
-          ranks?: number | null
-          /** @description Distinguishes similar stops, e.g. "Open Diapason I". */
-          tag?: string
-          /** @enum {string} */
-          type: "voice"
-        }
-      | {
-          pitch: components["schemas"]["CouplerPitch"]
-          source: components["schemas"]["DivisionRole"]
-          /** @enum {string} */
-          type: "coupler"
-        }
-      | {
-          /** @enum {string} */
-          type: "tremulant"
-        }
-      | {
-          /** @enum {string} */
-          type: "unison_off"
-        }
-    /** @enum {string} */
-    ExportFormat: "organ" | "general_midi"
-    FadeRequest: {
-      /** @description true starts a fade-out, false cancels it. */
-      on: boolean
-    }
-    /**
-     * @description Tonal family, used to find a similar stop on another organ.
-     * @enum {string}
-     */
-    Family:
-      | "principal"
-      | "flute"
-      | "string"
-      | "celeste"
-      | "reed"
-      | "mutation"
-      | "mixture"
-      | "percussion"
-      | "other"
-    /** @enum {string} */
-    FileKind: "midi" | "musicxml"
-    Health: {
-      name: string
-      version: string
-    }
-    ImportAnalysis: {
-      kind: components["schemas"]["FileKind"]
-      midi?: null | components["schemas"]["MidiAnalysis"]
-      musicxml?: null | components["schemas"]["XmlAnalysis"]
-      title: string
-    }
-    ImportOptions: {
-      /**
-       * @description Channel (1-16) to division, for General MIDI files. Channels left out
-       *     are ignored. Default: the analysis's suggestions.
-       */
-      channels?: {
-        [key: string]: components["schemas"]["DivisionRole"]
-      }
-      /**
-       * @description Read the file as the current organ's own MIDI (stops and all).
-       *     Otherwise notes are mapped by channel.
-       */
-      organ_format?: boolean
-      /** @description Pedal notes an octave up (MuseScore writes pedal parts at 16′ pitch). */
-      pedal_octave_up?: boolean
-      /**
-       * Format: int32
-       * @description Split into separate pieces at silences this long (ms). None = one piece.
-       */
-      split_ms?: number | null
-      /** @description Title for the piece (pieces get " (2)", " (3)"…). Default from the file. */
-      title?: string | null
-    }
-    LiveSnapshot: {
-      console: components["schemas"]["ConsoleState"]
-      organ_id: string
-      /** @description Where the organ's MIDI goes, if anywhere. */
-      output?: string | null
-    }
-    LoadOrgan: {
-      organ_id: string
-    }
-    LoadTrack: {
-      options?: components["schemas"]["PlayOptions"]
-      /** @description Start playing straight away (default true). */
-      play?: boolean
-      track_id: string
-    }
-    Login: {
-      password: string
-    }
-    /** @enum {string} */
-    Manufacturer:
-      | "generic"
-      | "hauptwerk"
-      | "allen"
-      | "classic_organ_works"
-      | "content"
-      | "johannus"
-      | "johannus_programmable"
-      | "makin"
-      | "peterson"
-      | "rodgers"
-      | "rodgers_phase2"
-      | "solid_state1"
-      | "solid_state2"
-      | "viscount"
-      | "walker"
-      | "wyvern"
-    /**
-     * @description Musical framing for the score view. Exact for samples and imports;
-     *     estimated for live recordings.
-     */
-    Meter: {
-      /** Format: int32 */
-      beat_unit: number
-      /**
-       * Format: int32
-       * @description Time signature, e.g. 4/4, 3/4, 6/8.
-       */
-      beats: number
-      /**
-       * Format: float
-       * @description Crotchet (quarter-note) beats per minute at 100 % tempo.
-       */
-      bpm: number
-      /**
-       * Format: int32
-       * @description Key signature as sharps (+) or flats (-).
-       */
-      fifths?: number
-      mode?: components["schemas"]["Mode"]
-      /**
-       * Format: int32
-       * @description Track time of the first downbeat (after any pick-up).
-       */
-      offset_ms?: number
-    }
-    MidiAnalysis: {
-      channels: components["schemas"]["ChannelInfo"][]
-      /** Format: int32 */
-      duration_ms: number
-      /**
-       * @description Silences of 4 s or more (ms from the start), where the file could be
-       *     split into separate pieces.
-       */
-      gaps: number[]
-      /**
-       * Format: float
-       * @description Share (0-1) of the file's non-note messages that the current organ
-       *     understands. High means it was recorded on (or for) this organ.
-       */
-      organ_match: number
-    }
-    /**
-     * @description Which MIDI ports to use. Ports are identified by name, because OS-level port
-     *     ids are not stable across restarts or replugging.
-     */
-    MidiConfig: {
-      /** @description Input ports to listen to (the organ console, or Hauptwerk's output). */
-      inputs?: string[]
-      /** @description The single output port to drive (the organ, or Hauptwerk's input). */
-      output?: string | null
-    }
-    MidiStatus: {
-      /** @description Input ports that are currently open. */
-      inputs: string[]
-      /** @description Configured ports that could not be opened (unplugged, in use, renamed). */
-      missing: string[]
-      /** @description Output port that is currently open. */
-      output?: string | null
-      test: components["schemas"]["TestStatus"]
-    }
-    /** @enum {string} */
-    Mode: "major" | "minor"
-    MusicEntry: {
-      composer: string
-      /** Format: int32 */
-      duration_ms: number
-      id: string
-      kind: components["schemas"]["MusicKind"]
-      licence: string
-      melody: string
-      /** @description Other hymns sung to the same tune. */
-      other_titles?: string[]
-      /** @description Path within the library, with forward slashes. */
-      path: string
-      /** @description Where it came from, for credit (e.g. "Open Hymnal Project"). */
-      source?: string
-      source_url?: string
-      tags: string[]
-      title: string
-      verses: number
-    }
-    /** @enum {string} */
-    MusicKind: "score" | "recording"
-    NewPassword: {
-      /** @description The new password, or null to remove the password. */
-      password?: string | null
-    }
-    NewPlaylist: {
-      name: string
-    }
-    OrganDefaults: {
-      /**
-       * Format: int32
-       * @description Silence after the last note.
-       */
-      margin_end_ms?: number
-      /**
-       * Format: int32
-       * @description Silence before the first note of a new recording.
-       */
-      margin_start_ms?: number
-    }
-    OrganDefinition: {
-      all_stops_off?: null | components["schemas"]["Pattern"]
-      connection?: null | components["schemas"]["Connection"]
-      defaults?: components["schemas"]["OrganDefaults"]
-      /** @description Keyboards, in the order they appear (bottom to top is up to the UI). */
-      divisions: components["schemas"]["Division"][]
-      /** @description File-safe identifier, e.g. "demo". */
-      id: string
-      manufacturer: components["schemas"]["Manufacturer"]
-      master_volume?: null | components["schemas"]["ValueBinding"]
-      name: string
-      /** Format: int32 */
-      schema: number
-      stops: components["schemas"]["Stop"][]
-    }
-    OrganEntry: {
-      divisions: number
-      id: string
-      meta: components["schemas"]["OrganMeta"]
-      name: string
-      path: string
-      stops: number
-    }
-    /** @description Something that happened on (or should happen to) an organ console. */
-    OrganEvent:
-      | {
-          division: components["schemas"]["DivisionRole"]
-          /** Format: int32 */
-          key: number
-          /** @enum {string} */
-          type: "note"
-          /**
-           * Format: int32
-           * @description 0 = note off.
-           */
-          velocity: number
-        }
-      | {
-          on: boolean
-          stop: string
-          /** @enum {string} */
-          type: "stop"
-        }
-      | {
-          stop: string
-          /** @enum {string} */
-          type: "stop_toggle"
-        }
-      | {
-          division: components["schemas"]["DivisionRole"]
-          /** @enum {string} */
-          type: "expression"
-          /**
-           * Format: int32
-           * @description Normalised 0-127.
-           */
-          value: number
-        }
-      | {
-          /** @enum {string} */
-          type: "master_volume"
-          /** Format: int32 */
-          value: number
-        }
-      | {
-          /** @enum {string} */
-          type: "all_stops_off"
-        }
-    OrganMeta: {
-      confidence: components["schemas"]["Confidence"]
-      contributor?: string
-      /** @description Always CC0-1.0 in the shared library. */
-      licence: string
-      maker: string
-      model: string
-      /** @description Anything to do on the organ first ("set MIDI to mode B"). */
-      notes?: string[]
-      /** @description e.g. "1995–2005". */
-      years?: string
-    }
-    OrganSummary: {
-      /** @description Shipped with Cecilia (read-only) rather than user-created. */
-      builtin: boolean
-      divisions: number
-      id: string
-      manufacturer: components["schemas"]["Manufacturer"]
-      name: string
-      stops: number
-    }
-    ParsedVerses: {
-      verses?: null | components["schemas"]["VersePlan"]
-    }
-    /** @description MIDI message as hex bytes, optionally with one `vv` value slot, e.g. "B1 0B vv" */
-    Pattern: string
-    PlayOptions: {
-      /**
-       * Format: int32
-       * @description Start here instead of at the beginning (track ms).
-       */
-      start_ms?: number | null
-      /**
-       * Format: int32
-       * @description Percent, 25-400. Default 100.
-       */
-      tempo?: number | null
-      verses?: null | components["schemas"]["VersePlan"]
-    }
-    PlaybackSettings: {
-      /**
-       * Format: int32
-       * @description Length of a fade-out. 1-30 s.
-       * @default 5000
-       */
-      fade_ms: number
-      /**
-       * Format: int32
-       * @description Wait after a general cancel on organs whose stops toggle.
-       * @default 400
-       */
-      settle_ms: number
-    }
-    PlayerEvent:
-      | (components["schemas"]["PlayerStatus"] & {
-          /** @enum {string} */
-          type: "status"
-        })
-      | {
-          track_id: string
-          /** @enum {string} */
-          type: "finished"
-        }
-    /** @enum {string} */
-    PlayerState: "stopped" | "starting" | "playing" | "paused"
-    PlayerStatus: {
-      /** Format: int32 */
-      duration_ms: number
-      /**
-       * Format: int32
-       * @description Progress through the verses being played (repeats included).
-       */
-      elapsed_ms: number
-      fading: boolean
-      organ_id: string
-      /** @description Recorded verse numbers to be played, in order. */
-      plan: number[]
-      /**
-       * Format: int32
-       * @description Position in the track, in ms.
-       */
-      position_ms: number
-      skip_to_last: boolean
-      state: components["schemas"]["PlayerState"]
-      stop_after_verse: boolean
-      /**
-       * Format: int32
-       * @description Playback speed in percent (100 = as recorded).
-       */
-      tempo: number
-      title?: string | null
-      /** Format: int32 */
-      total_ms: number
-      track_id?: string | null
-      /** @description 1-based verse being played, out of `verses`. */
-      verse: number
-      verses: number
-    }
-    Playlist: {
-      /** Format: int64 */
-      created: number
-      id: string
-      /** Format: int64 */
-      modified: number
-      name: string
-      /** @description Start again from the top after the last row. */
-      repeat?: boolean
-      rows?: components["schemas"]["PlaylistRow"][]
-      /** Format: int32 */
-      schema: number
-      /** @description Play the track rows in a random order. */
-      shuffle?: boolean
-      /**
-       * @description Leave the stops as they are when a track ends (they're reset when the
-       *     next one starts). Otherwise every stop is pushed in at the end.
-       */
-      silent?: boolean
-    }
-    PlaylistRow:
-      | {
-          delay?: components["schemas"]["Delay"]
-          /** @description Free text shown beside the row (e.g. "Hymn 477, page 12"). */
-          note?: string
-          /**
-           * Format: int32
-           * @description Percent; default 100.
-           */
-          tempo?: number | null
-          track_id: string
-          /**
-           * Format: int64
-           * @description The track's `modified` time when it was added or last checked,
-           *     so the UI can warn if it was edited since.
-           */
-          track_modified?: number
-          /** @enum {string} */
-          type: "track"
-          verses?: null | components["schemas"]["VersePlan"]
-        }
-      | {
-          text: string
-          /** @enum {string} */
-          type: "text"
-        }
-    PlaylistSummary: {
-      id: string
-      /** Format: int64 */
-      modified: number
-      name: string
-      tracks: number
-    }
-    PortList: {
-      inputs: string[]
-      outputs: string[]
-    }
-    /** @enum {string} */
-    RecorderState: "off" | "waiting" | "recording"
-    RecorderStatus: {
-      /**
-       * Format: int32
-       * @description Length of the piece being recorded so far.
-       */
-      elapsed_ms: number
-      /** @description Notes in the piece being recorded. */
-      notes: number
-      /** @description Tracks saved since the recorder was armed. */
-      saved: number
-      state: components["schemas"]["RecorderState"]
-    }
-    /** @description How the auto-recorder splits a service into pieces. */
-    RecordingSettings: {
-      /**
-       * Format: int32
-       * @default 2000
-       */
-      margin_end_ms: number
-      /**
-       * Format: int32
-       * @description Silence kept before the first note and after the last. 0-15 s.
-       * @default 2000
-       */
-      margin_start_ms: number
-      /**
-       * Format: int32
-       * @description Silence (after the last key is released) that ends a piece. 2-60 s.
-       * @default 8000
-       */
-      silence_ms: number
-    }
-    /** @description Stops drawn plus pedal positions at one moment. */
-    Registration: {
-      /** @description Expression per division, 0-127. */
-      expression?: {
-        [key: string]: number
-      }
-      /** Format: int32 */
-      master_volume?: number | null
-      stops?: components["schemas"]["StopRef"][]
-    }
-    RestoreResult: {
-      organs: number
-      playlists: number
-      tracks: number
-    }
-    Seek: {
-      /**
-       * Format: int32
-       * @description Track position in ms.
-       */
-      ms: number
-    }
-    SelectRow: {
-      row: number
-    }
-    /** @enum {string} */
-    ServiceState: "idle" | "ready" | "playing" | "waiting" | "finished"
-    ServiceStatus: {
-      /**
-       * Format: int32
-       * @description Seconds until an automatic start.
-       */
-      countdown?: number | null
-      name?: string | null
-      /** @description Row index of the track after it, if any. */
-      next_row?: number | null
-      playlist_id?: string | null
-      /** @description Row index (into the playlist's rows) of the current track. */
-      row?: number | null
-      state: components["schemas"]["ServiceState"]
-    }
-    SettingsBody: {
-      playback: components["schemas"]["PlaybackSettings"]
-      recording: components["schemas"]["RecordingSettings"]
-    }
-    SimSnapshot: {
-      /** @description Name of the audio device, if sound is available. */
-      audio?: string | null
-      console: components["schemas"]["ConsoleState"]
-      organ_id: string
-    }
-    StartService: {
-      /** @description Start playing at once (default false: load and wait for Play). */
-      play?: boolean
-      playlist_id: string
-      /** @description Row to start from (default: the first track). */
-      row?: number | null
-    }
-    Stop: {
-      /**
-       * Format: int32
-       * @description Pause after changing this stop before continuing playback.
-       */
-      delay_ms?: number
-      division: components["schemas"]["DivisionRole"]
-      equivalent: components["schemas"]["Equivalent"]
-      /** @description Tooltip; defaults to the label lines joined. */
-      full_name?: string | null
-      /** @description Unique within the organ; stable across edits. */
-      id: string
-      /** @description Up to five ways the organ can switch this stop (jamb, crescendo, pistons...). */
-      midi?: components["schemas"]["StopBinding"][]
-      /** @description Up to three label lines shown on the stop, e.g. ["Open", "Diapason", "8"]. */
-      names: string[]
-      /**
-       * Format: int32
-       * @description Minimum gap between conflicting on/off messages (moving drawstops).
-       */
-      repeat_ms?: number
-      style?: components["schemas"]["StopStyle"]
-    }
-    /** @description How a stop is switched over MIDI. */
-    StopBinding:
-      | {
-          off: components["schemas"]["Pattern"]
-          on: components["schemas"]["Pattern"]
-          /** @enum {string} */
-          type: "on_off"
-        }
-      | {
-          msg: components["schemas"]["Pattern"]
-          /** @enum {string} */
-          type: "toggle"
-        }
-      | {
-          /** Format: int32 */
-          off: number
-          /** Format: int32 */
-          on: number
-          pattern: components["schemas"]["Pattern"]
-          /** @enum {string} */
-          type: "switch"
-        }
-    /** @description One line of "how will this track sound here". */
-    StopMapping: {
-      exact: boolean
-      recorded: components["schemas"]["StopRef"]
-      /** @description Stop id on this organ, or None if it is left out. */
-      stop?: string | null
-    }
-    /** @description A stop as a track sees it: which keyboard, and what it *is*. */
-    StopRef: {
-      division: components["schemas"]["DivisionRole"]
-      equivalent: components["schemas"]["Equivalent"]
-    }
-    /** @enum {string} */
-    StopShape: "round" | "rectangle"
-    StopStyle: {
-      background?: string | null
-      /** @description Swap text and background colours when the stop is on. */
-      invert?: boolean
-      shape?: components["schemas"]["StopShape"]
-      /** @description CSS colour of the label, e.g. "#1d4ed8". */
-      text_color?: string | null
-    }
-    Stream: {
-      /** Format: int32 */
-      high: number
-      /** @description "part:staff:voice", used to choose its division. */
-      id: string
-      /** @description e.g. "Organ, lower staff, voice 2". */
-      label: string
-      /** Format: int32 */
-      low: number
-      notes: number
-      suggested: components["schemas"]["DivisionRole"]
-    }
-    Tempo: {
-      /**
-       * Format: int32
-       * @description 25-400 percent.
-       */
-      percent: number
-    }
-    /** @enum {string} */
-    TestState: "idle" | "recording" | "playing"
-    TestStatus: {
-      /**
-       * Format: int64
-       * @description Length of the test recording (grows live while recording).
-       */
-      duration_ms: number
-      /** @description Number of MIDI messages captured by the test recorder. */
-      events: number
-      /**
-       * Format: int64
-       * @description Playback position while playing, otherwise 0.
-       */
-      position_ms: number
-      state: components["schemas"]["TestState"]
-    }
-    TimedEvent: components["schemas"]["TrackEvent"] & {
-      /**
-       * Format: int32
-       * @description Milliseconds from the start of the track.
-       */
-      t: number
-    }
-    Track: {
-      /**
-       * Format: int64
-       * @description Unix time in ms.
-       */
-      created: number
-      /**
-       * Format: int32
-       * @description Where the track ends (the last note plus the end margin).
-       */
-      duration_ms: number
-      /** @description Sorted by time; at equal times, stop and pedal changes come first. */
-      events: components["schemas"]["TimedEvent"][]
-      id: string
-      info: components["schemas"]["TrackInfo"]
-      /** @description Registration and pedals when the track starts. */
-      initial: components["schemas"]["Registration"]
-      meter?: null | components["schemas"]["Meter"]
-      /** Format: int64 */
-      modified: number
-      /** @description Organ it was recorded on (empty for samples). */
-      organ_id?: string
-      organ_name?: string
-      /** Format: int32 */
-      schema: number
-      source: components["schemas"]["TrackSource"]
-      /** @description Boundaries between hymn verses, in ms. Empty = a single verse. */
-      verses?: number[]
-    }
-    /** @description Something the organist did, in organ-neutral terms. */
-    TrackEvent:
-      | {
-          division: components["schemas"]["DivisionRole"]
-          /** Format: int32 */
-          key: number
-          /** @enum {string} */
-          type: "note"
-          /**
-           * Format: int32
-           * @description 0 = note off.
-           */
-          velocity: number
-        }
-      | {
-          on: boolean
-          stop: components["schemas"]["StopRef"]
-          /** @enum {string} */
-          type: "stop"
-        }
-      | {
-          division: components["schemas"]["DivisionRole"]
-          /** @enum {string} */
-          type: "expression"
-          /** Format: int32 */
-          value: number
-        }
-      | {
-          /** @enum {string} */
-          type: "master_volume"
-          /** Format: int32 */
-          value: number
-        }
-    /** @description Descriptive fields, all editable in the library. */
-    TrackInfo: {
-      composer?: string
-      copyright?: string
-      /** @description Hymn tune name, e.g. "OLD 100TH". */
-      melody?: string
-      performer?: string
-      publication?: string
-      /**
-       * Format: int32
-       * @description Usual playback speed in percent (100 = as recorded). A playlist or
-       *     the tempo slider can still change it for one performance.
-       */
-      tempo?: number
-      title: string
-      /**
-       * Format: int32
-       * @description Playback volume 1-100, applied through the master volume.
-       */
-      volume?: number
-    }
-    /** @description Fields to change; anything left out stays as it is. */
-    TrackPatch: {
-      composer?: string | null
-      copyright?: string | null
-      melody?: string | null
-      performer?: string | null
-      publication?: string | null
-      /**
-       * Format: int32
-       * @description Usual playback speed, 25-400 percent.
-       */
-      tempo?: number | null
-      title?: string | null
-      /** @description Verse boundaries in ms. */
-      verses?: number[] | null
-      /**
-       * Format: int32
-       * @description 1-100.
-       */
-      volume?: number | null
-    }
-    /** @enum {string} */
-    TrackSource: "recorded" | "sample" | "imported"
-    /** @description A library listing row. */
-    TrackSummary: {
-      /** Format: int64 */
-      created: number
-      /** @description Divisions with notes in them. */
-      divisions: components["schemas"]["DivisionRole"][]
-      /** Format: int32 */
-      duration_ms: number
-      id: string
-      info: components["schemas"]["TrackInfo"]
-      /** Format: int64 */
-      modified: number
-      notes: number
-      organ_name: string
-      source: components["schemas"]["TrackSource"]
-      verses: number
-    }
-    /** @description A value-carrying control such as an expression pedal or master volume. */
-    ValueBinding: {
-      /** Format: int32 */
-      max?: number
-      /** Format: int32 */
-      min?: number
-      /** @description Must contain a `vv` slot. */
-      pattern: components["schemas"]["Pattern"]
-    }
-    VerseControl: {
-      /** @description When this verse ends, go straight to the last one. */
-      skip_to_last?: boolean | null
-      /** @description Stop when the verse being played ends. */
-      stop_after_verse?: boolean | null
-    }
-    /** @description Which verses to play. */
-    VersePlan: number | number[]
-    VerseText: {
-      /** @description What the organist typed, e.g. "4" or "12357". */
-      text: string
-    }
-    XmlAnalysis: {
-      /** Format: int32 */
-      beat_unit: number
-      /** Format: int32 */
-      beats: number
-      /**
-       * Format: float
-       * @description Crotchets per minute (from the score, or 80 if it doesn't say).
-       */
-      bpm: number
-      composer: string
-      /** Format: int32 */
-      fifths: number
-      measures: number
-      streams: components["schemas"]["Stream"][]
-      title: string
-    }
-    XmlImportOptions: {
-      /**
-       * Format: float
-       * @description Crotchets per minute (default: the score's tempo, or 80).
-       */
-      bpm?: number | null
-      skip?: string[]
-      /**
-       * @description Stream id to division; streams left out use the suggestion. Map a
-       *     stream to nothing by leaving it out and listing it in `skip`.
-       */
-      streams?: {
-        [key: string]: components["schemas"]["DivisionRole"]
-      }
-      title?: string | null
-      /**
-       * Format: int32
-       * @description Play it this many times as hymn verses (default 1).
-       */
-      verses?: number | null
-    }
-  }
-  responses: never
-  parameters: never
-  requestBodies: never
-  headers: never
-  pathItems: never
+    schemas: {
+        ApiErrorBody: {
+            error: string;
+        };
+        /** @description Events for clients besides raw MIDI and simulator snapshots. */
+        AppEvent: (components["schemas"]["RecorderStatus"] & {
+            /** @enum {string} */
+            type: "recorder";
+        }) | {
+            saved?: null | components["schemas"]["TrackSummary"];
+            /** @enum {string} */
+            type: "library";
+        } | (components["schemas"]["ServiceStatus"] & {
+            /** @enum {string} */
+            type: "service";
+        });
+        Assistant: {
+            /** @description What the assistant is called (and, with voice control, its wake word). */
+            name: string;
+        };
+        AuthStatus: {
+            /** @description A password is set. */
+            required: boolean;
+            signed_in: boolean;
+        };
+        Catalogue: {
+            music: components["schemas"]["MusicEntry"][];
+            organs: components["schemas"]["OrganEntry"][];
+            /** Format: int32 */
+            schema: number;
+        };
+        ChannelInfo: {
+            /**
+             * Format: int32
+             * @description 1-16.
+             */
+            channel: number;
+            /**
+             * Format: int32
+             * @description Same notes at the same times as an earlier channel (a doubled part).
+             */
+            duplicate_of?: number | null;
+            /** Format: int32 */
+            high: number;
+            /** Format: int32 */
+            low: number;
+            name?: string | null;
+            notes: number;
+            /**
+             * Format: float
+             * @description Average number of notes sounding together while any sound.
+             */
+            polyphony: number;
+            suggested?: null | components["schemas"]["DivisionRole"];
+        };
+        /**
+         * @description How far a shared organ definition can be trusted.
+         * @enum {string}
+         */
+        Confidence: "template" | "learned" | "verified";
+        /** @description How to cable the organ, in the words printed beside its sockets. */
+        Connection: {
+            /**
+             * @description Anything else the organist should know before relying on this
+             *     definition (unverified numbers, settings to change on the organ...).
+             */
+            notes?: string[];
+            /** @description The organ's socket to play back into, e.g. "MIDI IN". */
+            play_to?: string | null;
+            /** @description The organ's socket to record from, e.g. "MIDI SEQ". */
+            record_from?: string | null;
+        };
+        ConsoleState: {
+            /** @description Expression per division, 0-127 (only divisions that have a pedal). */
+            expression: {
+                [key: string]: number;
+            };
+            /** Format: int32 */
+            master_volume: number;
+            /** @description Held keys per division. */
+            notes: {
+                [key: string]: number[];
+            };
+            /** @description Ids of stops that are on. */
+            stops: string[];
+        };
+        CopyOrgan: {
+            /** @description Organ to start from. */
+            from: string;
+            name: string;
+        };
+        /** @enum {string} */
+        CouplerPitch: "sub" | "unison" | "super";
+        /** @description What happens after the previous row, before this track plays. */
+        Delay: {
+            /** @enum {string} */
+            type: "wait";
+        } | {
+            /** Format: int32 */
+            seconds: number;
+            /** @enum {string} */
+            type: "after";
+        } | {
+            /** @enum {string} */
+            type: "cue";
+        };
+        /** @enum {string} */
+        Direction: "in" | "out";
+        Division: {
+            /**
+             * Format: int32
+             * @description MIDI channel 1-16 that carries this keyboard's notes.
+             */
+            channel: number;
+            expression?: null | components["schemas"]["ValueBinding"];
+            /** Format: int32 */
+            high_key: number;
+            /**
+             * Format: int32
+             * @description Lowest and highest MIDI note on the keyboard.
+             */
+            low_key: number;
+            /** @description Display name, e.g. "Great", "Hauptwerk", "Grand Orgue". */
+            name: string;
+            role: components["schemas"]["DivisionRole"];
+        };
+        /**
+         * @description The role of a keyboard, independent of its local name (Great, Hauptwerk,
+         *     Grand Orgue...). Order follows the English convention.
+         * @enum {string}
+         */
+        DivisionRole: "pedal" | "great" | "swell" | "choir" | "solo" | "echo";
+        /** @description Pushed to every subscriber (e.g. WebSocket clients). */
+        EngineEvent: {
+            bytes: number[];
+            direction: components["schemas"]["Direction"];
+            port: string;
+            /**
+             * Format: int64
+             * @description Microseconds since the engine started.
+             */
+            t_us: number;
+            /** @enum {string} */
+            type: "midi";
+        } | (components["schemas"]["MidiStatus"] & {
+            /** @enum {string} */
+            type: "status";
+        });
+        /**
+         * @description What a stop *is*, independent of what it's called on this organ.
+         *     Unique per `(division, equivalent)` within an organ.
+         */
+        Equivalent: {
+            family: components["schemas"]["Family"];
+            /** @description Footage such as "16", "8", "4", "2 2/3", "1 3/5". */
+            footage: string;
+            /**
+             * Format: int32
+             * @description Number of ranks (mixtures, celestes).
+             */
+            ranks?: number | null;
+            /** @description Distinguishes similar stops, e.g. "Open Diapason I". */
+            tag?: string;
+            /** @enum {string} */
+            type: "voice";
+        } | {
+            pitch: components["schemas"]["CouplerPitch"];
+            source: components["schemas"]["DivisionRole"];
+            /** @enum {string} */
+            type: "coupler";
+        } | {
+            /** @enum {string} */
+            type: "tremulant";
+        } | {
+            /** @enum {string} */
+            type: "unison_off";
+        };
+        /** @enum {string} */
+        ExportFormat: "organ" | "general_midi";
+        FadeRequest: {
+            /** @description true starts a fade-out, false cancels it. */
+            on: boolean;
+        };
+        /**
+         * @description Tonal family, used to find a similar stop on another organ.
+         * @enum {string}
+         */
+        Family: "principal" | "flute" | "string" | "celeste" | "reed" | "mutation" | "mixture" | "percussion" | "other";
+        /** @enum {string} */
+        FileKind: "midi" | "musicxml";
+        Health: {
+            name: string;
+            version: string;
+        };
+        ImportAnalysis: {
+            kind: components["schemas"]["FileKind"];
+            midi?: null | components["schemas"]["MidiAnalysis"];
+            musicxml?: null | components["schemas"]["XmlAnalysis"];
+            title: string;
+        };
+        ImportOptions: {
+            /**
+             * @description Channel (1-16) to division, for General MIDI files. Channels left out
+             *     are ignored. Default: the analysis's suggestions.
+             */
+            channels?: {
+                [key: string]: components["schemas"]["DivisionRole"];
+            };
+            /**
+             * @description Read the file as the current organ's own MIDI (stops and all).
+             *     Otherwise notes are mapped by channel.
+             */
+            organ_format?: boolean;
+            /** @description Pedal notes an octave up (MuseScore writes pedal parts at 16′ pitch). */
+            pedal_octave_up?: boolean;
+            /**
+             * Format: int32
+             * @description Split into separate pieces at silences this long (ms). None = one piece.
+             */
+            split_ms?: number | null;
+            /** @description Title for the piece (pieces get " (2)", " (3)"…). Default from the file. */
+            title?: string | null;
+        };
+        LiveSnapshot: {
+            console: components["schemas"]["ConsoleState"];
+            organ_id: string;
+            /** @description Where the organ's MIDI goes, if anywhere. */
+            output?: string | null;
+        };
+        LoadOrgan: {
+            organ_id: string;
+        };
+        LoadTrack: {
+            options?: components["schemas"]["PlayOptions"];
+            /** @description Start playing straight away (default true). */
+            play?: boolean;
+            track_id: string;
+        };
+        Login: {
+            password: string;
+        };
+        /** @enum {string} */
+        Manufacturer: "generic" | "hauptwerk" | "allen" | "classic_organ_works" | "content" | "johannus" | "johannus_programmable" | "makin" | "peterson" | "rodgers" | "rodgers_phase2" | "solid_state1" | "solid_state2" | "viscount" | "walker" | "wyvern";
+        /**
+         * @description Musical framing for the score view. Exact for samples and imports;
+         *     estimated for live recordings.
+         */
+        Meter: {
+            /** Format: int32 */
+            beat_unit: number;
+            /**
+             * Format: int32
+             * @description Time signature, e.g. 4/4, 3/4, 6/8.
+             */
+            beats: number;
+            /**
+             * Format: float
+             * @description Crotchet (quarter-note) beats per minute at 100 % tempo.
+             */
+            bpm: number;
+            /**
+             * Format: int32
+             * @description Key signature as sharps (+) or flats (-).
+             */
+            fifths?: number;
+            mode?: components["schemas"]["Mode"];
+            /**
+             * Format: int32
+             * @description Track time of the first downbeat (after any pick-up).
+             */
+            offset_ms?: number;
+        };
+        MidiAnalysis: {
+            channels: components["schemas"]["ChannelInfo"][];
+            /** Format: int32 */
+            duration_ms: number;
+            /**
+             * @description Silences of 4 s or more (ms from the start), where the file could be
+             *     split into separate pieces.
+             */
+            gaps: number[];
+            /**
+             * Format: float
+             * @description Share (0-1) of the file's non-note messages that the current organ
+             *     understands. High means it was recorded on (or for) this organ.
+             */
+            organ_match: number;
+        };
+        /**
+         * @description Which MIDI ports to use. Ports are identified by name, because OS-level port
+         *     ids are not stable across restarts or replugging.
+         */
+        MidiConfig: {
+            /** @description Input ports to listen to (the organ console, or Hauptwerk's output). */
+            inputs?: string[];
+            /** @description The single output port to drive (the organ, or Hauptwerk's input). */
+            output?: string | null;
+        };
+        MidiStatus: {
+            /** @description Input ports that are currently open. */
+            inputs: string[];
+            /** @description Configured ports that could not be opened (unplugged, in use, renamed). */
+            missing: string[];
+            /** @description Output port that is currently open. */
+            output?: string | null;
+            test: components["schemas"]["TestStatus"];
+        };
+        /** @enum {string} */
+        Mode: "major" | "minor";
+        MusicEntry: {
+            composer: string;
+            /** Format: int32 */
+            duration_ms: number;
+            id: string;
+            kind: components["schemas"]["MusicKind"];
+            licence: string;
+            melody: string;
+            /** @description Other hymns sung to the same tune. */
+            other_titles?: string[];
+            /** @description Path within the library, with forward slashes. */
+            path: string;
+            /** @description Where it came from, for credit (e.g. "Open Hymnal Project"). */
+            source?: string;
+            source_url?: string;
+            tags: string[];
+            title: string;
+            verses: number;
+        };
+        /** @enum {string} */
+        MusicKind: "score" | "recording";
+        NewPassword: {
+            /** @description The new password, or null to remove the password. */
+            password?: string | null;
+        };
+        NewPlaylist: {
+            name: string;
+        };
+        OrganDefaults: {
+            /**
+             * Format: int32
+             * @description Silence after the last note.
+             */
+            margin_end_ms?: number;
+            /**
+             * Format: int32
+             * @description Silence before the first note of a new recording.
+             */
+            margin_start_ms?: number;
+        };
+        OrganDefinition: {
+            all_stops_off?: null | components["schemas"]["Pattern"];
+            connection?: null | components["schemas"]["Connection"];
+            defaults?: components["schemas"]["OrganDefaults"];
+            /** @description Keyboards, in the order they appear (bottom to top is up to the UI). */
+            divisions: components["schemas"]["Division"][];
+            /** @description File-safe identifier, e.g. "demo". */
+            id: string;
+            manufacturer: components["schemas"]["Manufacturer"];
+            master_volume?: null | components["schemas"]["ValueBinding"];
+            name: string;
+            /** Format: int32 */
+            schema: number;
+            stops: components["schemas"]["Stop"][];
+        };
+        OrganEntry: {
+            divisions: number;
+            id: string;
+            meta: components["schemas"]["OrganMeta"];
+            name: string;
+            path: string;
+            stops: number;
+        };
+        /** @description Something that happened on (or should happen to) an organ console. */
+        OrganEvent: {
+            division: components["schemas"]["DivisionRole"];
+            /** Format: int32 */
+            key: number;
+            /** @enum {string} */
+            type: "note";
+            /**
+             * Format: int32
+             * @description 0 = note off.
+             */
+            velocity: number;
+        } | {
+            on: boolean;
+            stop: string;
+            /** @enum {string} */
+            type: "stop";
+        } | {
+            stop: string;
+            /** @enum {string} */
+            type: "stop_toggle";
+        } | {
+            division: components["schemas"]["DivisionRole"];
+            /** @enum {string} */
+            type: "expression";
+            /**
+             * Format: int32
+             * @description Normalised 0-127.
+             */
+            value: number;
+        } | {
+            /** @enum {string} */
+            type: "master_volume";
+            /** Format: int32 */
+            value: number;
+        } | {
+            /** @enum {string} */
+            type: "all_stops_off";
+        };
+        OrganMeta: {
+            /** @description Other names or numbers the same organ is sold under, for searching. */
+            also_known_as?: string[];
+            confidence: components["schemas"]["Confidence"];
+            contributor?: string;
+            /** @description Always CC0-1.0 in the shared library. */
+            licence: string;
+            maker: string;
+            /** @description The model as the maker names it, e.g. "Studio 170" or "Westmorland 2". */
+            model: string;
+            /** @description Anything to do on the organ first ("set MIDI to mode B"). */
+            notes?: string[];
+            /** @description The family the model belongs to, e.g. "Studio" or "Opus", for grouping. */
+            series?: string;
+            /**
+             * @description What sets this setup apart from others of the same model, e.g.
+             *     "with optional Solo division" or "built 2010 onwards (MIDI channel 16)".
+             */
+            variant?: string;
+            /** @description e.g. "1995–2005". */
+            years?: string;
+        };
+        OrganSummary: {
+            /** @description Shipped with Cecilia (read-only) rather than user-created. */
+            builtin: boolean;
+            divisions: number;
+            id: string;
+            manufacturer: components["schemas"]["Manufacturer"];
+            name: string;
+            stops: number;
+        };
+        ParsedVerses: {
+            verses?: null | components["schemas"]["VersePlan"];
+        };
+        /** @description MIDI message as hex bytes, optionally with one `vv` value slot, e.g. "B1 0B vv" */
+        Pattern: string;
+        PlayOptions: {
+            /**
+             * Format: int32
+             * @description Start here instead of at the beginning (track ms).
+             */
+            start_ms?: number | null;
+            /**
+             * Format: int32
+             * @description Percent, 25-400. Default 100.
+             */
+            tempo?: number | null;
+            verses?: null | components["schemas"]["VersePlan"];
+        };
+        PlaybackSettings: {
+            /**
+             * Format: int32
+             * @description Length of a fade-out. 1-30 s.
+             * @default 5000
+             */
+            fade_ms: number;
+            /**
+             * Format: int32
+             * @description Wait after a general cancel on organs whose stops toggle.
+             * @default 400
+             */
+            settle_ms: number;
+        };
+        PlayerEvent: (components["schemas"]["PlayerStatus"] & {
+            /** @enum {string} */
+            type: "status";
+        }) | {
+            track_id: string;
+            /** @enum {string} */
+            type: "finished";
+        };
+        /** @enum {string} */
+        PlayerState: "stopped" | "starting" | "playing" | "paused";
+        PlayerStatus: {
+            /** Format: int32 */
+            duration_ms: number;
+            /**
+             * Format: int32
+             * @description Progress through the verses being played (repeats included).
+             */
+            elapsed_ms: number;
+            fading: boolean;
+            organ_id: string;
+            /** @description Recorded verse numbers to be played, in order. */
+            plan: number[];
+            /**
+             * Format: int32
+             * @description Position in the track, in ms.
+             */
+            position_ms: number;
+            skip_to_last: boolean;
+            state: components["schemas"]["PlayerState"];
+            stop_after_verse: boolean;
+            /**
+             * Format: int32
+             * @description Playback speed in percent (100 = as recorded).
+             */
+            tempo: number;
+            title?: string | null;
+            /** Format: int32 */
+            total_ms: number;
+            track_id?: string | null;
+            /** @description 1-based verse being played, out of `verses`. */
+            verse: number;
+            verses: number;
+        };
+        Playlist: {
+            /** Format: int64 */
+            created: number;
+            id: string;
+            /** Format: int64 */
+            modified: number;
+            name: string;
+            /** @description Start again from the top after the last row. */
+            repeat?: boolean;
+            rows?: components["schemas"]["PlaylistRow"][];
+            /** Format: int32 */
+            schema: number;
+            /** @description Play the track rows in a random order. */
+            shuffle?: boolean;
+            /**
+             * @description Leave the stops as they are when a track ends (they're reset when the
+             *     next one starts). Otherwise every stop is pushed in at the end.
+             */
+            silent?: boolean;
+        };
+        PlaylistRow: {
+            delay?: components["schemas"]["Delay"];
+            /** @description Free text shown beside the row (e.g. "Hymn 477, page 12"). */
+            note?: string;
+            /**
+             * Format: int32
+             * @description Percent; default 100.
+             */
+            tempo?: number | null;
+            track_id: string;
+            /**
+             * Format: int64
+             * @description The track's `modified` time when it was added or last checked,
+             *     so the UI can warn if it was edited since.
+             */
+            track_modified?: number;
+            /** @enum {string} */
+            type: "track";
+            verses?: null | components["schemas"]["VersePlan"];
+        } | {
+            text: string;
+            /** @enum {string} */
+            type: "text";
+        };
+        PlaylistSummary: {
+            id: string;
+            /** Format: int64 */
+            modified: number;
+            name: string;
+            tracks: number;
+        };
+        PortList: {
+            inputs: string[];
+            outputs: string[];
+        };
+        /** @enum {string} */
+        RecorderState: "off" | "waiting" | "recording";
+        RecorderStatus: {
+            /**
+             * Format: int32
+             * @description Length of the piece being recorded so far.
+             */
+            elapsed_ms: number;
+            /** @description Notes in the piece being recorded. */
+            notes: number;
+            /** @description Tracks saved since the recorder was armed. */
+            saved: number;
+            state: components["schemas"]["RecorderState"];
+        };
+        /** @description How the auto-recorder splits a service into pieces. */
+        RecordingSettings: {
+            /**
+             * Format: int32
+             * @default 2000
+             */
+            margin_end_ms: number;
+            /**
+             * Format: int32
+             * @description Silence kept before the first note and after the last. 0-15 s.
+             * @default 2000
+             */
+            margin_start_ms: number;
+            /**
+             * Format: int32
+             * @description Silence (after the last key is released) that ends a piece. 2-60 s.
+             * @default 8000
+             */
+            silence_ms: number;
+        };
+        /** @description Stops drawn plus pedal positions at one moment. */
+        Registration: {
+            /** @description Expression per division, 0-127. */
+            expression?: {
+                [key: string]: number;
+            };
+            /** Format: int32 */
+            master_volume?: number | null;
+            stops?: components["schemas"]["StopRef"][];
+        };
+        RestoreResult: {
+            organs: number;
+            playlists: number;
+            tracks: number;
+        };
+        Seek: {
+            /**
+             * Format: int32
+             * @description Track position in ms.
+             */
+            ms: number;
+        };
+        SelectRow: {
+            row: number;
+        };
+        /** @enum {string} */
+        ServiceState: "idle" | "ready" | "playing" | "waiting" | "finished";
+        ServiceStatus: {
+            /**
+             * Format: int32
+             * @description Seconds until an automatic start.
+             */
+            countdown?: number | null;
+            name?: string | null;
+            /** @description Row index of the track after it, if any. */
+            next_row?: number | null;
+            playlist_id?: string | null;
+            /** @description Row index (into the playlist's rows) of the current track. */
+            row?: number | null;
+            state: components["schemas"]["ServiceState"];
+        };
+        SettingsBody: {
+            playback: components["schemas"]["PlaybackSettings"];
+            recording: components["schemas"]["RecordingSettings"];
+        };
+        SimSnapshot: {
+            /** @description Name of the audio device, if sound is available. */
+            audio?: string | null;
+            console: components["schemas"]["ConsoleState"];
+            organ_id: string;
+        };
+        StartService: {
+            /** @description Start playing at once (default false: load and wait for Play). */
+            play?: boolean;
+            playlist_id: string;
+            /** @description Row to start from (default: the first track). */
+            row?: number | null;
+        };
+        Stop: {
+            /**
+             * Format: int32
+             * @description Pause after changing this stop before continuing playback.
+             */
+            delay_ms?: number;
+            division: components["schemas"]["DivisionRole"];
+            equivalent: components["schemas"]["Equivalent"];
+            /** @description Tooltip; defaults to the label lines joined. */
+            full_name?: string | null;
+            /** @description Unique within the organ; stable across edits. */
+            id: string;
+            /** @description Up to five ways the organ can switch this stop (jamb, crescendo, pistons...). */
+            midi?: components["schemas"]["StopBinding"][];
+            /** @description Up to three label lines shown on the stop, e.g. ["Open", "Diapason", "8"]. */
+            names: string[];
+            /**
+             * Format: int32
+             * @description Minimum gap between conflicting on/off messages (moving drawstops).
+             */
+            repeat_ms?: number;
+            style?: components["schemas"]["StopStyle"];
+        };
+        /** @description How a stop is switched over MIDI. */
+        StopBinding: {
+            off: components["schemas"]["Pattern"];
+            on: components["schemas"]["Pattern"];
+            /** @enum {string} */
+            type: "on_off";
+        } | {
+            msg: components["schemas"]["Pattern"];
+            /** @enum {string} */
+            type: "toggle";
+        } | {
+            /** Format: int32 */
+            off: number;
+            /** Format: int32 */
+            on: number;
+            pattern: components["schemas"]["Pattern"];
+            /** @enum {string} */
+            type: "switch";
+        };
+        /** @description One line of "how will this track sound here". */
+        StopMapping: {
+            exact: boolean;
+            recorded: components["schemas"]["StopRef"];
+            /** @description Stop id on this organ, or None if it is left out. */
+            stop?: string | null;
+        };
+        /** @description A stop as a track sees it: which keyboard, and what it *is*. */
+        StopRef: {
+            division: components["schemas"]["DivisionRole"];
+            equivalent: components["schemas"]["Equivalent"];
+        };
+        /** @enum {string} */
+        StopShape: "round" | "rectangle";
+        StopStyle: {
+            background?: string | null;
+            /** @description Swap text and background colours when the stop is on. */
+            invert?: boolean;
+            shape?: components["schemas"]["StopShape"];
+            /** @description CSS colour of the label, e.g. "#1d4ed8". */
+            text_color?: string | null;
+        };
+        Stream: {
+            /** Format: int32 */
+            high: number;
+            /** @description "part:staff:voice", used to choose its division. */
+            id: string;
+            /** @description e.g. "Organ, lower staff, voice 2". */
+            label: string;
+            /** Format: int32 */
+            low: number;
+            notes: number;
+            suggested: components["schemas"]["DivisionRole"];
+        };
+        Tempo: {
+            /**
+             * Format: int32
+             * @description 25-400 percent.
+             */
+            percent: number;
+        };
+        /** @enum {string} */
+        TestState: "idle" | "recording" | "playing";
+        TestStatus: {
+            /**
+             * Format: int64
+             * @description Length of the test recording (grows live while recording).
+             */
+            duration_ms: number;
+            /** @description Number of MIDI messages captured by the test recorder. */
+            events: number;
+            /**
+             * Format: int64
+             * @description Playback position while playing, otherwise 0.
+             */
+            position_ms: number;
+            state: components["schemas"]["TestState"];
+        };
+        TimedEvent: components["schemas"]["TrackEvent"] & {
+            /**
+             * Format: int32
+             * @description Milliseconds from the start of the track.
+             */
+            t: number;
+        };
+        Track: {
+            /**
+             * Format: int64
+             * @description Unix time in ms.
+             */
+            created: number;
+            /**
+             * Format: int32
+             * @description Where the track ends (the last note plus the end margin).
+             */
+            duration_ms: number;
+            /** @description Sorted by time; at equal times, stop and pedal changes come first. */
+            events: components["schemas"]["TimedEvent"][];
+            id: string;
+            info: components["schemas"]["TrackInfo"];
+            /** @description Registration and pedals when the track starts. */
+            initial: components["schemas"]["Registration"];
+            meter?: null | components["schemas"]["Meter"];
+            /** Format: int64 */
+            modified: number;
+            /** @description Organ it was recorded on (empty for samples). */
+            organ_id?: string;
+            organ_name?: string;
+            /** Format: int32 */
+            schema: number;
+            source: components["schemas"]["TrackSource"];
+            /** @description Boundaries between hymn verses, in ms. Empty = a single verse. */
+            verses?: number[];
+        };
+        /** @description Something the organist did, in organ-neutral terms. */
+        TrackEvent: {
+            division: components["schemas"]["DivisionRole"];
+            /** Format: int32 */
+            key: number;
+            /** @enum {string} */
+            type: "note";
+            /**
+             * Format: int32
+             * @description 0 = note off.
+             */
+            velocity: number;
+        } | {
+            on: boolean;
+            stop: components["schemas"]["StopRef"];
+            /** @enum {string} */
+            type: "stop";
+        } | {
+            division: components["schemas"]["DivisionRole"];
+            /** @enum {string} */
+            type: "expression";
+            /** Format: int32 */
+            value: number;
+        } | {
+            /** @enum {string} */
+            type: "master_volume";
+            /** Format: int32 */
+            value: number;
+        };
+        /** @description Descriptive fields, all editable in the library. */
+        TrackInfo: {
+            composer?: string;
+            copyright?: string;
+            /** @description Hymn tune name, e.g. "OLD 100TH". */
+            melody?: string;
+            performer?: string;
+            publication?: string;
+            /**
+             * Format: int32
+             * @description Usual playback speed in percent (100 = as recorded). A playlist or
+             *     the tempo slider can still change it for one performance.
+             */
+            tempo?: number;
+            title: string;
+            /**
+             * Format: int32
+             * @description Playback volume 1-100, applied through the master volume.
+             */
+            volume?: number;
+        };
+        /** @description Fields to change; anything left out stays as it is. */
+        TrackPatch: {
+            composer?: string | null;
+            copyright?: string | null;
+            melody?: string | null;
+            performer?: string | null;
+            publication?: string | null;
+            /**
+             * Format: int32
+             * @description Usual playback speed, 25-400 percent.
+             */
+            tempo?: number | null;
+            title?: string | null;
+            /** @description Verse boundaries in ms. */
+            verses?: number[] | null;
+            /**
+             * Format: int32
+             * @description 1-100.
+             */
+            volume?: number | null;
+        };
+        /** @enum {string} */
+        TrackSource: "recorded" | "sample" | "imported";
+        /** @description A library listing row. */
+        TrackSummary: {
+            /** Format: int64 */
+            created: number;
+            /** @description Divisions with notes in them. */
+            divisions: components["schemas"]["DivisionRole"][];
+            /** Format: int32 */
+            duration_ms: number;
+            id: string;
+            info: components["schemas"]["TrackInfo"];
+            /** Format: int64 */
+            modified: number;
+            notes: number;
+            organ_name: string;
+            source: components["schemas"]["TrackSource"];
+            verses: number;
+        };
+        /** @description A value-carrying control such as an expression pedal or master volume. */
+        ValueBinding: {
+            /** Format: int32 */
+            max?: number;
+            /** Format: int32 */
+            min?: number;
+            /** @description Must contain a `vv` slot. */
+            pattern: components["schemas"]["Pattern"];
+        };
+        VerseControl: {
+            /** @description When this verse ends, go straight to the last one. */
+            skip_to_last?: boolean | null;
+            /** @description Stop when the verse being played ends. */
+            stop_after_verse?: boolean | null;
+        };
+        /** @description Which verses to play. */
+        VersePlan: number | number[];
+        VerseText: {
+            /** @description What the organist typed, e.g. "4" or "12357". */
+            text: string;
+        };
+        XmlAnalysis: {
+            /** Format: int32 */
+            beat_unit: number;
+            /** Format: int32 */
+            beats: number;
+            /**
+             * Format: float
+             * @description Crotchets per minute (from the score, or 80 if it doesn't say).
+             */
+            bpm: number;
+            composer: string;
+            /** Format: int32 */
+            fifths: number;
+            measures: number;
+            streams: components["schemas"]["Stream"][];
+            title: string;
+        };
+        XmlImportOptions: {
+            /**
+             * Format: float
+             * @description Crotchets per minute (default: the score's tempo, or 80).
+             */
+            bpm?: number | null;
+            skip?: string[];
+            /**
+             * @description Stream id to division; streams left out use the suggestion. Map a
+             *     stream to nothing by leaving it out and listing it in `skip`.
+             */
+            streams?: {
+                [key: string]: components["schemas"]["DivisionRole"];
+            };
+            title?: string | null;
+            /**
+             * Format: int32
+             * @description Play it this many times as hymn verses (default 1).
+             */
+            verses?: number | null;
+        };
+    };
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-export type $defs = Record<string, never>
+export type $defs = Record<string, never>;
 export interface operations {
-  get_assistant: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["Assistant"]
-        }
-      }
-    }
-  }
-  put_assistant: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["Assistant"]
-      }
-    }
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["Assistant"]
-        }
-      }
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  auth_status: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["AuthStatus"]
-        }
-      }
-    }
-  }
-  login: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["Login"]
-      }
-    }
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-      401: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  logout: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  set_password: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["NewPassword"]
-      }
-    }
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-      401: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  catalogue: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["Catalogue"]
-        }
-      }
-      503: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  add_music: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description Piece id in the shared library */
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["TrackSummary"]
-        }
-      }
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-      503: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  add_organ: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description Organ id in the shared library */
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["OrganSummary"]
-        }
-      }
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-      503: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  refresh: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["Catalogue"]
-        }
-      }
-      503: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  backup: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/zip": unknown
-        }
-      }
-    }
-  }
-  export_zip: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/zip": unknown
-        }
-      }
-    }
-  }
-  export_csv: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "text/csv": unknown
-        }
-      }
-    }
-  }
-  health: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["Health"]
-        }
-      }
-    }
-  }
-  import: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The file's name, used to tell the format and as a default title. */
-        name: string
-        /** @description JSON import options (`ImportOptions` for MIDI, `XmlImportOptions` for MusicXML). */
-        options: string | null
-      }
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/octet-stream": number[]
-      }
-    }
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["TrackSummary"][]
-        }
-      }
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  analyse: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The file's name, used to tell the format and as a default title. */
-        name: string
-        /** @description JSON import options (`ImportOptions` for MIDI, `XmlImportOptions` for MusicXML). */
-        options: string | null
-      }
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/octet-stream": number[]
-      }
-    }
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ImportAnalysis"]
-        }
-      }
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  restore: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/zip": number[]
-      }
-    }
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["RestoreResult"]
-        }
-      }
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  list_tracks: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["TrackSummary"][]
-        }
-      }
-    }
-  }
-  get_track: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description Track id */
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["Track"]
-        }
-      }
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  put_track: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description Track id */
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["Track"]
-      }
-    }
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["TrackSummary"]
-        }
-      }
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  delete_track: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description Track id */
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  patch_track: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description Track id */
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["TrackPatch"]
-      }
-    }
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["TrackSummary"]
-        }
-      }
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  duplicate_track: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description Track id */
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["TrackSummary"]
-        }
-      }
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  track_mapping: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description Track id */
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["StopMapping"][]
-        }
-      }
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  export_midi: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description Track id */
-        id: string
-        /** @description `organ` (default): the current organ's MIDI. `general_midi`: one channel per division. */
-        format: null | components["schemas"]["ExportFormat"]
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "audio/midi": unknown
-        }
-      }
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  live_state: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["LiveSnapshot"]
-        }
-      }
-    }
-  }
-  live_act: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["OrganEvent"]
-      }
-    }
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-      409: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  get_config: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["MidiConfig"]
-        }
-      }
-    }
-  }
-  put_config: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["MidiConfig"]
-      }
-    }
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["MidiStatus"]
-        }
-      }
-    }
-  }
-  panic: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-      409: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  ports: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["PortList"]
-        }
-      }
-      503: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  status: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["MidiStatus"]
-        }
-      }
-    }
-  }
-  test_play: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["MidiStatus"]
-        }
-      }
-      409: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  test_record: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["MidiStatus"]
-        }
-      }
-      409: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  test_stop: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["MidiStatus"]
-        }
-      }
-    }
-  }
-  omr: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The scan's file name (PNG, JPEG, TIFF or PDF). */
-        name: string
-      }
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/octet-stream": number[]
-      }
-    }
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/vnd.recordare.musicxml": unknown
-        }
-      }
-      422: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-      501: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  list_organs: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["OrganSummary"][]
-        }
-      }
-    }
-  }
-  copy_organ: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["CopyOrgan"]
-      }
-    }
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["OrganDefinition"]
-        }
-      }
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  get_organ: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description Organ id */
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["OrganDefinition"]
-        }
-      }
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  delete_organ: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description Organ id */
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-      409: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  save_organ: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description Organ id */
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["OrganDefinition"]
-      }
-    }
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["OrganDefinition"]
-        }
-      }
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-      409: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  player_status: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["PlayerStatus"]
-        }
-      }
-    }
-  }
-  player_fade: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["FadeRequest"]
-      }
-    }
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["PlayerStatus"]
-        }
-      }
-    }
-  }
-  player_load: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["LoadTrack"]
-      }
-    }
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["PlayerStatus"]
-        }
-      }
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-      409: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  player_pause: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["PlayerStatus"]
-        }
-      }
-    }
-  }
-  player_play: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["PlayerStatus"]
-        }
-      }
-    }
-  }
-  player_seek: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["Seek"]
-      }
-    }
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["PlayerStatus"]
-        }
-      }
-    }
-  }
-  player_stop: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["PlayerStatus"]
-        }
-      }
-    }
-  }
-  player_tempo: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["Tempo"]
-      }
-    }
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["PlayerStatus"]
-        }
-      }
-    }
-  }
-  player_verses: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["VerseControl"]
-      }
-    }
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["PlayerStatus"]
-        }
-      }
-    }
-  }
-  list_playlists: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["PlaylistSummary"][]
-        }
-      }
-    }
-  }
-  create_playlist: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["NewPlaylist"]
-      }
-    }
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["Playlist"]
-        }
-      }
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  get_playlist: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description Playlist id */
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["Playlist"]
-        }
-      }
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  put_playlist: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description Playlist id */
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["Playlist"]
-      }
-    }
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["Playlist"]
-        }
-      }
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  delete_playlist: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description Playlist id */
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  duplicate_playlist: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description Playlist id */
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["Playlist"]
-        }
-      }
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  recorder_status: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["RecorderStatus"]
-        }
-      }
-    }
-  }
-  recorder_start: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["RecorderStatus"]
-        }
-      }
-      409: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  recorder_stop: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["RecorderStatus"]
-        }
-      }
-    }
-  }
-  service_status: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ServiceStatus"]
-        }
-      }
-    }
-  }
-  service_end: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ServiceStatus"]
-        }
-      }
-    }
-  }
-  service_next: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ServiceStatus"]
-        }
-      }
-      409: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  service_previous: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ServiceStatus"]
-        }
-      }
-      409: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  service_select: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["SelectRow"]
-      }
-    }
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ServiceStatus"]
-        }
-      }
-      409: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  service_start: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["StartService"]
-      }
-    }
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ServiceStatus"]
-        }
-      }
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-      409: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  get_settings: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["SettingsBody"]
-        }
-      }
-    }
-  }
-  put_settings: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["SettingsBody"]
-      }
-    }
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["SettingsBody"]
-        }
-      }
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  sim_state: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["SimSnapshot"]
-        }
-      }
-    }
-  }
-  sim_act: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["OrganEvent"]
-      }
-    }
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  sim_load_organ: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["LoadOrgan"]
-      }
-    }
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["SimSnapshot"]
-        }
-      }
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
-  sim_reset: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  verses_parse: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["VerseText"]
-      }
-    }
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ParsedVerses"]
-        }
-      }
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ApiErrorBody"]
-        }
-      }
-    }
-  }
+    get_assistant: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Assistant"];
+                };
+            };
+        };
+    };
+    put_assistant: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Assistant"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Assistant"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    auth_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthStatus"];
+                };
+            };
+        };
+    };
+    login: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Login"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    set_password: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NewPassword"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    catalogue: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Catalogue"];
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    add_music: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Piece id in the shared library */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackSummary"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    get_organ: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organ id in the shared library */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrganDefinition"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    add_organ: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organ id in the shared library */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrganSummary"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    refresh: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Catalogue"];
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    backup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/zip": unknown;
+                };
+            };
+        };
+    };
+    export_zip: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/zip": unknown;
+                };
+            };
+        };
+    };
+    export_csv: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv": unknown;
+                };
+            };
+        };
+    };
+    health: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Health"];
+                };
+            };
+        };
+    };
+    import: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The file's name, used to tell the format and as a default title. */
+                name: string;
+                /** @description JSON import options (`ImportOptions` for MIDI, `XmlImportOptions` for MusicXML). */
+                options: string | null;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/octet-stream": number[];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackSummary"][];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    analyse: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The file's name, used to tell the format and as a default title. */
+                name: string;
+                /** @description JSON import options (`ImportOptions` for MIDI, `XmlImportOptions` for MusicXML). */
+                options: string | null;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/octet-stream": number[];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportAnalysis"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    restore: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/zip": number[];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RestoreResult"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    list_tracks: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackSummary"][];
+                };
+            };
+        };
+    };
+    get_track: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Track id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Track"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    put_track: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Track id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Track"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackSummary"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    delete_track: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Track id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    patch_track: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Track id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TrackPatch"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackSummary"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    duplicate_track: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Track id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackSummary"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    track_mapping: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Track id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StopMapping"][];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    export_midi: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Track id */
+                id: string;
+                /** @description `organ` (default): the current organ's MIDI. `general_midi`: one channel per division. */
+                format: null | components["schemas"]["ExportFormat"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "audio/midi": unknown;
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    live_state: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LiveSnapshot"];
+                };
+            };
+        };
+    };
+    live_act: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrganEvent"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    get_config: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MidiConfig"];
+                };
+            };
+        };
+    };
+    put_config: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MidiConfig"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MidiStatus"];
+                };
+            };
+        };
+    };
+    panic: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    ports: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortList"];
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MidiStatus"];
+                };
+            };
+        };
+    };
+    test_play: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MidiStatus"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    test_record: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MidiStatus"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    test_stop: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MidiStatus"];
+                };
+            };
+        };
+    };
+    omr: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The scan's file name (PNG, JPEG, TIFF or PDF). */
+                name: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/octet-stream": number[];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/vnd.recordare.musicxml": unknown;
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            501: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    list_organs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrganSummary"][];
+                };
+            };
+        };
+    };
+    copy_organ: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CopyOrgan"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrganDefinition"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    get_organ: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organ id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrganDefinition"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    delete_organ: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organ id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    save_organ: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organ id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrganDefinition"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrganDefinition"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    player_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlayerStatus"];
+                };
+            };
+        };
+    };
+    player_fade: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FadeRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlayerStatus"];
+                };
+            };
+        };
+    };
+    player_load: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoadTrack"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlayerStatus"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    player_pause: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlayerStatus"];
+                };
+            };
+        };
+    };
+    player_play: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlayerStatus"];
+                };
+            };
+        };
+    };
+    player_seek: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Seek"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlayerStatus"];
+                };
+            };
+        };
+    };
+    player_stop: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlayerStatus"];
+                };
+            };
+        };
+    };
+    player_tempo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Tempo"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlayerStatus"];
+                };
+            };
+        };
+    };
+    player_verses: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerseControl"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlayerStatus"];
+                };
+            };
+        };
+    };
+    list_playlists: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlaylistSummary"][];
+                };
+            };
+        };
+    };
+    create_playlist: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NewPlaylist"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Playlist"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    get_playlist: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Playlist id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Playlist"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    put_playlist: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Playlist id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Playlist"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Playlist"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    delete_playlist: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Playlist id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    duplicate_playlist: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Playlist id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Playlist"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    recorder_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecorderStatus"];
+                };
+            };
+        };
+    };
+    recorder_start: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecorderStatus"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    recorder_stop: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecorderStatus"];
+                };
+            };
+        };
+    };
+    service_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceStatus"];
+                };
+            };
+        };
+    };
+    service_end: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceStatus"];
+                };
+            };
+        };
+    };
+    service_next: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceStatus"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    service_previous: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceStatus"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    service_select: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SelectRow"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceStatus"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    service_start: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StartService"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceStatus"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    get_settings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SettingsBody"];
+                };
+            };
+        };
+    };
+    put_settings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SettingsBody"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SettingsBody"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    sim_state: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SimSnapshot"];
+                };
+            };
+        };
+    };
+    sim_act: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrganEvent"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    sim_load_organ: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoadOrgan"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SimSnapshot"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    sim_reset: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    verses_parse: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerseText"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ParsedVerses"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
 }

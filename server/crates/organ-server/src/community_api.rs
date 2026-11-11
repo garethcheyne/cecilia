@@ -96,6 +96,7 @@ pub fn router() -> Router<AppState> {
         .route("/community", get(catalogue))
         .route("/community/refresh", post(refresh))
         .route("/community/music/{id}/add", post(add_music))
+        .route("/community/organs/{id}", get(get_organ))
         .route("/community/organs/{id}/add", post(add_organ))
 }
 
@@ -150,6 +151,21 @@ pub async fn add_music(State(s): State<AppState>, Path(id): Path<String>) -> Res
     let summary = s.library.save(&track).map_err(|e| error(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
     let _ = s.app_events.send(AppEvent::Library { saved: None });
     Ok(Json(summary))
+}
+
+/// A shared organ setup in full, to look at before adding it.
+#[utoipa::path(get, path = "/api/v1/community/organs/{id}", tag = "community",
+    params(("id" = String, Path, description = "Organ id in the shared library")),
+    responses((status = 200, body = OrganDefinition), (status = 404, body = ApiErrorBody), (status = 503, body = ApiErrorBody)))]
+pub async fn get_organ(State(s): State<AppState>, Path(id): Path<String>) -> Result<Json<OrganDefinition>, Response> {
+    let cat = s.community.catalogue(false).await.map_err(|e| error(StatusCode::SERVICE_UNAVAILABLE, e))?;
+    let entry = cat
+        .organs
+        .iter()
+        .find(|o| o.id == id)
+        .ok_or_else(|| error(StatusCode::NOT_FOUND, format!("the shared library has no organ called {id:?}")))?;
+    let text = s.community.fetch(&entry.path).await.map_err(|e| error(StatusCode::SERVICE_UNAVAILABLE, e))?;
+    OrganDefinition::from_json(&text).map(Json).map_err(|e| error(StatusCode::UNPROCESSABLE_ENTITY, e.to_string()))
 }
 
 /// Add an organ setup from the shared library (as one you can edit).

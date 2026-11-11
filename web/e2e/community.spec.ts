@@ -65,18 +65,24 @@ test("a hymn is added from the shared library", async ({ page, request }) => {
   expect(added?.info.composer).toContain("Joseph Parry")
 })
 
-test("an organ setup is added from the shared library", async ({
+test("an organ is set up by maker, model and variant", async ({
   page,
   request,
 }) => {
   await page.goto("/organs/")
-  await expect(
-    page.getByRole("heading", { name: "Shared organ setups" })
-  ).toBeVisible()
-  await page.getByRole("button", { name: "Add to my organs" }).first().click()
-  await expect(page).toHaveURL(/\/organs\/edit\/\?id=/)
-  const id = new URL(page.url()).searchParams.get("id")!
-  const organ = await (await request.get(`/api/v1/organs/${id}`)).json()
-  expect(organ.name).toMatch(/^Makin/)
-  await request.post(`/api/v1/organs/${id}/delete`)
+  await page.getByRole("button", { name: "Find my organ" }).click()
+  const dialog = page.getByRole("dialog")
+  await expect(dialog.getByText("Who made your organ?")).toBeVisible()
+  await dialog.getByRole("button", { name: /^Makin/ }).click()
+  await dialog.getByRole("button", { name: /Two-manual/ }).click()
+  // Two versions of this model: choose the newer one.
+  await dialog.getByRole("button", { name: /built 2010 onwards/ }).click()
+  await expect(dialog.getByRole("heading", { name: "Great" })).toBeVisible()
+  await dialog.getByRole("button", { name: "Add and use this organ" }).click()
+  await expect(page.getByText(/^Now using Makin/)).toBeVisible()
+
+  const sim = await (await request.get("/api/v1/simulator")).json()
+  expect(sim.organ_id).not.toBe("demo")
+  await request.put("/api/v1/simulator/organ", { data: { organ_id: "demo" } })
+  await request.post(`/api/v1/organs/${sim.organ_id}/delete`)
 })
