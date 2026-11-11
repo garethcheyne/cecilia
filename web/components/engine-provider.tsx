@@ -11,6 +11,7 @@ import {
   type MidiStatus,
   type PlayerStatus,
   type RecorderStatus,
+  type ServiceStatus,
   type SimSnapshot,
   type TrackSummary,
 } from "@/lib/api/client"
@@ -31,6 +32,8 @@ interface EngineContextValue {
   recorder: RecorderStatus | null
   /** Bumped whenever the library changes; refetch when it does. */
   libraryVersion: number
+  /** The playlist being run, if any. */
+  service: ServiceStatus | null
   /** performance.now() when `status` arrived, for interpolating timers. */
   statusAt: number
 }
@@ -62,6 +65,7 @@ export function EngineProvider({ children }: { children: React.ReactNode }) {
   const [playerAt, setPlayerAt] = React.useState(0)
   const [recorder, setRecorder] = React.useState<RecorderStatus | null>(null)
   const [libraryVersion, setLibraryVersion] = React.useState(0)
+  const [service, setService] = React.useState<ServiceStatus | null>(null)
   const [statusAt, setStatusAt] = React.useState(0)
   const [events, setEvents] = React.useState<MonitorEvent[]>([])
   const [skipped, setSkipped] = React.useState(0)
@@ -105,6 +109,7 @@ export function EngineProvider({ children }: { children: React.ReactNode }) {
           | (RecorderStatus & { type: "recorder" })
           | { type: "library"; saved?: TrackSummary | null }
           | { type: "player_finished"; track_id: string }
+          | (ServiceStatus & { type: "service" })
           | { type: "lagged"; skipped: number }
         if (event.type === "status") {
           setStatus(event)
@@ -118,6 +123,8 @@ export function EngineProvider({ children }: { children: React.ReactNode }) {
         } else if (event.type === "player") {
           setPlayer(event)
           setPlayerAt(performance.now())
+        } else if (event.type === "service") {
+          setService(event)
         } else if (event.type === "recorder") {
           setRecorder(event)
         } else if (event.type === "library") {
@@ -151,8 +158,8 @@ export function EngineProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const value = React.useMemo(
-    () => ({ connected, status, simulator, player, playerAt, recorder, libraryVersion, statusAt }),
-    [connected, status, simulator, player, playerAt, recorder, libraryVersion, statusAt]
+    () => ({ connected, status, simulator, player, playerAt, recorder, libraryVersion, service, statusAt }),
+    [connected, status, simulator, player, playerAt, recorder, libraryVersion, service, statusAt]
   )
   const monitor = React.useMemo(
     () => ({ events, skipped, paused, setPaused, clearEvents }),

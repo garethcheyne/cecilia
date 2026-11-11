@@ -420,6 +420,63 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/playlists": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** All playlists, most recently changed first. */
+        get: operations["list_playlists"];
+        put?: never;
+        /** Create an empty playlist. */
+        post: operations["create_playlist"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/playlists/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A playlist with all its rows. */
+        get: operations["get_playlist"];
+        /**
+         * Save a playlist. Saving also marks every track as checked, clearing
+         *     "edited since it was added" warnings.
+         */
+        put: operations["put_playlist"];
+        post?: never;
+        /** Delete a playlist (the tracks stay in the library). */
+        delete: operations["delete_playlist"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/playlists/{id}/duplicate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Copy a playlist (e.g. last Sunday's as a starting point). */
+        post: operations["duplicate_playlist"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/recorder": {
         parameters: {
             query?: never;
@@ -465,6 +522,108 @@ export interface paths {
         put?: never;
         /** Stop recording; a piece in progress is saved. */
         post: operations["recorder_stop"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/service": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Which playlist is running and where it's up to. */
+        get: operations["service_status"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/service/end": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Stop running the playlist. */
+        post: operations["service_end"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/service/next": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Skip to the next track and play it. */
+        post: operations["service_next"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/service/previous": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Go back to the previous track and play it. */
+        post: operations["service_previous"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/service/select": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Get a row ready to play. */
+        post: operations["service_select"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/service/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run a playlist. */
+        post: operations["service_start"];
         delete?: never;
         options?: never;
         head?: never;
@@ -542,6 +701,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/verses/parse": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Check a verse entry ("4" = four verses, "12357" = exactly those). */
+        post: operations["verses_parse"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -557,7 +733,10 @@ export interface components {
             saved?: null | components["schemas"]["TrackSummary"];
             /** @enum {string} */
             type: "library";
-        };
+        } | (components["schemas"]["ServiceStatus"] & {
+            /** @enum {string} */
+            type: "service";
+        });
         Assistant: {
             /** @description What the assistant is called (and, with voice control, its wake word). */
             name: string;
@@ -590,6 +769,19 @@ export interface components {
         };
         /** @enum {string} */
         CouplerPitch: "sub" | "unison" | "super";
+        /** @description What happens after the previous row, before this track plays. */
+        Delay: {
+            /** @enum {string} */
+            type: "wait";
+        } | {
+            /** Format: int32 */
+            seconds: number;
+            /** @enum {string} */
+            type: "after";
+        } | {
+            /** @enum {string} */
+            type: "cue";
+        };
         /** @enum {string} */
         Direction: "in" | "out";
         Division: {
@@ -735,6 +927,9 @@ export interface components {
         };
         /** @enum {string} */
         Mode: "major" | "minor";
+        NewPlaylist: {
+            name: string;
+        };
         OrganDefaults: {
             /**
              * Format: int32
@@ -810,6 +1005,9 @@ export interface components {
             name: string;
             stops: number;
         };
+        ParsedVerses: {
+            verses?: null | components["schemas"]["VersePlan"];
+        };
         /** @description MIDI message as hex bytes, optionally with one `vv` value slot, e.g. "B1 0B vv" */
         Pattern: string;
         PlayOptions: {
@@ -868,6 +1066,57 @@ export interface components {
             verse: number;
             verses: number;
         };
+        Playlist: {
+            /** Format: int64 */
+            created: number;
+            id: string;
+            /** Format: int64 */
+            modified: number;
+            name: string;
+            /** @description Start again from the top after the last row. */
+            repeat?: boolean;
+            rows?: components["schemas"]["PlaylistRow"][];
+            /** Format: int32 */
+            schema: number;
+            /** @description Play the track rows in a random order. */
+            shuffle?: boolean;
+            /**
+             * @description Leave the stops as they are when a track ends (they're reset when the
+             *     next one starts). Otherwise every stop is pushed in at the end.
+             */
+            silent?: boolean;
+        };
+        PlaylistRow: {
+            delay?: components["schemas"]["Delay"];
+            /** @description Free text shown beside the row (e.g. "Hymn 477, page 12"). */
+            note?: string;
+            /**
+             * Format: int32
+             * @description Percent; default 100.
+             */
+            tempo?: number | null;
+            track_id: string;
+            /**
+             * Format: int64
+             * @description The track's `modified` time when it was added or last checked,
+             *     so the UI can warn if it was edited since.
+             */
+            track_modified?: number;
+            /** @enum {string} */
+            type: "track";
+            verses?: null | components["schemas"]["VersePlan"];
+        } | {
+            text: string;
+            /** @enum {string} */
+            type: "text";
+        };
+        PlaylistSummary: {
+            id: string;
+            /** Format: int64 */
+            modified: number;
+            name: string;
+            tracks: number;
+        };
         PortList: {
             inputs: string[];
             outputs: string[];
@@ -903,11 +1152,37 @@ export interface components {
              */
             ms: number;
         };
+        SelectRow: {
+            row: number;
+        };
+        /** @enum {string} */
+        ServiceState: "idle" | "ready" | "playing" | "waiting" | "finished";
+        ServiceStatus: {
+            /**
+             * Format: int32
+             * @description Seconds until an automatic start.
+             */
+            countdown?: number | null;
+            name?: string | null;
+            /** @description Row index of the track after it, if any. */
+            next_row?: number | null;
+            playlist_id?: string | null;
+            /** @description Row index (into the playlist's rows) of the current track. */
+            row?: number | null;
+            state: components["schemas"]["ServiceState"];
+        };
         SimSnapshot: {
             /** @description Name of the audio device, if sound is available. */
             audio?: string | null;
             console: components["schemas"]["ConsoleState"];
             organ_id: string;
+        };
+        StartService: {
+            /** @description Start playing at once (default false: load and wait for Play). */
+            play?: boolean;
+            playlist_id: string;
+            /** @description Row to start from (default: the first track). */
+            row?: number | null;
         };
         Stop: {
             /**
@@ -1129,6 +1404,10 @@ export interface components {
         };
         /** @description Which verses to play. */
         VersePlan: number | number[];
+        VerseText: {
+            /** @description What the organist typed, e.g. "4" or "12357". */
+            text: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -1862,6 +2141,178 @@ export interface operations {
             };
         };
     };
+    list_playlists: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlaylistSummary"][];
+                };
+            };
+        };
+    };
+    create_playlist: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NewPlaylist"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Playlist"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    get_playlist: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Playlist id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Playlist"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    put_playlist: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Playlist id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Playlist"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Playlist"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    delete_playlist: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Playlist id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    duplicate_playlist: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Playlist id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Playlist"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
     recorder_status: {
         parameters: {
             query?: never;
@@ -1923,6 +2374,168 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RecorderStatus"];
+                };
+            };
+        };
+    };
+    service_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceStatus"];
+                };
+            };
+        };
+    };
+    service_end: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceStatus"];
+                };
+            };
+        };
+    };
+    service_next: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceStatus"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    service_previous: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceStatus"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    service_select: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SelectRow"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceStatus"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    service_start: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StartService"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceStatus"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
                 };
             };
         };
@@ -2012,6 +2625,37 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    verses_parse: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerseText"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ParsedVerses"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
             };
         };
     };

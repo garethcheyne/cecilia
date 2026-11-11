@@ -25,6 +25,12 @@ export type PlayerStatus = Schemas["PlayerStatus"]
 export type PlayerState = Schemas["PlayerState"]
 export type PlayOptions = Schemas["PlayOptions"]
 export type RecorderStatus = Schemas["RecorderStatus"]
+export type Playlist = Schemas["Playlist"]
+export type PlaylistRow = Schemas["PlaylistRow"]
+export type PlaylistSummary = Schemas["PlaylistSummary"]
+export type Delay = Schemas["Delay"]
+export type VersePlan = Schemas["VersePlan"]
+export type ServiceStatus = Schemas["ServiceStatus"]
 
 /** Empty string = same origin (production, served by organ-server). */
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? ""

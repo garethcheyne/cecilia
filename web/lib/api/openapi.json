@@ -921,6 +921,236 @@
         }
       }
     },
+    "/api/v1/playlists": {
+      "get": {
+        "tags": [
+          "playlists"
+        ],
+        "summary": "All playlists, most recently changed first.",
+        "operationId": "list_playlists",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PlaylistSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "playlists"
+        ],
+        "summary": "Create an empty playlist.",
+        "operationId": "create_playlist",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewPlaylist"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Playlist"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/playlists/{id}": {
+      "get": {
+        "tags": [
+          "playlists"
+        ],
+        "summary": "A playlist with all its rows.",
+        "operationId": "get_playlist",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Playlist id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Playlist"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "playlists"
+        ],
+        "summary": "Save a playlist. Saving also marks every track as checked, clearing\n\"edited since it was added\" warnings.",
+        "operationId": "put_playlist",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Playlist id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Playlist"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Playlist"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "playlists"
+        ],
+        "summary": "Delete a playlist (the tracks stay in the library).",
+        "operationId": "delete_playlist",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Playlist id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/playlists/{id}/duplicate": {
+      "post": {
+        "tags": [
+          "playlists"
+        ],
+        "summary": "Copy a playlist (e.g. last Sunday's as a starting point).",
+        "operationId": "duplicate_playlist",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Playlist id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Playlist"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/recorder": {
       "get": {
         "tags": [
@@ -987,6 +1217,202 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/RecorderStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/service": {
+      "get": {
+        "tags": [
+          "service"
+        ],
+        "summary": "Which playlist is running and where it's up to.",
+        "operationId": "service_status",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/service/end": {
+      "post": {
+        "tags": [
+          "service"
+        ],
+        "summary": "Stop running the playlist.",
+        "operationId": "service_end",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/service/next": {
+      "post": {
+        "tags": [
+          "service"
+        ],
+        "summary": "Skip to the next track and play it.",
+        "operationId": "service_next",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceStatus"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/service/previous": {
+      "post": {
+        "tags": [
+          "service"
+        ],
+        "summary": "Go back to the previous track and play it.",
+        "operationId": "service_previous",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceStatus"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/service/select": {
+      "post": {
+        "tags": [
+          "service"
+        ],
+        "summary": "Get a row ready to play.",
+        "operationId": "service_select",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SelectRow"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceStatus"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/service/start": {
+      "post": {
+        "tags": [
+          "service"
+        ],
+        "summary": "Run a playlist.",
+        "operationId": "service_start",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartService"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceStatus"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
                 }
               }
             }
@@ -1093,6 +1519,47 @@
           }
         }
       }
+    },
+    "/api/v1/verses/parse": {
+      "post": {
+        "tags": [
+          "playlists"
+        ],
+        "summary": "Check a verse entry (\"4\" = four verses, \"12357\" = exactly those).",
+        "operationId": "verses_parse",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerseText"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParsedVerses"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1155,6 +1622,29 @@
                 ]
               }
             }
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ServiceStatus",
+                "description": "The service runner moved on."
+              },
+              {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "service"
+                    ]
+                  }
+                }
+              }
+            ],
+            "description": "The service runner moved on."
           }
         ],
         "description": "Events for clients besides raw MIDI and simulator snapshots."
@@ -1275,6 +1765,62 @@
           "unison",
           "super"
         ]
+      },
+      "Delay": {
+        "oneOf": [
+          {
+            "type": "object",
+            "description": "Load it and wait for Play (the space bar).",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "wait"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Start automatically this many seconds after the previous track ends.",
+            "required": [
+              "seconds",
+              "type"
+            ],
+            "properties": {
+              "seconds": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "after"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Load it positioned at its first note and wait, so Play starts the\nmusic at once.",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "cue"
+                ]
+              }
+            }
+          }
+        ],
+        "description": "What happens after the previous row, before this track plays."
       },
       "Direction": {
         "type": "string",
@@ -1696,6 +2242,17 @@
           "minor"
         ]
       },
+      "NewPlaylist": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
       "OrganDefaults": {
         "type": "object",
         "properties": {
@@ -1959,6 +2516,21 @@
           }
         }
       },
+      "ParsedVerses": {
+        "type": "object",
+        "properties": {
+          "verses": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/VersePlan"
+              }
+            ]
+          }
+        }
+      },
       "Pattern": {
         "type": "string",
         "description": "MIDI message as hex bytes, optionally with one `vv` value slot, e.g. \"B1 0B vv\""
@@ -2142,6 +2714,157 @@
           }
         }
       },
+      "Playlist": {
+        "type": "object",
+        "required": [
+          "schema",
+          "id",
+          "name",
+          "created",
+          "modified"
+        ],
+        "properties": {
+          "created": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "id": {
+            "type": "string"
+          },
+          "modified": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "name": {
+            "type": "string"
+          },
+          "repeat": {
+            "type": "boolean",
+            "description": "Start again from the top after the last row."
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlaylistRow"
+            }
+          },
+          "schema": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "shuffle": {
+            "type": "boolean",
+            "description": "Play the track rows in a random order."
+          },
+          "silent": {
+            "type": "boolean",
+            "description": "Leave the stops as they are when a track ends (they're reset when the\nnext one starts). Otherwise every stop is pushed in at the end."
+          }
+        }
+      },
+      "PlaylistRow": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "track_id",
+              "type"
+            ],
+            "properties": {
+              "delay": {
+                "$ref": "#/components/schemas/Delay"
+              },
+              "note": {
+                "type": "string",
+                "description": "Free text shown beside the row (e.g. \"Hymn 477, page 12\")."
+              },
+              "tempo": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "format": "int32",
+                "description": "Percent; default 100.",
+                "minimum": 0
+              },
+              "track_id": {
+                "type": "string"
+              },
+              "track_modified": {
+                "type": "integer",
+                "format": "int64",
+                "description": "The track's `modified` time when it was added or last checked,\nso the UI can warn if it was edited since.",
+                "minimum": 0
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "track"
+                ]
+              },
+              "verses": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/VersePlan",
+                    "description": "Verses to play; default every recorded verse."
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "A heading or reminder (\"Sermon\", \"Collection\").",
+            "required": [
+              "text",
+              "type"
+            ],
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "text"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "PlaylistSummary": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "tracks",
+          "modified"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "modified": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "name": {
+            "type": "string"
+          },
+          "tracks": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
       "PortList": {
         "type": "object",
         "required": [
@@ -2257,6 +2980,76 @@
           }
         }
       },
+      "SelectRow": {
+        "type": "object",
+        "required": [
+          "row"
+        ],
+        "properties": {
+          "row": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "ServiceState": {
+        "type": "string",
+        "enum": [
+          "idle",
+          "ready",
+          "playing",
+          "waiting",
+          "finished"
+        ]
+      },
+      "ServiceStatus": {
+        "type": "object",
+        "required": [
+          "state"
+        ],
+        "properties": {
+          "countdown": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "description": "Seconds until an automatic start.",
+            "minimum": 0
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "next_row": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Row index of the track after it, if any.",
+            "minimum": 0
+          },
+          "playlist_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "row": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Row index (into the playlist's rows) of the current track.",
+            "minimum": 0
+          },
+          "state": {
+            "$ref": "#/components/schemas/ServiceState"
+          }
+        }
+      },
       "SimSnapshot": {
         "type": "object",
         "required": [
@@ -2276,6 +3069,29 @@
           },
           "organ_id": {
             "type": "string"
+          }
+        }
+      },
+      "StartService": {
+        "type": "object",
+        "required": [
+          "playlist_id"
+        ],
+        "properties": {
+          "play": {
+            "type": "boolean",
+            "description": "Start playing at once (default false: load and wait for Play)."
+          },
+          "playlist_id": {
+            "type": "string"
+          },
+          "row": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Row to start from (default: the first track).",
+            "minimum": 0
           }
         }
       },
@@ -2969,6 +3785,18 @@
           }
         ],
         "description": "Which verses to play."
+      },
+      "VerseText": {
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "What the organist typed, e.g. \"4\" or \"12357\"."
+          }
+        }
       }
     }
   }

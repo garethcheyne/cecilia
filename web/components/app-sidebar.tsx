@@ -10,6 +10,7 @@ import {
   LayoutDashboardIcon,
   LibraryIcon,
   ListMusicIcon,
+  MonitorPlayIcon,
   PianoIcon,
   type LucideIcon,
 } from "lucide-react"
@@ -45,7 +46,8 @@ const PERFORM: NavItem[] = [
   { title: "Simulator", href: "/simulator", icon: PianoIcon },
   { title: "Console", href: "/console", icon: GaugeIcon, soon: true },
   { title: "Library", href: "/library", icon: LibraryIcon },
-  { title: "Playlists", href: "/playlists", icon: ListMusicIcon, soon: true },
+  { title: "Playlists", href: "/playlists", icon: ListMusicIcon },
+  { title: "Service", href: "/service", icon: MonitorPlayIcon },
 ]
 
 const SETUP: NavItem[] = [
@@ -56,6 +58,7 @@ const SETUP: NavItem[] = [
 function NavGroup({ label, items }: { label: string; items: NavItem[] }) {
   // trailingSlash is on, so normalise "/setup/midi/" to "/setup/midi".
   const pathname = usePathname().replace(/(.)\/$/, "$1")
+  const active = (href: string) => pathname === href || (href !== "/" && pathname.startsWith(`${href}/`))
   return (
     <SidebarGroup>
       <SidebarGroupLabel>{label}</SidebarGroupLabel>
@@ -70,7 +73,7 @@ function NavGroup({ label, items }: { label: string; items: NavItem[] }) {
                 </SidebarMenuButton>
               ) : (
                 <SidebarMenuButton
-                  isActive={pathname === item.href}
+                  isActive={active(item.href)}
                   tooltip={item.title}
                   render={<Link href={item.href} />}
                 >
