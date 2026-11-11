@@ -227,7 +227,7 @@ pub struct Division {
 }
 
 /// Tonal family, used to find a similar stop on another organ.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, ToSchema)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize, ToSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum Family {
     Principal,
@@ -241,7 +241,7 @@ pub enum Family {
     Other,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, ToSchema)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize, ToSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum CouplerPitch {
     /// 16' (an octave down)
@@ -276,7 +276,7 @@ pub fn footage_feet(footage: &str) -> Option<f32> {
 
 /// What a stop *is*, independent of what it's called on this organ.
 /// Unique per `(division, equivalent)` within an organ.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, ToSchema)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize, ToSchema)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Equivalent {
     /// A speaking stop.

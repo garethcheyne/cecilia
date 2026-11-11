@@ -7,14 +7,20 @@
 //! * [`console`]: stop/key/pedal state of a console.
 //! * [`live`]: the connected organ's current state, tracked from MIDI traffic.
 //! * [`simulator`] + [`synth`]: the built-in virtual organ and its sound.
+//! * [`track`]: organ-neutral recordings; [`recorder`]: the auto-recorder.
 
 pub mod console;
 pub mod driver;
 pub mod live;
 pub mod midi;
 pub mod organ;
+pub mod organist;
+pub mod player;
+pub mod recorder;
+pub mod sample;
 pub mod simulator;
 pub mod synth;
+pub mod track;
 
 pub use midi::{
     Direction, EngineEvent, MidiConfig, MidiError, MidiHub, MidiStatus, PortList, TestState,

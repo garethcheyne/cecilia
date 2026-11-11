@@ -125,6 +125,8 @@ enum Cmd {
     Configure(MidiConfig, Reply<MidiStatus>),
     Status(Reply<MidiStatus>),
     Send(Vec<u8>, Reply<Result<(), MidiError>>),
+    /// Send without waiting for the result (used by the player thread).
+    SendQuiet(Vec<u8>),
     Panic(Reply<Result<(), MidiError>>),
     TestRecord(Reply<Result<MidiStatus, MidiError>>),
     TestStop(Reply<MidiStatus>),
@@ -187,6 +189,12 @@ impl MidiHub {
 
     pub async fn send(&self, bytes: Vec<u8>) -> Result<(), MidiError> {
         self.call(|r| Cmd::Send(bytes, r)).await?
+    }
+
+    /// Queue a message for the output without waiting (callable from any
+    /// thread). Failures, such as having no output, are dropped.
+    pub fn send_quiet(&self, bytes: Vec<u8>) {
+        let _ = self.tx.send(Cmd::SendQuiet(bytes));
     }
 
     /// All Notes Off + All Sound Off on every channel.
@@ -340,6 +348,11 @@ impl Engine {
             }
             Cmd::Send(bytes, r) => {
                 let _ = r.send(self.send(&bytes));
+            }
+            Cmd::SendQuiet(bytes) => {
+                if let Err(err) = self.send(&bytes) {
+                    tracing::trace!(%err, "dropped MIDI message");
+                }
             }
             Cmd::Panic(r) => {
                 let _ = r.send(self.panic());
