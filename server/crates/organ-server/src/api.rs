@@ -120,12 +120,20 @@ pub fn router() -> Router<AppState> {
         crate::system_api::restore, crate::system_api::auth_status, crate::system_api::login,
         crate::system_api::logout, crate::system_api::set_password, crate::system_api::omr,
         crate::community_api::catalogue, crate::community_api::refresh,
-        crate::community_api::add_music, crate::community_api::get_organ, crate::community_api::add_organ
+        crate::community_api::add_music, crate::community_api::get_organ, crate::community_api::add_organ,
+        crate::sharing_api::account, crate::sharing_api::start, crate::sharing_api::verify,
+        crate::sharing_api::sign_out, crate::sharing_api::profile, crate::sharing_api::shared,
+        crate::sharing_api::share_organ, crate::sharing_api::share_music,
+        crate::organists_api::get_organists, crate::organists_api::put_organists
     ),
     components(schemas(
         Health, ApiErrorBody, PortList, MidiConfig, MidiStatus, TestStatus, TestState,
         EngineEvent, Direction, OrganSummary, OrganDefinition, OrganEvent, SimSnapshot,
         ConsoleState, LoadOrgan, Assistant, LiveSnapshot,
+        crate::sharing_api::CommunityAccountStatus, crate::sharing_api::SignInStart, crate::sharing_api::SignInStarted,
+        crate::sharing_api::SignInVerify, crate::sharing_api::CommunityProfile, crate::sharing_api::ShareOrgan,
+        crate::sharing_api::ShareMusic, crate::sharing_api::ShareResult,
+        crate::organists_api::OrganistsBody, crate::settings::Organist,
         organ_core::track::Track, organ_core::track::TrackSummary, organ_core::track::TrackInfo,
         organ_core::track::TrackEvent, organ_core::track::TimedEvent, organ_core::track::StopRef,
         organ_core::track::Registration, organ_core::track::Meter, organ_core::track::Mode,

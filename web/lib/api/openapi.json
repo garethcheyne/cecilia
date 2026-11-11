@@ -12,9 +12,7 @@
   "paths": {
     "/api/v1/assistant": {
       "get": {
-        "tags": [
-          "assistant"
-        ],
+        "tags": ["assistant"],
         "summary": "The assistant's name, used by the MCP server (`/mcp`).",
         "operationId": "get_assistant",
         "responses": {
@@ -31,9 +29,7 @@
         }
       },
       "put": {
-        "tags": [
-          "assistant"
-        ],
+        "tags": ["assistant"],
         "summary": "Rename the assistant (1-40 characters).",
         "operationId": "put_assistant",
         "requestBody": {
@@ -72,9 +68,7 @@
     },
     "/api/v1/auth": {
       "get": {
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "summary": "Whether a password is needed, and whether this browser is signed in.",
         "operationId": "auth_status",
         "responses": {
@@ -93,9 +87,7 @@
     },
     "/api/v1/auth/login": {
       "post": {
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "summary": "Sign in.",
         "operationId": "login",
         "requestBody": {
@@ -127,9 +119,7 @@
     },
     "/api/v1/auth/logout": {
       "post": {
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "summary": "Sign out.",
         "operationId": "logout",
         "responses": {
@@ -141,9 +131,7 @@
     },
     "/api/v1/auth/password": {
       "put": {
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "summary": "Set, change or remove the password (needs a session if one is set).\nOther signed-in browsers are signed out.",
         "operationId": "set_password",
         "requestBody": {
@@ -185,9 +173,7 @@
     },
     "/api/v1/community": {
       "get": {
-        "tags": [
-          "community"
-        ],
+        "tags": ["community"],
         "summary": "What's in the shared library.",
         "operationId": "catalogue",
         "responses": {
@@ -214,11 +200,157 @@
         }
       }
     },
+    "/api/v1/community/account": {
+      "get": {
+        "tags": ["community"],
+        "summary": "Whether this Cecilia is signed in to the community, and as whom.",
+        "operationId": "account",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommunityAccountStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/community/account/profile": {
+      "put": {
+        "tags": ["community"],
+        "summary": "Your name and church, as other churches see them.",
+        "operationId": "profile",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommunityProfile"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommunityAccountStatus"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/community/account/sign-out": {
+      "post": {
+        "tags": ["community"],
+        "summary": "Sign out of the community on this Cecilia.",
+        "operationId": "sign_out",
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/community/account/start": {
+      "post": {
+        "tags": ["community"],
+        "summary": "Email a sign-in code.",
+        "operationId": "start",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignInStart"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignInStarted"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/community/account/verify": {
+      "post": {
+        "tags": ["community"],
+        "summary": "Sign in with the emailed code.",
+        "operationId": "verify",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignInVerify"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommunityAccountStatus"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/community/music/{id}/add": {
       "post": {
-        "tags": [
-          "community"
-        ],
+        "tags": ["community"],
         "summary": "Add a piece from the shared library to this Cecilia's library.",
         "operationId": "add_music",
         "parameters": [
@@ -268,9 +400,7 @@
     },
     "/api/v1/community/organs/{id}": {
       "get": {
-        "tags": [
-          "community"
-        ],
+        "tags": ["community"],
         "summary": "A shared organ setup in full, to look at before adding it.",
         "operationId": "get_organ",
         "parameters": [
@@ -320,9 +450,7 @@
     },
     "/api/v1/community/organs/{id}/add": {
       "post": {
-        "tags": [
-          "community"
-        ],
+        "tags": ["community"],
         "summary": "Add an organ setup from the shared library (as one you can edit).",
         "operationId": "add_organ",
         "parameters": [
@@ -372,9 +500,7 @@
     },
     "/api/v1/community/refresh": {
       "post": {
-        "tags": [
-          "community"
-        ],
+        "tags": ["community"],
         "summary": "Check the shared library again now.",
         "operationId": "refresh",
         "responses": {
@@ -401,11 +527,176 @@
         }
       }
     },
+    "/api/v1/community/share/music/{id}": {
+      "post": {
+        "tags": ["community"],
+        "summary": "Share a recording with other churches. The organist is named only if\ntheir profile says they've agreed.",
+        "operationId": "share_music",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Piece id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShareMusic"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShareResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/community/share/organ/{id}": {
+      "post": {
+        "tags": ["community"],
+        "summary": "Share one of this machine's organ setups with other churches.",
+        "operationId": "share_organ",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Organ id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShareOrgan"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShareResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/community/shared": {
+      "get": {
+        "tags": ["community"],
+        "summary": "What this account has shared, and where each has got to.",
+        "operationId": "shared",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/export/backup.zip": {
       "get": {
-        "tags": [
-          "system"
-        ],
+        "tags": ["system"],
         "summary": "Everything that matters (library, organs, playlists, settings) in one zip.",
         "operationId": "backup",
         "responses": {
@@ -420,9 +711,7 @@
     },
     "/api/v1/export/library-midi.zip": {
       "get": {
-        "tags": [
-          "files"
-        ],
+        "tags": ["files"],
         "summary": "Every track as a MIDI file for the current organ, zipped: a backup that\nany MIDI program can open.",
         "operationId": "export_zip",
         "responses": {
@@ -437,9 +726,7 @@
     },
     "/api/v1/export/library.csv": {
       "get": {
-        "tags": [
-          "files"
-        ],
+        "tags": ["files"],
         "summary": "The library as a spreadsheet (CSV).",
         "operationId": "export_csv",
         "responses": {
@@ -454,9 +741,7 @@
     },
     "/api/v1/health": {
       "get": {
-        "tags": [
-          "system"
-        ],
+        "tags": ["system"],
         "summary": "Server identity and version.",
         "operationId": "health",
         "responses": {
@@ -475,9 +760,7 @@
     },
     "/api/v1/import": {
       "post": {
-        "tags": [
-          "files"
-        ],
+        "tags": ["files"],
         "summary": "Import a file into the library. MIDI files may become several pieces.",
         "operationId": "import",
         "parameters": [
@@ -496,10 +779,7 @@
             "description": "JSON import options (`ImportOptions` for MIDI, `XmlImportOptions` for MusicXML).",
             "required": true,
             "schema": {
-              "type": [
-                "string",
-                "null"
-              ]
+              "type": ["string", "null"]
             }
           }
         ],
@@ -547,9 +827,7 @@
     },
     "/api/v1/import/analyse": {
       "post": {
-        "tags": [
-          "files"
-        ],
+        "tags": ["files"],
         "summary": "Look inside a file before importing it: channels or staves, length,\nand whether it was recorded on the current organ.",
         "operationId": "analyse",
         "parameters": [
@@ -568,10 +846,7 @@
             "description": "JSON import options (`ImportOptions` for MIDI, `XmlImportOptions` for MusicXML).",
             "required": true,
             "schema": {
-              "type": [
-                "string",
-                "null"
-              ]
+              "type": ["string", "null"]
             }
           }
         ],
@@ -616,9 +891,7 @@
     },
     "/api/v1/import/backup": {
       "post": {
-        "tags": [
-          "system"
-        ],
+        "tags": ["system"],
         "summary": "Restore a backup made with `export/backup.zip`. Items with the same name\nare replaced; everything else is kept. This machine's MIDI ports and\npassword stay as they are.",
         "operationId": "restore",
         "requestBody": {
@@ -662,9 +935,7 @@
     },
     "/api/v1/library": {
       "get": {
-        "tags": [
-          "library"
-        ],
+        "tags": ["library"],
         "summary": "Every track in the library, newest first.",
         "operationId": "list_tracks",
         "responses": {
@@ -686,9 +957,7 @@
     },
     "/api/v1/library/{id}": {
       "get": {
-        "tags": [
-          "library"
-        ],
+        "tags": ["library"],
         "summary": "A whole track, with its events.",
         "operationId": "get_track",
         "parameters": [
@@ -726,9 +995,7 @@
         }
       },
       "put": {
-        "tags": [
-          "library"
-        ],
+        "tags": ["library"],
         "summary": "Save a whole track (from the editor or an import). Creates or replaces.",
         "operationId": "put_track",
         "parameters": [
@@ -776,9 +1043,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "library"
-        ],
+        "tags": ["library"],
         "summary": "Delete a track (a copy is kept in the history folder).",
         "operationId": "delete_track",
         "parameters": [
@@ -809,9 +1074,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "library"
-        ],
+        "tags": ["library"],
         "summary": "Edit a track's details (title, composer, volume, verse markers…).",
         "operationId": "patch_track",
         "parameters": [
@@ -871,9 +1134,7 @@
     },
     "/api/v1/library/{id}/duplicate": {
       "post": {
-        "tags": [
-          "library"
-        ],
+        "tags": ["library"],
         "summary": "Copy a track under a new name.",
         "operationId": "duplicate_track",
         "parameters": [
@@ -913,9 +1174,7 @@
     },
     "/api/v1/library/{id}/mapping": {
       "get": {
-        "tags": [
-          "library"
-        ],
+        "tags": ["library"],
         "summary": "How the track's stops map onto the current organ (the virtual organist's plan).",
         "operationId": "track_mapping",
         "parameters": [
@@ -958,9 +1217,7 @@
     },
     "/api/v1/library/{id}/midi": {
       "get": {
-        "tags": [
-          "files"
-        ],
+        "tags": ["files"],
         "summary": "Download a track as a MIDI file.",
         "operationId": "export_midi",
         "parameters": [
@@ -1012,9 +1269,7 @@
     },
     "/api/v1/live": {
       "get": {
-        "tags": [
-          "live"
-        ],
+        "tags": ["live"],
         "summary": "What the connected organ (the Organ out) is doing, as tracked from MIDI.",
         "operationId": "live_state",
         "responses": {
@@ -1033,9 +1288,7 @@
     },
     "/api/v1/live/act": {
       "post": {
-        "tags": [
-          "live"
-        ],
+        "tags": ["live"],
         "summary": "Operate the connected organ: draw a stop, press a key, move a pedal.\nToggle-only stops are sent only when they need to change.",
         "operationId": "live_act",
         "requestBody": {
@@ -1067,9 +1320,7 @@
     },
     "/api/v1/midi/config": {
       "get": {
-        "tags": [
-          "midi"
-        ],
+        "tags": ["midi"],
         "summary": "The saved port selection.",
         "operationId": "get_config",
         "responses": {
@@ -1086,9 +1337,7 @@
         }
       },
       "put": {
-        "tags": [
-          "midi"
-        ],
+        "tags": ["midi"],
         "summary": "Save a new port selection and reconnect. Ports that could not be opened\nare listed in `missing` in the response.",
         "operationId": "put_config",
         "requestBody": {
@@ -1117,9 +1366,7 @@
     },
     "/api/v1/midi/panic": {
       "post": {
-        "tags": [
-          "midi"
-        ],
+        "tags": ["midi"],
         "summary": "Send All Notes Off and All Sound Off on every channel.",
         "operationId": "panic",
         "responses": {
@@ -1141,9 +1388,7 @@
     },
     "/api/v1/midi/ports": {
       "get": {
-        "tags": [
-          "midi"
-        ],
+        "tags": ["midi"],
         "summary": "MIDI ports currently available on this machine.",
         "operationId": "ports",
         "responses": {
@@ -1172,9 +1417,7 @@
     },
     "/api/v1/midi/status": {
       "get": {
-        "tags": [
-          "midi"
-        ],
+        "tags": ["midi"],
         "summary": "Open connections and test recorder state.",
         "operationId": "status",
         "responses": {
@@ -1193,9 +1436,7 @@
     },
     "/api/v1/midi/test/play": {
       "post": {
-        "tags": [
-          "test"
-        ],
+        "tags": ["test"],
         "summary": "Play the test recording back, byte-for-byte, to the output port.",
         "operationId": "test_play",
         "responses": {
@@ -1224,9 +1465,7 @@
     },
     "/api/v1/midi/test/record": {
       "post": {
-        "tags": [
-          "test"
-        ],
+        "tags": ["test"],
         "summary": "Start the raw test recorder (discards the previous test recording).",
         "operationId": "test_record",
         "responses": {
@@ -1255,9 +1494,7 @@
     },
     "/api/v1/midi/test/stop": {
       "post": {
-        "tags": [
-          "test"
-        ],
+        "tags": ["test"],
         "summary": "Stop test recording or playback.",
         "operationId": "test_stop",
         "responses": {
@@ -1276,9 +1513,7 @@
     },
     "/api/v1/omr": {
       "post": {
-        "tags": [
-          "files"
-        ],
+        "tags": ["files"],
         "summary": "Read printed music from a scan or photo with the OMR engine and return\nMusicXML, ready for the usual import.",
         "operationId": "omr",
         "parameters": [
@@ -1337,11 +1572,65 @@
         }
       }
     },
+    "/api/v1/organists": {
+      "get": {
+        "tags": ["organists"],
+        "summary": "The organists, and who's playing now.",
+        "operationId": "get_organists",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganistsBody"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["organists"],
+        "summary": "Replace the list of organists (new ones may have an empty id).",
+        "operationId": "put_organists",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrganistsBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganistsBody"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/organs": {
       "get": {
-        "tags": [
-          "organs"
-        ],
+        "tags": ["organs"],
         "summary": "Organ definitions available on this server.",
         "operationId": "list_organs",
         "responses": {
@@ -1363,9 +1652,7 @@
     },
     "/api/v1/organs/copy": {
       "post": {
-        "tags": [
-          "organs"
-        ],
+        "tags": ["organs"],
         "summary": "Make a new organ as a copy of another (the way to start a definition for\nyour own instrument, e.g. from the Makin template).",
         "operationId": "copy_organ",
         "requestBody": {
@@ -1404,9 +1691,7 @@
     },
     "/api/v1/organs/{id}": {
       "get": {
-        "tags": [
-          "organs"
-        ],
+        "tags": ["organs"],
         "summary": "A full organ definition.",
         "operationId": "get_organ",
         "parameters": [
@@ -1446,9 +1731,7 @@
     },
     "/api/v1/organs/{id}/delete": {
       "post": {
-        "tags": [
-          "organs"
-        ],
+        "tags": ["organs"],
         "summary": "Delete a user organ. If it was in use, the demo organ takes over.",
         "operationId": "delete_organ",
         "parameters": [
@@ -1491,9 +1774,7 @@
     },
     "/api/v1/organs/{id}/save": {
       "put": {
-        "tags": [
-          "organs"
-        ],
+        "tags": ["organs"],
         "summary": "Save changes to a user organ. If it's the organ in use, it's reloaded\neverywhere straight away.",
         "operationId": "save_organ",
         "parameters": [
@@ -1553,9 +1834,7 @@
     },
     "/api/v1/player": {
       "get": {
-        "tags": [
-          "player"
-        ],
+        "tags": ["player"],
         "summary": "Transport state.",
         "operationId": "player_status",
         "responses": {
@@ -1574,9 +1853,7 @@
     },
     "/api/v1/player/fade": {
       "post": {
-        "tags": [
-          "player"
-        ],
+        "tags": ["player"],
         "summary": "Fade out and stop (or cancel a fade).",
         "operationId": "player_fade",
         "requestBody": {
@@ -1605,9 +1882,7 @@
     },
     "/api/v1/player/load": {
       "post": {
-        "tags": [
-          "player"
-        ],
+        "tags": ["player"],
         "summary": "Load a track from the library, and by default start playing it.",
         "operationId": "player_load",
         "requestBody": {
@@ -1656,9 +1931,7 @@
     },
     "/api/v1/player/pause": {
       "post": {
-        "tags": [
-          "player"
-        ],
+        "tags": ["player"],
         "summary": "Pause (press again to continue).",
         "operationId": "player_pause",
         "responses": {
@@ -1677,9 +1950,7 @@
     },
     "/api/v1/player/play": {
       "post": {
-        "tags": [
-          "player"
-        ],
+        "tags": ["player"],
         "summary": "Play, or resume from pause.",
         "operationId": "player_play",
         "responses": {
@@ -1698,9 +1969,7 @@
     },
     "/api/v1/player/seek": {
       "post": {
-        "tags": [
-          "player"
-        ],
+        "tags": ["player"],
         "summary": "Jump to a position; the registration there is re-created.",
         "operationId": "player_seek",
         "requestBody": {
@@ -1729,9 +1998,7 @@
     },
     "/api/v1/player/stop": {
       "post": {
-        "tags": [
-          "player"
-        ],
+        "tags": ["player"],
         "summary": "Stop playback.",
         "operationId": "player_stop",
         "responses": {
@@ -1750,9 +2017,7 @@
     },
     "/api/v1/player/tempo": {
       "post": {
-        "tags": [
-          "player"
-        ],
+        "tags": ["player"],
         "summary": "Change the playback speed.",
         "operationId": "player_tempo",
         "requestBody": {
@@ -1781,9 +2046,7 @@
     },
     "/api/v1/player/verses": {
       "post": {
-        "tags": [
-          "player"
-        ],
+        "tags": ["player"],
         "summary": "Verse control for hymns.",
         "operationId": "player_verses",
         "requestBody": {
@@ -1812,9 +2075,7 @@
     },
     "/api/v1/playlists": {
       "get": {
-        "tags": [
-          "playlists"
-        ],
+        "tags": ["playlists"],
         "summary": "All playlists, most recently changed first.",
         "operationId": "list_playlists",
         "responses": {
@@ -1834,9 +2095,7 @@
         }
       },
       "post": {
-        "tags": [
-          "playlists"
-        ],
+        "tags": ["playlists"],
         "summary": "Create an empty playlist.",
         "operationId": "create_playlist",
         "requestBody": {
@@ -1875,9 +2134,7 @@
     },
     "/api/v1/playlists/{id}": {
       "get": {
-        "tags": [
-          "playlists"
-        ],
+        "tags": ["playlists"],
         "summary": "A playlist with all its rows.",
         "operationId": "get_playlist",
         "parameters": [
@@ -1915,9 +2172,7 @@
         }
       },
       "put": {
-        "tags": [
-          "playlists"
-        ],
+        "tags": ["playlists"],
         "summary": "Save a playlist. Saving also marks every track as checked, clearing\n\"edited since it was added\" warnings.",
         "operationId": "put_playlist",
         "parameters": [
@@ -1965,9 +2220,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "playlists"
-        ],
+        "tags": ["playlists"],
         "summary": "Delete a playlist (the tracks stay in the library).",
         "operationId": "delete_playlist",
         "parameters": [
@@ -2000,9 +2253,7 @@
     },
     "/api/v1/playlists/{id}/duplicate": {
       "post": {
-        "tags": [
-          "playlists"
-        ],
+        "tags": ["playlists"],
         "summary": "Copy a playlist (e.g. last Sunday's as a starting point).",
         "operationId": "duplicate_playlist",
         "parameters": [
@@ -2042,9 +2293,7 @@
     },
     "/api/v1/recorder": {
       "get": {
-        "tags": [
-          "recorder"
-        ],
+        "tags": ["recorder"],
         "summary": "Auto-recorder state.",
         "operationId": "recorder_status",
         "responses": {
@@ -2063,9 +2312,7 @@
     },
     "/api/v1/recorder/start": {
       "post": {
-        "tags": [
-          "recorder"
-        ],
+        "tags": ["recorder"],
         "summary": "Arm the auto-recorder: each piece played from now on is saved to the library.",
         "operationId": "recorder_start",
         "responses": {
@@ -2094,9 +2341,7 @@
     },
     "/api/v1/recorder/stop": {
       "post": {
-        "tags": [
-          "recorder"
-        ],
+        "tags": ["recorder"],
         "summary": "Stop recording; a piece in progress is saved.",
         "operationId": "recorder_stop",
         "responses": {
@@ -2115,9 +2360,7 @@
     },
     "/api/v1/service": {
       "get": {
-        "tags": [
-          "service"
-        ],
+        "tags": ["service"],
         "summary": "Which playlist is running and where it's up to.",
         "operationId": "service_status",
         "responses": {
@@ -2136,9 +2379,7 @@
     },
     "/api/v1/service/end": {
       "post": {
-        "tags": [
-          "service"
-        ],
+        "tags": ["service"],
         "summary": "Stop running the playlist.",
         "operationId": "service_end",
         "responses": {
@@ -2157,9 +2398,7 @@
     },
     "/api/v1/service/next": {
       "post": {
-        "tags": [
-          "service"
-        ],
+        "tags": ["service"],
         "summary": "Skip to the next track and play it.",
         "operationId": "service_next",
         "responses": {
@@ -2188,9 +2427,7 @@
     },
     "/api/v1/service/previous": {
       "post": {
-        "tags": [
-          "service"
-        ],
+        "tags": ["service"],
         "summary": "Go back to the previous track and play it.",
         "operationId": "service_previous",
         "responses": {
@@ -2219,9 +2456,7 @@
     },
     "/api/v1/service/select": {
       "post": {
-        "tags": [
-          "service"
-        ],
+        "tags": ["service"],
         "summary": "Get a row ready to play.",
         "operationId": "service_select",
         "requestBody": {
@@ -2260,9 +2495,7 @@
     },
     "/api/v1/service/start": {
       "post": {
-        "tags": [
-          "service"
-        ],
+        "tags": ["service"],
         "summary": "Run a playlist.",
         "operationId": "service_start",
         "requestBody": {
@@ -2311,9 +2544,7 @@
     },
     "/api/v1/settings": {
       "get": {
-        "tags": [
-          "system"
-        ],
+        "tags": ["system"],
         "summary": "Recording and playback settings.",
         "operationId": "get_settings",
         "responses": {
@@ -2330,9 +2561,7 @@
         }
       },
       "put": {
-        "tags": [
-          "system"
-        ],
+        "tags": ["system"],
         "summary": "Change recording and playback settings (they apply straight away).",
         "operationId": "put_settings",
         "requestBody": {
@@ -2371,9 +2600,7 @@
     },
     "/api/v1/simulator": {
       "get": {
-        "tags": [
-          "simulator"
-        ],
+        "tags": ["simulator"],
         "summary": "The simulator's organ, console state and audio device.",
         "operationId": "sim_state",
         "responses": {
@@ -2392,9 +2619,7 @@
     },
     "/api/v1/simulator/act": {
       "post": {
-        "tags": [
-          "simulator"
-        ],
+        "tags": ["simulator"],
         "summary": "Do something at the simulated console: press a key, draw a stop, move a\npedal. It sounds, and the organ's MIDI is sent to the engine as input.",
         "operationId": "sim_act",
         "requestBody": {
@@ -2416,9 +2641,7 @@
     },
     "/api/v1/simulator/organ": {
       "put": {
-        "tags": [
-          "simulator"
-        ],
+        "tags": ["simulator"],
         "summary": "Choose which organ the simulator plays (saved).",
         "operationId": "sim_load_organ",
         "requestBody": {
@@ -2457,9 +2680,7 @@
     },
     "/api/v1/simulator/reset": {
       "post": {
-        "tags": [
-          "simulator"
-        ],
+        "tags": ["simulator"],
         "summary": "Release all keys and push in every stop.",
         "operationId": "sim_reset",
         "responses": {
@@ -2471,9 +2692,7 @@
     },
     "/api/v1/verses/parse": {
       "post": {
-        "tags": [
-          "playlists"
-        ],
+        "tags": ["playlists"],
         "summary": "Check a verse entry (\"4\" = four verses, \"12357\" = exactly those).",
         "operationId": "verses_parse",
         "requestBody": {
@@ -2515,9 +2734,7 @@
     "schemas": {
       "ApiErrorBody": {
         "type": "object",
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "properties": {
           "error": {
             "type": "string"
@@ -2533,15 +2750,11 @@
               },
               {
                 "type": "object",
-                "required": [
-                  "type"
-                ],
+                "required": ["type"],
                 "properties": {
                   "type": {
                     "type": "string",
-                    "enum": [
-                      "recorder"
-                    ]
+                    "enum": ["recorder"]
                   }
                 }
               }
@@ -2550,9 +2763,7 @@
           {
             "type": "object",
             "description": "The library changed; `saved` is a newly recorded track, if any.",
-            "required": [
-              "type"
-            ],
+            "required": ["type"],
             "properties": {
               "saved": {
                 "oneOf": [
@@ -2566,9 +2777,7 @@
               },
               "type": {
                 "type": "string",
-                "enum": [
-                  "library"
-                ]
+                "enum": ["library"]
               }
             }
           },
@@ -2580,15 +2789,11 @@
               },
               {
                 "type": "object",
-                "required": [
-                  "type"
-                ],
+                "required": ["type"],
                 "properties": {
                   "type": {
                     "type": "string",
-                    "enum": [
-                      "service"
-                    ]
+                    "enum": ["service"]
                   }
                 }
               }
@@ -2600,9 +2805,7 @@
       },
       "Assistant": {
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "properties": {
           "name": {
             "type": "string",
@@ -2612,10 +2815,7 @@
       },
       "AuthStatus": {
         "type": "object",
-        "required": [
-          "required",
-          "signed_in"
-        ],
+        "required": ["required", "signed_in"],
         "properties": {
           "required": {
             "type": "boolean",
@@ -2628,11 +2828,7 @@
       },
       "Catalogue": {
         "type": "object",
-        "required": [
-          "schema",
-          "music",
-          "organs"
-        ],
+        "required": ["schema", "music", "organs"],
         "properties": {
           "music": {
             "type": "array",
@@ -2655,13 +2851,7 @@
       },
       "ChannelInfo": {
         "type": "object",
-        "required": [
-          "channel",
-          "notes",
-          "low",
-          "high",
-          "polyphony"
-        ],
+        "required": ["channel", "notes", "low", "high", "polyphony"],
         "properties": {
           "channel": {
             "type": "integer",
@@ -2670,10 +2860,7 @@
             "minimum": 0
           },
           "duplicate_of": {
-            "type": [
-              "integer",
-              "null"
-            ],
+            "type": ["integer", "null"],
             "format": "int32",
             "description": "Same notes at the same times as an earlier channel (a doubled part).",
             "minimum": 0
@@ -2689,10 +2876,7 @@
             "minimum": 0
           },
           "name": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "notes": {
             "type": "integer",
@@ -2715,14 +2899,44 @@
           }
         }
       },
+      "CommunityAccountStatus": {
+        "type": "object",
+        "required": ["signed_in"],
+        "properties": {
+          "church": {
+            "type": ["string", "null"]
+          },
+          "email": {
+            "type": ["string", "null"]
+          },
+          "name": {
+            "type": ["string", "null"]
+          },
+          "role": {
+            "type": ["string", "null"],
+            "description": "member, trusted or moderator."
+          },
+          "signed_in": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CommunityProfile": {
+        "type": "object",
+        "required": ["name", "church"],
+        "properties": {
+          "church": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
       "Confidence": {
         "type": "string",
         "description": "How far a shared organ definition can be trusted.",
-        "enum": [
-          "template",
-          "learned",
-          "verified"
-        ]
+        "enum": ["template", "learned", "verified"]
       },
       "Connection": {
         "type": "object",
@@ -2736,29 +2950,18 @@
             "description": "Anything else the organist should know before relying on this\ndefinition (unverified numbers, settings to change on the organ...)."
           },
           "play_to": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "description": "The organ's socket to play back into, e.g. \"MIDI IN\"."
           },
           "record_from": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "description": "The organ's socket to record from, e.g. \"MIDI SEQ\"."
           }
         }
       },
       "ConsoleState": {
         "type": "object",
-        "required": [
-          "stops",
-          "notes",
-          "expression",
-          "master_volume"
-        ],
+        "required": ["stops", "notes", "expression", "master_volume"],
         "properties": {
           "expression": {
             "type": "object",
@@ -2771,14 +2974,7 @@
             "propertyNames": {
               "type": "string",
               "description": "The role of a keyboard, independent of its local name (Great, Hauptwerk,\nGrand Orgue...). Order follows the English convention.",
-              "enum": [
-                "pedal",
-                "great",
-                "swell",
-                "choir",
-                "solo",
-                "echo"
-              ]
+              "enum": ["pedal", "great", "swell", "choir", "solo", "echo"]
             }
           },
           "master_volume": {
@@ -2801,14 +2997,7 @@
             "propertyNames": {
               "type": "string",
               "description": "The role of a keyboard, independent of its local name (Great, Hauptwerk,\nGrand Orgue...). Order follows the English convention.",
-              "enum": [
-                "pedal",
-                "great",
-                "swell",
-                "choir",
-                "solo",
-                "echo"
-              ]
+              "enum": ["pedal", "great", "swell", "choir", "solo", "echo"]
             }
           },
           "stops": {
@@ -2823,10 +3012,7 @@
       },
       "CopyOrgan": {
         "type": "object",
-        "required": [
-          "from",
-          "name"
-        ],
+        "required": ["from", "name"],
         "properties": {
           "from": {
             "type": "string",
@@ -2839,36 +3025,25 @@
       },
       "CouplerPitch": {
         "type": "string",
-        "enum": [
-          "sub",
-          "unison",
-          "super"
-        ]
+        "enum": ["sub", "unison", "super"]
       },
       "Delay": {
         "oneOf": [
           {
             "type": "object",
             "description": "Load it and wait for Play (the space bar).",
-            "required": [
-              "type"
-            ],
+            "required": ["type"],
             "properties": {
               "type": {
                 "type": "string",
-                "enum": [
-                  "wait"
-                ]
+                "enum": ["wait"]
               }
             }
           },
           {
             "type": "object",
             "description": "Start automatically this many seconds after the previous track ends.",
-            "required": [
-              "seconds",
-              "type"
-            ],
+            "required": ["seconds", "type"],
             "properties": {
               "seconds": {
                 "type": "integer",
@@ -2877,24 +3052,18 @@
               },
               "type": {
                 "type": "string",
-                "enum": [
-                  "after"
-                ]
+                "enum": ["after"]
               }
             }
           },
           {
             "type": "object",
             "description": "Load it positioned at its first note and wait, so Play starts the\nmusic at once.",
-            "required": [
-              "type"
-            ],
+            "required": ["type"],
             "properties": {
               "type": {
                 "type": "string",
-                "enum": [
-                  "cue"
-                ]
+                "enum": ["cue"]
               }
             }
           }
@@ -2903,20 +3072,11 @@
       },
       "Direction": {
         "type": "string",
-        "enum": [
-          "in",
-          "out"
-        ]
+        "enum": ["in", "out"]
       },
       "Division": {
         "type": "object",
-        "required": [
-          "role",
-          "name",
-          "channel",
-          "low_key",
-          "high_key"
-        ],
+        "required": ["role", "name", "channel", "low_key", "high_key"],
         "properties": {
           "channel": {
             "type": "integer",
@@ -2957,27 +3117,14 @@
       "DivisionRole": {
         "type": "string",
         "description": "The role of a keyboard, independent of its local name (Great, Hauptwerk,\nGrand Orgue...). Order follows the English convention.",
-        "enum": [
-          "pedal",
-          "great",
-          "swell",
-          "choir",
-          "solo",
-          "echo"
-        ]
+        "enum": ["pedal", "great", "swell", "choir", "solo", "echo"]
       },
       "EngineEvent": {
         "oneOf": [
           {
             "type": "object",
             "description": "A raw MIDI message was received or sent.",
-            "required": [
-              "port",
-              "direction",
-              "t_us",
-              "bytes",
-              "type"
-            ],
+            "required": ["port", "direction", "t_us", "bytes", "type"],
             "properties": {
               "bytes": {
                 "type": "array",
@@ -3001,9 +3148,7 @@
               },
               "type": {
                 "type": "string",
-                "enum": [
-                  "midi"
-                ]
+                "enum": ["midi"]
               }
             }
           },
@@ -3015,15 +3160,11 @@
               },
               {
                 "type": "object",
-                "required": [
-                  "type"
-                ],
+                "required": ["type"],
                 "properties": {
                   "type": {
                     "type": "string",
-                    "enum": [
-                      "status"
-                    ]
+                    "enum": ["status"]
                   }
                 }
               }
@@ -3038,11 +3179,7 @@
           {
             "type": "object",
             "description": "A speaking stop.",
-            "required": [
-              "family",
-              "footage",
-              "type"
-            ],
+            "required": ["family", "footage", "type"],
             "properties": {
               "family": {
                 "$ref": "#/components/schemas/Family"
@@ -3052,10 +3189,7 @@
                 "description": "Footage such as \"16\", \"8\", \"4\", \"2 2/3\", \"1 3/5\"."
               },
               "ranks": {
-                "type": [
-                  "integer",
-                  "null"
-                ],
+                "type": ["integer", "null"],
                 "format": "int32",
                 "description": "Number of ranks (mixtures, celestes).",
                 "minimum": 0
@@ -3066,20 +3200,14 @@
               },
               "type": {
                 "type": "string",
-                "enum": [
-                  "voice"
-                ]
+                "enum": ["voice"]
               }
             }
           },
           {
             "type": "object",
             "description": "Plays `source` division's stops from this stop's keyboard.",
-            "required": [
-              "source",
-              "pitch",
-              "type"
-            ],
+            "required": ["source", "pitch", "type"],
             "properties": {
               "pitch": {
                 "$ref": "#/components/schemas/CouplerPitch"
@@ -3089,38 +3217,28 @@
               },
               "type": {
                 "type": "string",
-                "enum": [
-                  "coupler"
-                ]
+                "enum": ["coupler"]
               }
             }
           },
           {
             "type": "object",
-            "required": [
-              "type"
-            ],
+            "required": ["type"],
             "properties": {
               "type": {
                 "type": "string",
-                "enum": [
-                  "tremulant"
-                ]
+                "enum": ["tremulant"]
               }
             }
           },
           {
             "type": "object",
             "description": "Unison off for this division.",
-            "required": [
-              "type"
-            ],
+            "required": ["type"],
             "properties": {
               "type": {
                 "type": "string",
-                "enum": [
-                  "unison_off"
-                ]
+                "enum": ["unison_off"]
               }
             }
           }
@@ -3129,16 +3247,11 @@
       },
       "ExportFormat": {
         "type": "string",
-        "enum": [
-          "organ",
-          "general_midi"
-        ]
+        "enum": ["organ", "general_midi"]
       },
       "FadeRequest": {
         "type": "object",
-        "required": [
-          "on"
-        ],
+        "required": ["on"],
         "properties": {
           "on": {
             "type": "boolean",
@@ -3163,17 +3276,11 @@
       },
       "FileKind": {
         "type": "string",
-        "enum": [
-          "midi",
-          "musicxml"
-        ]
+        "enum": ["midi", "musicxml"]
       },
       "Health": {
         "type": "object",
-        "required": [
-          "name",
-          "version"
-        ],
+        "required": ["name", "version"],
         "properties": {
           "name": {
             "type": "string"
@@ -3185,10 +3292,7 @@
       },
       "ImportAnalysis": {
         "type": "object",
-        "required": [
-          "kind",
-          "title"
-        ],
+        "required": ["kind", "title"],
         "properties": {
           "kind": {
             "$ref": "#/components/schemas/FileKind"
@@ -3242,29 +3346,20 @@
             "description": "Pedal notes an octave up (MuseScore writes pedal parts at 16′ pitch)."
           },
           "split_ms": {
-            "type": [
-              "integer",
-              "null"
-            ],
+            "type": ["integer", "null"],
             "format": "int32",
             "description": "Split into separate pieces at silences this long (ms). None = one piece.",
             "minimum": 0
           },
           "title": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "description": "Title for the piece (pieces get \" (2)\", \" (3)\"…). Default from the file."
           }
         }
       },
       "LiveSnapshot": {
         "type": "object",
-        "required": [
-          "organ_id",
-          "console"
-        ],
+        "required": ["organ_id", "console"],
         "properties": {
           "console": {
             "$ref": "#/components/schemas/ConsoleState"
@@ -3273,19 +3368,14 @@
             "type": "string"
           },
           "output": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "description": "Where the organ's MIDI goes, if anywhere."
           }
         }
       },
       "LoadOrgan": {
         "type": "object",
-        "required": [
-          "organ_id"
-        ],
+        "required": ["organ_id"],
         "properties": {
           "organ_id": {
             "type": "string"
@@ -3294,9 +3384,7 @@
       },
       "LoadTrack": {
         "type": "object",
-        "required": [
-          "track_id"
-        ],
+        "required": ["track_id"],
         "properties": {
           "options": {
             "$ref": "#/components/schemas/PlayOptions"
@@ -3312,9 +3400,7 @@
       },
       "Login": {
         "type": "object",
-        "required": [
-          "password"
-        ],
+        "required": ["password"],
         "properties": {
           "password": {
             "type": "string"
@@ -3345,11 +3431,7 @@
       "Meter": {
         "type": "object",
         "description": "Musical framing for the score view. Exact for samples and imports;\nestimated for live recordings.",
-        "required": [
-          "bpm",
-          "beats",
-          "beat_unit"
-        ],
+        "required": ["bpm", "beats", "beat_unit"],
         "properties": {
           "beat_unit": {
             "type": "integer",
@@ -3385,12 +3467,7 @@
       },
       "MidiAnalysis": {
         "type": "object",
-        "required": [
-          "channels",
-          "duration_ms",
-          "organ_match",
-          "gaps"
-        ],
+        "required": ["channels", "duration_ms", "organ_match", "gaps"],
         "properties": {
           "channels": {
             "type": "array",
@@ -3431,21 +3508,14 @@
             "description": "Input ports to listen to (the organ console, or Hauptwerk's output)."
           },
           "output": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "description": "The single output port to drive (the organ, or Hauptwerk's input)."
           }
         }
       },
       "MidiStatus": {
         "type": "object",
-        "required": [
-          "inputs",
-          "missing",
-          "test"
-        ],
+        "required": ["inputs", "missing", "test"],
         "properties": {
           "inputs": {
             "type": "array",
@@ -3462,10 +3532,7 @@
             "description": "Configured ports that could not be opened (unplugged, in use, renamed)."
           },
           "output": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "description": "Output port that is currently open."
           },
           "test": {
@@ -3475,10 +3542,7 @@
       },
       "Mode": {
         "type": "string",
-        "enum": [
-          "major",
-          "minor"
-        ]
+        "enum": ["major", "minor"]
       },
       "MusicEntry": {
         "type": "object",
@@ -3550,28 +3614,20 @@
       },
       "MusicKind": {
         "type": "string",
-        "enum": [
-          "score",
-          "recording"
-        ]
+        "enum": ["score", "recording"]
       },
       "NewPassword": {
         "type": "object",
         "properties": {
           "password": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "description": "The new password, or null to remove the password."
           }
         }
       },
       "NewPlaylist": {
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "properties": {
           "name": {
             "type": "string"
@@ -3672,14 +3728,7 @@
       },
       "OrganEntry": {
         "type": "object",
-        "required": [
-          "id",
-          "path",
-          "name",
-          "meta",
-          "divisions",
-          "stops"
-        ],
+        "required": ["id", "path", "name", "meta", "divisions", "stops"],
         "properties": {
           "divisions": {
             "type": "integer",
@@ -3707,12 +3756,7 @@
         "oneOf": [
           {
             "type": "object",
-            "required": [
-              "division",
-              "key",
-              "velocity",
-              "type"
-            ],
+            "required": ["division", "key", "velocity", "type"],
             "properties": {
               "division": {
                 "$ref": "#/components/schemas/DivisionRole"
@@ -3724,9 +3768,7 @@
               },
               "type": {
                 "type": "string",
-                "enum": [
-                  "note"
-                ]
+                "enum": ["note"]
               },
               "velocity": {
                 "type": "integer",
@@ -3738,11 +3780,7 @@
           },
           {
             "type": "object",
-            "required": [
-              "stop",
-              "on",
-              "type"
-            ],
+            "required": ["stop", "on", "type"],
             "properties": {
               "on": {
                 "type": "boolean"
@@ -3752,47 +3790,34 @@
               },
               "type": {
                 "type": "string",
-                "enum": [
-                  "stop"
-                ]
+                "enum": ["stop"]
               }
             }
           },
           {
             "type": "object",
             "description": "A toggle message: the receiver flips the stop's current state.",
-            "required": [
-              "stop",
-              "type"
-            ],
+            "required": ["stop", "type"],
             "properties": {
               "stop": {
                 "type": "string"
               },
               "type": {
                 "type": "string",
-                "enum": [
-                  "stop_toggle"
-                ]
+                "enum": ["stop_toggle"]
               }
             }
           },
           {
             "type": "object",
-            "required": [
-              "division",
-              "value",
-              "type"
-            ],
+            "required": ["division", "value", "type"],
             "properties": {
               "division": {
                 "$ref": "#/components/schemas/DivisionRole"
               },
               "type": {
                 "type": "string",
-                "enum": [
-                  "expression"
-                ]
+                "enum": ["expression"]
               },
               "value": {
                 "type": "integer",
@@ -3804,16 +3829,11 @@
           },
           {
             "type": "object",
-            "required": [
-              "value",
-              "type"
-            ],
+            "required": ["value", "type"],
             "properties": {
               "type": {
                 "type": "string",
-                "enum": [
-                  "master_volume"
-                ]
+                "enum": ["master_volume"]
               },
               "value": {
                 "type": "integer",
@@ -3825,15 +3845,11 @@
           {
             "type": "object",
             "description": "General cancel: every stop pushed in.",
-            "required": [
-              "type"
-            ],
+            "required": ["type"],
             "properties": {
               "type": {
                 "type": "string",
-                "enum": [
-                  "all_stops_off"
-                ]
+                "enum": ["all_stops_off"]
               }
             }
           }
@@ -3842,12 +3858,7 @@
       },
       "OrganMeta": {
         "type": "object",
-        "required": [
-          "maker",
-          "model",
-          "confidence",
-          "licence"
-        ],
+        "required": ["maker", "model", "confidence", "licence"],
         "properties": {
           "also_known_as": {
             "type": "array",
@@ -3928,6 +3939,43 @@
           }
         }
       },
+      "Organist": {
+        "type": "object",
+        "description": "Someone who plays the organ here, and whether a shared recording may name them.",
+        "required": ["id", "name"],
+        "properties": {
+          "credit_as": {
+            "type": "string",
+            "description": "How to credit them publicly, e.g. \"John Brown, St Mary's\" (default: their name)."
+          },
+          "credit_publicly": {
+            "type": "boolean",
+            "description": "They've agreed to be named when a recording of theirs is shared."
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "OrganistsBody": {
+        "type": "object",
+        "required": ["organists"],
+        "properties": {
+          "current": {
+            "type": ["string", "null"],
+            "description": "Who's playing now (an id from the list), if anyone."
+          },
+          "organists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Organist"
+            }
+          }
+        }
+      },
       "ParsedVerses": {
         "type": "object",
         "properties": {
@@ -3951,19 +3999,13 @@
         "type": "object",
         "properties": {
           "start_ms": {
-            "type": [
-              "integer",
-              "null"
-            ],
+            "type": ["integer", "null"],
             "format": "int32",
             "description": "Start here instead of at the beginning (track ms).",
             "minimum": 0
           },
           "tempo": {
-            "type": [
-              "integer",
-              "null"
-            ],
+            "type": ["integer", "null"],
             "format": "int32",
             "description": "Percent, 25-400. Default 100.",
             "minimum": 0
@@ -4009,15 +4051,11 @@
               },
               {
                 "type": "object",
-                "required": [
-                  "type"
-                ],
+                "required": ["type"],
                 "properties": {
                   "type": {
                     "type": "string",
-                    "enum": [
-                      "status"
-                    ]
+                    "enum": ["status"]
                   }
                 }
               }
@@ -4026,19 +4064,14 @@
           {
             "type": "object",
             "description": "A track played to its end (not stopped by hand).",
-            "required": [
-              "track_id",
-              "type"
-            ],
+            "required": ["track_id", "type"],
             "properties": {
               "track_id": {
                 "type": "string"
               },
               "type": {
                 "type": "string",
-                "enum": [
-                  "finished"
-                ]
+                "enum": ["finished"]
               }
             }
           }
@@ -4046,12 +4079,7 @@
       },
       "PlayerState": {
         "type": "string",
-        "enum": [
-          "stopped",
-          "starting",
-          "playing",
-          "paused"
-        ]
+        "enum": ["stopped", "starting", "playing", "paused"]
       },
       "PlayerStatus": {
         "type": "object",
@@ -4118,10 +4146,7 @@
             "minimum": 0
           },
           "title": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "total_ms": {
             "type": "integer",
@@ -4129,10 +4154,7 @@
             "minimum": 0
           },
           "track_id": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "verse": {
             "type": "integer",
@@ -4147,13 +4169,7 @@
       },
       "Playlist": {
         "type": "object",
-        "required": [
-          "schema",
-          "id",
-          "name",
-          "created",
-          "modified"
-        ],
+        "required": ["schema", "id", "name", "created", "modified"],
         "properties": {
           "created": {
             "type": "integer",
@@ -4200,10 +4216,7 @@
         "oneOf": [
           {
             "type": "object",
-            "required": [
-              "track_id",
-              "type"
-            ],
+            "required": ["track_id", "type"],
             "properties": {
               "delay": {
                 "$ref": "#/components/schemas/Delay"
@@ -4213,10 +4226,7 @@
                 "description": "Free text shown beside the row (e.g. \"Hymn 477, page 12\")."
               },
               "tempo": {
-                "type": [
-                  "integer",
-                  "null"
-                ],
+                "type": ["integer", "null"],
                 "format": "int32",
                 "description": "Percent; default 100.",
                 "minimum": 0
@@ -4232,9 +4242,7 @@
               },
               "type": {
                 "type": "string",
-                "enum": [
-                  "track"
-                ]
+                "enum": ["track"]
               },
               "verses": {
                 "oneOf": [
@@ -4252,19 +4260,14 @@
           {
             "type": "object",
             "description": "A heading or reminder (\"Sermon\", \"Collection\").",
-            "required": [
-              "text",
-              "type"
-            ],
+            "required": ["text", "type"],
             "properties": {
               "text": {
                 "type": "string"
               },
               "type": {
                 "type": "string",
-                "enum": [
-                  "text"
-                ]
+                "enum": ["text"]
               }
             }
           }
@@ -4272,12 +4275,7 @@
       },
       "PlaylistSummary": {
         "type": "object",
-        "required": [
-          "id",
-          "name",
-          "tracks",
-          "modified"
-        ],
+        "required": ["id", "name", "tracks", "modified"],
         "properties": {
           "id": {
             "type": "string"
@@ -4298,10 +4296,7 @@
       },
       "PortList": {
         "type": "object",
-        "required": [
-          "inputs",
-          "outputs"
-        ],
+        "required": ["inputs", "outputs"],
         "properties": {
           "inputs": {
             "type": "array",
@@ -4319,20 +4314,11 @@
       },
       "RecorderState": {
         "type": "string",
-        "enum": [
-          "off",
-          "waiting",
-          "recording"
-        ]
+        "enum": ["off", "waiting", "recording"]
       },
       "RecorderStatus": {
         "type": "object",
-        "required": [
-          "state",
-          "elapsed_ms",
-          "notes",
-          "saved"
-        ],
+        "required": ["state", "elapsed_ms", "notes", "saved"],
         "properties": {
           "elapsed_ms": {
             "type": "integer",
@@ -4396,21 +4382,11 @@
             "propertyNames": {
               "type": "string",
               "description": "The role of a keyboard, independent of its local name (Great, Hauptwerk,\nGrand Orgue...). Order follows the English convention.",
-              "enum": [
-                "pedal",
-                "great",
-                "swell",
-                "choir",
-                "solo",
-                "echo"
-              ]
+              "enum": ["pedal", "great", "swell", "choir", "solo", "echo"]
             }
           },
           "master_volume": {
-            "type": [
-              "integer",
-              "null"
-            ],
+            "type": ["integer", "null"],
             "format": "int32",
             "minimum": 0
           },
@@ -4425,11 +4401,7 @@
       },
       "RestoreResult": {
         "type": "object",
-        "required": [
-          "tracks",
-          "organs",
-          "playlists"
-        ],
+        "required": ["tracks", "organs", "playlists"],
         "properties": {
           "organs": {
             "type": "integer",
@@ -4447,9 +4419,7 @@
       },
       "Seek": {
         "type": "object",
-        "required": [
-          "ms"
-        ],
+        "required": ["ms"],
         "properties": {
           "ms": {
             "type": "integer",
@@ -4461,9 +4431,7 @@
       },
       "SelectRow": {
         "type": "object",
-        "required": [
-          "row"
-        ],
+        "required": ["row"],
         "properties": {
           "row": {
             "type": "integer",
@@ -4473,54 +4441,31 @@
       },
       "ServiceState": {
         "type": "string",
-        "enum": [
-          "idle",
-          "ready",
-          "playing",
-          "waiting",
-          "finished"
-        ]
+        "enum": ["idle", "ready", "playing", "waiting", "finished"]
       },
       "ServiceStatus": {
         "type": "object",
-        "required": [
-          "state"
-        ],
+        "required": ["state"],
         "properties": {
           "countdown": {
-            "type": [
-              "integer",
-              "null"
-            ],
+            "type": ["integer", "null"],
             "format": "int32",
             "description": "Seconds until an automatic start.",
             "minimum": 0
           },
           "name": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "next_row": {
-            "type": [
-              "integer",
-              "null"
-            ],
+            "type": ["integer", "null"],
             "description": "Row index of the track after it, if any.",
             "minimum": 0
           },
           "playlist_id": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "row": {
-            "type": [
-              "integer",
-              "null"
-            ],
+            "type": ["integer", "null"],
             "description": "Row index (into the playlist's rows) of the current track.",
             "minimum": 0
           },
@@ -4531,10 +4476,7 @@
       },
       "SettingsBody": {
         "type": "object",
-        "required": [
-          "recording",
-          "playback"
-        ],
+        "required": ["recording", "playback"],
         "properties": {
           "playback": {
             "$ref": "#/components/schemas/PlaybackSettings"
@@ -4544,18 +4486,113 @@
           }
         }
       },
+      "ShareMusic": {
+        "type": "object",
+        "required": ["licence"],
+        "properties": {
+          "licence": {
+            "type": "string",
+            "description": "public-domain, CC0-1.0, CC-BY-4.0 or CC-BY-SA-4.0: the music itself\nmust be free to share."
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      },
+      "ShareOrgan": {
+        "type": "object",
+        "required": ["maker", "model"],
+        "properties": {
+          "maker": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string",
+            "description": "A note to the moderator."
+          },
+          "notes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Things to do on the organ first (\"set MIDI to mode B\")."
+          },
+          "series": {
+            "type": "string"
+          },
+          "variant": {
+            "type": "string"
+          },
+          "years": {
+            "type": "string"
+          }
+        }
+      },
+      "ShareResult": {
+        "type": "object",
+        "required": ["id", "status", "checks"],
+        "properties": {
+          "checks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "description": "pending (waiting for review) or approved (published)."
+          }
+        }
+      },
+      "SignInStart": {
+        "type": "object",
+        "required": ["email"],
+        "properties": {
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "SignInStarted": {
+        "type": "object",
+        "required": ["minutes"],
+        "properties": {
+          "code": {
+            "type": ["string", "null"],
+            "description": "Only from a development service, which shows codes instead of emailing them."
+          },
+          "minutes": {
+            "type": "integer",
+            "format": "int32",
+            "description": "How long the emailed code lasts.",
+            "minimum": 0
+          }
+        }
+      },
+      "SignInVerify": {
+        "type": "object",
+        "required": ["email", "code"],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        }
+      },
       "SimSnapshot": {
         "type": "object",
-        "required": [
-          "organ_id",
-          "console"
-        ],
+        "required": ["organ_id", "console"],
         "properties": {
           "audio": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "description": "Name of the audio device, if sound is available."
           },
           "console": {
@@ -4568,9 +4605,7 @@
       },
       "StartService": {
         "type": "object",
-        "required": [
-          "playlist_id"
-        ],
+        "required": ["playlist_id"],
         "properties": {
           "play": {
             "type": "boolean",
@@ -4580,10 +4615,7 @@
             "type": "string"
           },
           "row": {
-            "type": [
-              "integer",
-              "null"
-            ],
+            "type": ["integer", "null"],
             "description": "Row to start from (default: the first track).",
             "minimum": 0
           }
@@ -4591,12 +4623,7 @@
       },
       "Stop": {
         "type": "object",
-        "required": [
-          "id",
-          "division",
-          "equivalent",
-          "names"
-        ],
+        "required": ["id", "division", "equivalent", "names"],
         "properties": {
           "delay_ms": {
             "type": "integer",
@@ -4611,10 +4638,7 @@
             "$ref": "#/components/schemas/Equivalent"
           },
           "full_name": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "description": "Tooltip; defaults to the label lines joined."
           },
           "id": {
@@ -4651,11 +4675,7 @@
           {
             "type": "object",
             "description": "Distinct messages for on and off.",
-            "required": [
-              "on",
-              "off",
-              "type"
-            ],
+            "required": ["on", "off", "type"],
             "properties": {
               "off": {
                 "$ref": "#/components/schemas/Pattern"
@@ -4665,40 +4685,28 @@
               },
               "type": {
                 "type": "string",
-                "enum": [
-                  "on_off"
-                ]
+                "enum": ["on_off"]
               }
             }
           },
           {
             "type": "object",
             "description": "The same message flips the stop.",
-            "required": [
-              "msg",
-              "type"
-            ],
+            "required": ["msg", "type"],
             "properties": {
               "msg": {
                 "$ref": "#/components/schemas/Pattern"
               },
               "type": {
                 "type": "string",
-                "enum": [
-                  "toggle"
-                ]
+                "enum": ["toggle"]
               }
             }
           },
           {
             "type": "object",
             "description": "One message with a value slot carrying `on` or `off`.",
-            "required": [
-              "pattern",
-              "on",
-              "off",
-              "type"
-            ],
+            "required": ["pattern", "on", "off", "type"],
             "properties": {
               "off": {
                 "type": "integer",
@@ -4715,9 +4723,7 @@
               },
               "type": {
                 "type": "string",
-                "enum": [
-                  "switch"
-                ]
+                "enum": ["switch"]
               }
             }
           }
@@ -4727,10 +4733,7 @@
       "StopMapping": {
         "type": "object",
         "description": "One line of \"how will this track sound here\".",
-        "required": [
-          "recorded",
-          "exact"
-        ],
+        "required": ["recorded", "exact"],
         "properties": {
           "exact": {
             "type": "boolean"
@@ -4739,10 +4742,7 @@
             "$ref": "#/components/schemas/StopRef"
           },
           "stop": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "description": "Stop id on this organ, or None if it is left out."
           }
         }
@@ -4750,10 +4750,7 @@
       "StopRef": {
         "type": "object",
         "description": "A stop as a track sees it: which keyboard, and what it *is*.",
-        "required": [
-          "division",
-          "equivalent"
-        ],
+        "required": ["division", "equivalent"],
         "properties": {
           "division": {
             "$ref": "#/components/schemas/DivisionRole"
@@ -4765,19 +4762,13 @@
       },
       "StopShape": {
         "type": "string",
-        "enum": [
-          "round",
-          "rectangle"
-        ]
+        "enum": ["round", "rectangle"]
       },
       "StopStyle": {
         "type": "object",
         "properties": {
           "background": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "invert": {
             "type": "boolean",
@@ -4787,24 +4778,14 @@
             "$ref": "#/components/schemas/StopShape"
           },
           "text_color": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "description": "CSS colour of the label, e.g. \"#1d4ed8\"."
           }
         }
       },
       "Stream": {
         "type": "object",
-        "required": [
-          "id",
-          "label",
-          "notes",
-          "low",
-          "high",
-          "suggested"
-        ],
+        "required": ["id", "label", "notes", "low", "high", "suggested"],
         "properties": {
           "high": {
             "type": "integer",
@@ -4835,9 +4816,7 @@
       },
       "Tempo": {
         "type": "object",
-        "required": [
-          "percent"
-        ],
+        "required": ["percent"],
         "properties": {
           "percent": {
             "type": "integer",
@@ -4849,20 +4828,11 @@
       },
       "TestState": {
         "type": "string",
-        "enum": [
-          "idle",
-          "recording",
-          "playing"
-        ]
+        "enum": ["idle", "recording", "playing"]
       },
       "TestStatus": {
         "type": "object",
-        "required": [
-          "state",
-          "events",
-          "duration_ms",
-          "position_ms"
-        ],
+        "required": ["state", "events", "duration_ms", "position_ms"],
         "properties": {
           "duration_ms": {
             "type": "integer",
@@ -4893,9 +4863,7 @@
           },
           {
             "type": "object",
-            "required": [
-              "t"
-            ],
+            "required": ["t"],
             "properties": {
               "t": {
                 "type": "integer",
@@ -4995,12 +4963,7 @@
         "oneOf": [
           {
             "type": "object",
-            "required": [
-              "division",
-              "key",
-              "velocity",
-              "type"
-            ],
+            "required": ["division", "key", "velocity", "type"],
             "properties": {
               "division": {
                 "$ref": "#/components/schemas/DivisionRole"
@@ -5012,9 +4975,7 @@
               },
               "type": {
                 "type": "string",
-                "enum": [
-                  "note"
-                ]
+                "enum": ["note"]
               },
               "velocity": {
                 "type": "integer",
@@ -5026,11 +4987,7 @@
           },
           {
             "type": "object",
-            "required": [
-              "stop",
-              "on",
-              "type"
-            ],
+            "required": ["stop", "on", "type"],
             "properties": {
               "on": {
                 "type": "boolean"
@@ -5040,28 +4997,20 @@
               },
               "type": {
                 "type": "string",
-                "enum": [
-                  "stop"
-                ]
+                "enum": ["stop"]
               }
             }
           },
           {
             "type": "object",
-            "required": [
-              "division",
-              "value",
-              "type"
-            ],
+            "required": ["division", "value", "type"],
             "properties": {
               "division": {
                 "$ref": "#/components/schemas/DivisionRole"
               },
               "type": {
                 "type": "string",
-                "enum": [
-                  "expression"
-                ]
+                "enum": ["expression"]
               },
               "value": {
                 "type": "integer",
@@ -5072,16 +5021,11 @@
           },
           {
             "type": "object",
-            "required": [
-              "value",
-              "type"
-            ],
+            "required": ["value", "type"],
             "properties": {
               "type": {
                 "type": "string",
-                "enum": [
-                  "master_volume"
-                ]
+                "enum": ["master_volume"]
               },
               "value": {
                 "type": "integer",
@@ -5096,9 +5040,7 @@
       "TrackInfo": {
         "type": "object",
         "description": "Descriptive fields, all editable in the library.",
-        "required": [
-          "title"
-        ],
+        "required": ["title"],
         "properties": {
           "composer": {
             "type": "string"
@@ -5138,55 +5080,31 @@
         "description": "Fields to change; anything left out stays as it is.",
         "properties": {
           "composer": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "copyright": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "melody": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "performer": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "publication": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "tempo": {
-            "type": [
-              "integer",
-              "null"
-            ],
+            "type": ["integer", "null"],
             "format": "int32",
             "description": "Usual playback speed, 25-400 percent.",
             "minimum": 0
           },
           "title": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "verses": {
-            "type": [
-              "array",
-              "null"
-            ],
+            "type": ["array", "null"],
             "items": {
               "type": "integer",
               "format": "int32",
@@ -5195,10 +5113,7 @@
             "description": "Verse boundaries in ms."
           },
           "volume": {
-            "type": [
-              "integer",
-              "null"
-            ],
+            "type": ["integer", "null"],
             "format": "int32",
             "description": "1-100.",
             "minimum": 0
@@ -5207,11 +5122,7 @@
       },
       "TrackSource": {
         "type": "string",
-        "enum": [
-          "recorded",
-          "sample",
-          "imported"
-        ]
+        "enum": ["recorded", "sample", "imported"]
       },
       "TrackSummary": {
         "type": "object",
@@ -5276,9 +5187,7 @@
       "ValueBinding": {
         "type": "object",
         "description": "A value-carrying control such as an expression pedal or master volume.",
-        "required": [
-          "pattern"
-        ],
+        "required": ["pattern"],
         "properties": {
           "max": {
             "type": "integer",
@@ -5300,17 +5209,11 @@
         "type": "object",
         "properties": {
           "skip_to_last": {
-            "type": [
-              "boolean",
-              "null"
-            ],
+            "type": ["boolean", "null"],
             "description": "When this verse ends, go straight to the last one."
           },
           "stop_after_verse": {
-            "type": [
-              "boolean",
-              "null"
-            ],
+            "type": ["boolean", "null"],
             "description": "Stop when the verse being played ends."
           }
         }
@@ -5335,9 +5238,7 @@
       },
       "VerseText": {
         "type": "object",
-        "required": [
-          "text"
-        ],
+        "required": ["text"],
         "properties": {
           "text": {
             "type": "string",
@@ -5399,10 +5300,7 @@
         "type": "object",
         "properties": {
           "bpm": {
-            "type": [
-              "number",
-              "null"
-            ],
+            "type": ["number", "null"],
             "format": "float",
             "description": "Crotchets per minute (default: the score's tempo, or 80)."
           },
@@ -5423,16 +5321,10 @@
             }
           },
           "title": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "verses": {
-            "type": [
-              "integer",
-              "null"
-            ],
+            "type": ["integer", "null"],
             "format": "int32",
             "description": "Play it this many times as hymn verses (default 1).",
             "minimum": 0

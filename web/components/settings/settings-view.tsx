@@ -21,6 +21,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { PageBody } from "@/components/page-body"
+import { CommunityAccountCard } from "@/components/settings/community-account-card"
+import { OrganistsCard } from "@/components/settings/organists-card"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -383,6 +385,10 @@ export function SettingsView() {
           )}
         </CardFooter>
       </Card>
+
+      <OrganistsCard />
+
+      <CommunityAccountCard />
 
       <AlertDialog
         open={!!restoreFile}

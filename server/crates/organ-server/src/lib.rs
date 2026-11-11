@@ -3,6 +3,8 @@
 
 pub mod api;
 pub mod community_api;
+pub mod organists_api;
+pub mod sharing_api;
 pub mod files_api;
 pub mod library;
 pub mod library_cli;
@@ -130,6 +132,7 @@ pub async fn build(config: Config) -> anyhow::Result<App> {
         recorder_config(&current.recording),
         Arc::clone(&library),
         app_events.clone(),
+        Arc::clone(&settings),
     );
     let player = start_player(hub.clone(), live.clone(), sim_organ, player_settings(&current.playback));
     let playlists = Arc::new(crate::playlists::PlaylistStore::load(&config.data_dir)?);
@@ -170,6 +173,8 @@ pub async fn build(config: Config) -> anyhow::Result<App> {
         .nest("/api/v1", api::router().merge(music::router()).merge(playlist_api::router())
                 .merge(organ_api::router())
                 .merge(community_api::router())
+                .merge(sharing_api::router())
+                .merge(organists_api::router())
                 .merge(system_api::router().layer(axum::extract::DefaultBodyLimit::max(200 * 1024 * 1024)))
                 .merge(files_api::router().layer(axum::extract::DefaultBodyLimit::max(files_api::MAX_IMPORT_BYTES))))
         .route("/mcp", post(mcp::post).get(mcp::get))

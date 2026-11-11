@@ -10,6 +10,7 @@ import {
   PencilIcon,
   PlusIcon,
   SaveIcon,
+  Share2Icon,
   Trash2Icon,
   WandSparklesIcon,
 } from "lucide-react"
@@ -18,6 +19,7 @@ import { toast } from "sonner"
 import { CONSOLE_ORDER } from "@/components/organ/divisions"
 import { LearnDialog } from "@/components/organs/learn-dialog"
 import { uniqueName } from "@/components/organs/organ-names"
+import { ShareOrganDialog } from "@/components/organs/share-organ-dialog"
 import { MANUFACTURERS } from "@/components/organs/organs-index"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
@@ -468,6 +470,7 @@ export function OrganEditor() {
   const [copying, setCopying] = React.useState(false)
   const [missing, setMissing] = React.useState(false)
   const [dirty, setDirty] = React.useState(false)
+  const [sharing, setSharing] = React.useState(false)
   const [saving, setSaving] = React.useState(false)
   const [problem, setProblem] = React.useState<string | null>(null)
   const [editing, setEditing] = React.useState<Stop | null>(null)
@@ -626,6 +629,22 @@ export function OrganEditor() {
             <span className="text-sm text-muted-foreground" aria-live="polite">
               {saving ? "Saving…" : dirty ? "Unsaved changes" : "Saved"}
             </span>
+            <Button
+              variant="outline"
+              onClick={() => setSharing(true)}
+              disabled={dirty || saving}
+              title={
+                dirty
+                  ? "Save your changes first"
+                  : "Share this setup with other churches"
+              }
+            >
+              <Share2Icon data-icon="inline-start" />
+              <span className="hidden sm:inline">
+                Share with other churches
+              </span>
+              <span className="sm:hidden">Share</span>
+            </Button>
             <Button onClick={save} disabled={!dirty || saving}>
               <SaveIcon data-icon="inline-start" />
               Save
@@ -633,6 +652,13 @@ export function OrganEditor() {
           </>
         )}
       </div>
+      {!builtin && (
+        <ShareOrganDialog
+          organ={organ}
+          open={sharing}
+          onOpenChange={setSharing}
+        />
+      )}
       {builtin && (
         <Alert>
           <CopyIcon />

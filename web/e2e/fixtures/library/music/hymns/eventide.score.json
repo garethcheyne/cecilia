@@ -36,10 +36,7 @@
       "-swell to pedal",
       "+pedal principal 8"
     ],
-    "4": [
-      "+great principal 4",
-      "+swell reed 8"
-    ],
+    "4": ["+great principal 4", "+swell reed 8"],
     "5": [
       "+great principal 2",
       "+great mixture 1 1/3",
@@ -69,10 +66,6 @@
     }
   ],
   "licence": "public-domain",
-  "tags": [
-    "hymn",
-    "evening",
-    "funeral"
-  ],
+  "tags": ["hymn", "evening", "funeral"],
   "source": "Bundled with Cecilia"
 }

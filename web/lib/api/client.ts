@@ -106,3 +106,7 @@ export async function call<T>(
   }
   return result.data as T
 }
+export type Organist = Schemas["Organist"]
+export type OrganistsBody = Schemas["OrganistsBody"]
+export type CommunityAccountStatus = Schemas["CommunityAccountStatus"]
+export type ShareResult = Schemas["ShareResult"]

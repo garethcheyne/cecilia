@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/popover"
 import { Slider } from "@/components/ui/slider"
 import { Toggle } from "@/components/ui/toggle"
+import { OrganistPicker } from "@/components/settings/organist-picker"
 import { NowPlayingScore } from "@/components/transport/now-playing-score"
 import { useTransport } from "@/hooks/use-transport"
 import { api, call } from "@/lib/api/client"
@@ -411,6 +412,7 @@ export function TransportBar() {
                   <PlayPause t={t} />
                   <RecordButton t={t} compact large />
                 </div>
+                <OrganistPicker full />
                 <TempoSlider t={t} />
                 <div className="flex flex-wrap justify-center gap-2">
                   <VerseControls t={t} />
@@ -437,6 +439,7 @@ export function TransportBar() {
       {/* Tablet and desktop: everything in one bar. */}
       <div className="hidden items-center gap-4 px-4 py-2.5 md:flex">
         <RecordButton t={t} />
+        <OrganistPicker />
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"

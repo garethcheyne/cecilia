@@ -1,7 +1,14 @@
 import type { DivisionRole, Stop } from "@/lib/api/client"
 
 /** Manuals from the top of the console down, then the pedalboard. */
-export const CONSOLE_ORDER: DivisionRole[] = ["echo", "solo", "swell", "great", "choir", "pedal"]
+export const CONSOLE_ORDER: DivisionRole[] = [
+  "echo",
+  "solo",
+  "swell",
+  "great",
+  "choir",
+  "pedal",
+]
 
 /** Fixed division colours (the same on every organ). Static strings so Tailwind sees them. */
 export const DIVISION_BG: Record<DivisionRole, string> = {

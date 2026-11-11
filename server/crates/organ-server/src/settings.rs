@@ -59,6 +59,45 @@ pub struct Settings {
     /// "salt$sha256" of the password, if one is set.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub password: Option<String>,
+    /// The people who play here.
+    #[serde(default)]
+    pub organists: Vec<Organist>,
+    /// Who's playing now: new recordings are credited to them.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub current_organist: Option<String>,
+    /// Sign-in to the Cecilia Community (the token is never sent to browsers).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub community: Option<CommunityAccount>,
+}
+
+/// Someone who plays the organ here, and whether a shared recording may name them.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ToSchema)]
+pub struct Organist {
+    pub id: String,
+    pub name: String,
+    /// How to credit them publicly, e.g. "John Brown, St Mary's" (default: their name).
+    #[serde(default)]
+    pub credit_as: String,
+    /// They've agreed to be named when a recording of theirs is shared.
+    #[serde(default)]
+    pub credit_publicly: bool,
+}
+
+impl Organist {
+    /// The credit on a shared recording: their name only with their permission.
+    pub fn public_credit(&self) -> String {
+        if !self.credit_publicly {
+            return "A Cecilia organist".into();
+        }
+        let c = self.credit_as.trim();
+        if c.is_empty() { self.name.clone() } else { c.to_string() }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CommunityAccount {
+    pub token: String,
+    pub email: String,
 }
 
 pub struct SettingsStore {

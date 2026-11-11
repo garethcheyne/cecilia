@@ -8,10 +8,7 @@
   "licence": "public-domain",
   "source": "Open Hymnal Project",
   "source_url": "https://openhymnal.org",
-  "tags": [
-    "hymn",
-    "christmas"
-  ],
+  "tags": ["hymn", "christmas"],
   "bpm": 100.0,
   "time": "4/4",
   "key": "F",
@@ -30,10 +27,7 @@
     "great to pedal"
   ],
   "verse_registration": {
-    "5": [
-      "+great principal 2",
-      "+swell reed 8"
-    ]
+    "5": ["+great principal 2", "+swell reed 8"]
   },
   "expression": {
     "swell": 90

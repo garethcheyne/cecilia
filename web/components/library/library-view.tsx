@@ -15,6 +15,7 @@ import {
   PianoIcon,
   PlayIcon,
   SearchIcon,
+  Share2Icon,
   Trash2Icon,
   UploadIcon,
 } from "lucide-react"
@@ -23,6 +24,7 @@ import { toast } from "sonner"
 import { useEngine } from "@/components/engine-provider"
 import { PageBody } from "@/components/page-body"
 import { ImportDialog } from "@/components/library/import-dialog"
+import { ShareMusicDialog } from "@/components/library/share-music-dialog"
 import { TrackDetailsDialog } from "@/components/library/track-details-dialog"
 import {
   AlertDialog,
@@ -143,11 +145,13 @@ function TrackMenu({
   track,
   onEdit,
   onDuplicate,
+  onShare,
   onDelete,
 }: {
   track: TrackSummary
   onEdit: () => void
   onDuplicate: () => void
+  onShare: () => void
   onDelete: () => void
 }) {
   return (
@@ -215,6 +219,13 @@ function TrackMenu({
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
+          <DropdownMenuItem onClick={onShare}>
+            <Share2Icon />
+            Share with other churches
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
           <DropdownMenuItem variant="destructive" onClick={onDelete}>
             <Trash2Icon />
             Delete
@@ -244,6 +255,7 @@ export function LibraryView() {
     asc: false,
   })
   const [editing, setEditing] = React.useState<TrackSummary | null>(null)
+  const [sharing, setSharing] = React.useState<TrackSummary | null>(null)
   const [deleting, setDeleting] = React.useState<TrackSummary | null>(null)
   const [importing, setImporting] = React.useState(false)
 
@@ -304,6 +316,7 @@ export function LibraryView() {
       track={tr}
       onEdit={() => setEditing(tr)}
       onDuplicate={() => duplicate(tr)}
+      onShare={() => setSharing(tr)}
       onDelete={() => setDeleting(tr)}
     />
   )
@@ -519,6 +532,11 @@ export function LibraryView() {
       )}
 
       <ImportDialog open={importing} onOpenChange={setImporting} />
+      <ShareMusicDialog
+        track={sharing}
+        open={!!sharing}
+        onOpenChange={(o) => !o && setSharing(null)}
+      />
       <TrackDetailsDialog
         track={editing}
         open={!!editing}

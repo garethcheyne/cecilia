@@ -53,6 +53,7 @@ pub struct Recorder {
     hub: MidiHub,
     library: Arc<LibraryStore>,
     events: broadcast::Sender<AppEvent>,
+    settings: Arc<crate::settings::SettingsStore>,
 }
 
 impl Recorder {
@@ -63,12 +64,14 @@ impl Recorder {
         config: RecorderConfig,
         library: Arc<LibraryStore>,
         events: broadcast::Sender<AppEvent>,
+        settings: Arc<crate::settings::SettingsStore>,
     ) -> Self {
         let r = Self {
             inner: Arc::new(Mutex::new(AutoRecorder::new(organ, config))),
             hub,
             library,
             events,
+            settings,
         };
         let task = r.clone();
         tokio::spawn(async move { task.run().await });
@@ -108,7 +111,14 @@ impl Recorder {
         }
     }
 
-    fn save(&self, track: organ_core::track::Track) {
+    fn save(&self, mut track: organ_core::track::Track) {
+        // Credit whoever is playing.
+        if track.info.performer.is_empty() {
+            let st = self.settings.get();
+            if let Some(o) = st.current_organist.as_ref().and_then(|id| st.organists.iter().find(|o| &o.id == id)) {
+                track.info.performer = o.name.clone();
+            }
+        }
         match self.library.save(&track) {
             Ok(summary) => {
                 tracing::info!(id = %summary.id, notes = summary.notes, "recorded a track");

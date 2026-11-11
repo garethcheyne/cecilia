@@ -40,10 +40,7 @@
         "family": "flute",
         "footage": "16"
       },
-      "names": [
-        "Sub Bass",
-        "16"
-      ],
+      "names": ["Sub Bass", "16"],
       "midi": [
         {
           "type": "toggle",
@@ -60,10 +57,7 @@
         "footage": "16",
         "tag": "soft"
       },
-      "names": [
-        "Bourdon",
-        "16"
-      ],
+      "names": ["Bourdon", "16"],
       "midi": [
         {
           "type": "toggle",
@@ -79,10 +73,7 @@
         "family": "principal",
         "footage": "8"
       },
-      "names": [
-        "Principal",
-        "8"
-      ],
+      "names": ["Principal", "8"],
       "midi": [
         {
           "type": "toggle",
@@ -98,10 +89,7 @@
         "family": "flute",
         "footage": "8"
       },
-      "names": [
-        "Bass Flute",
-        "8"
-      ],
+      "names": ["Bass Flute", "8"],
       "midi": [
         {
           "type": "toggle",
@@ -117,10 +105,7 @@
         "family": "principal",
         "footage": "4"
       },
-      "names": [
-        "Choral Bass",
-        "4"
-      ],
+      "names": ["Choral Bass", "4"],
       "midi": [
         {
           "type": "toggle",
@@ -136,10 +121,7 @@
         "family": "reed",
         "footage": "16"
       },
-      "names": [
-        "Trombone",
-        "16"
-      ],
+      "names": ["Trombone", "16"],
       "midi": [
         {
           "type": "toggle",
@@ -159,10 +141,7 @@
         "source": "swell",
         "pitch": "unison"
       },
-      "names": [
-        "Swell",
-        "to Pedal"
-      ],
+      "names": ["Swell", "to Pedal"],
       "midi": [
         {
           "type": "toggle",
@@ -181,10 +160,7 @@
         "source": "great",
         "pitch": "unison"
       },
-      "names": [
-        "Great",
-        "to Pedal"
-      ],
+      "names": ["Great", "to Pedal"],
       "midi": [
         {
           "type": "toggle",
@@ -203,10 +179,7 @@
         "family": "flute",
         "footage": "8"
       },
-      "names": [
-        "Gedackt",
-        "8"
-      ],
+      "names": ["Gedackt", "8"],
       "midi": [
         {
           "type": "toggle",
@@ -222,10 +195,7 @@
         "family": "string",
         "footage": "8"
       },
-      "names": [
-        "Salicional",
-        "8"
-      ],
+      "names": ["Salicional", "8"],
       "midi": [
         {
           "type": "toggle",
@@ -242,10 +212,7 @@
         "footage": "8",
         "ranks": 2
       },
-      "names": [
-        "Voix Celeste",
-        "8"
-      ],
+      "names": ["Voix Celeste", "8"],
       "midi": [
         {
           "type": "toggle",
@@ -261,10 +228,7 @@
         "family": "principal",
         "footage": "4"
       },
-      "names": [
-        "Gemshorn",
-        "4"
-      ],
+      "names": ["Gemshorn", "4"],
       "midi": [
         {
           "type": "toggle",
@@ -280,10 +244,7 @@
         "family": "mutation",
         "footage": "2 2/3"
       },
-      "names": [
-        "Nazard",
-        "2 2/3"
-      ],
+      "names": ["Nazard", "2 2/3"],
       "midi": [
         {
           "type": "toggle",
@@ -299,10 +260,7 @@
         "family": "flute",
         "footage": "2"
       },
-      "names": [
-        "Piccolo",
-        "2"
-      ],
+      "names": ["Piccolo", "2"],
       "midi": [
         {
           "type": "toggle",
@@ -318,10 +276,7 @@
         "family": "mutation",
         "footage": "1 3/5"
       },
-      "names": [
-        "Tierce",
-        "1 3/5"
-      ],
+      "names": ["Tierce", "1 3/5"],
       "midi": [
         {
           "type": "toggle",
@@ -337,10 +292,7 @@
         "family": "reed",
         "footage": "8"
       },
-      "names": [
-        "Oboe",
-        "8"
-      ],
+      "names": ["Oboe", "8"],
       "midi": [
         {
           "type": "toggle",
@@ -358,9 +310,7 @@
       "equivalent": {
         "type": "tremulant"
       },
-      "names": [
-        "Tremulant"
-      ],
+      "names": ["Tremulant"],
       "midi": [
         {
           "type": "toggle",
@@ -376,10 +326,7 @@
         "family": "flute",
         "footage": "16"
       },
-      "names": [
-        "Bourdon",
-        "16"
-      ],
+      "names": ["Bourdon", "16"],
       "midi": [
         {
           "type": "toggle",
@@ -395,11 +342,7 @@
         "family": "principal",
         "footage": "8"
       },
-      "names": [
-        "Open",
-        "Diapason",
-        "8"
-      ],
+      "names": ["Open", "Diapason", "8"],
       "midi": [
         {
           "type": "toggle",
@@ -415,11 +358,7 @@
         "family": "flute",
         "footage": "8"
       },
-      "names": [
-        "Stopped",
-        "Diapason",
-        "8"
-      ],
+      "names": ["Stopped", "Diapason", "8"],
       "midi": [
         {
           "type": "toggle",
@@ -435,10 +374,7 @@
         "family": "principal",
         "footage": "4"
       },
-      "names": [
-        "Principal",
-        "4"
-      ],
+      "names": ["Principal", "4"],
       "midi": [
         {
           "type": "toggle",
@@ -454,10 +390,7 @@
         "family": "flute",
         "footage": "4"
       },
-      "names": [
-        "Flute",
-        "4"
-      ],
+      "names": ["Flute", "4"],
       "midi": [
         {
           "type": "toggle",
@@ -473,10 +406,7 @@
         "family": "mutation",
         "footage": "2 2/3"
       },
-      "names": [
-        "Twelfth",
-        "2 2/3"
-      ],
+      "names": ["Twelfth", "2 2/3"],
       "midi": [
         {
           "type": "toggle",
@@ -492,10 +422,7 @@
         "family": "principal",
         "footage": "2"
       },
-      "names": [
-        "Fifteenth",
-        "2"
-      ],
+      "names": ["Fifteenth", "2"],
       "midi": [
         {
           "type": "toggle",
@@ -512,10 +439,7 @@
         "footage": "1 1/3",
         "ranks": 4
       },
-      "names": [
-        "Mixture",
-        "IV"
-      ],
+      "names": ["Mixture", "IV"],
       "midi": [
         {
           "type": "toggle",
@@ -531,10 +455,7 @@
         "family": "reed",
         "footage": "8"
       },
-      "names": [
-        "Trumpet",
-        "8"
-      ],
+      "names": ["Trumpet", "8"],
       "midi": [
         {
           "type": "toggle",
@@ -554,10 +475,7 @@
         "source": "swell",
         "pitch": "unison"
       },
-      "names": [
-        "Swell",
-        "to Great"
-      ],
+      "names": ["Swell", "to Great"],
       "midi": [
         {
           "type": "toggle",

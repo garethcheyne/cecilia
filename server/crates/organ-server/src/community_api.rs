@@ -45,6 +45,45 @@ impl Community {
         self.base.starts_with("http://") || self.base.starts_with("https://")
     }
 
+    /// Call the Cecilia Community service's API (sharing and accounts).
+    /// Errors come back as (status, a message to show).
+    pub(crate) async fn service(
+        &self,
+        method: reqwest::Method,
+        path: &str,
+        token: Option<&str>,
+        body: Option<serde_json::Value>,
+    ) -> Result<serde_json::Value, (StatusCode, String)> {
+        if !self.is_web() {
+            return Err((
+                StatusCode::SERVICE_UNAVAILABLE,
+                "Sharing needs the Cecilia Community service; this Cecilia reads the library from a folder.".into(),
+            ));
+        }
+        let url = format!("{}/api{}", self.base.trim_end_matches('/'), path);
+        let mut req = self.http.request(method, &url);
+        if let Some(t) = token {
+            req = req.bearer_auth(t);
+        }
+        if let Some(b) = body {
+            req = req.json(&b);
+        }
+        let res = req.send().await.map_err(|_| (StatusCode::SERVICE_UNAVAILABLE, offline()))?;
+        let status = StatusCode::from_u16(res.status().as_u16()).unwrap_or(StatusCode::BAD_GATEWAY);
+        let value: serde_json::Value = res.json().await.unwrap_or(serde_json::Value::Null);
+        if status.is_success() {
+            Ok(value)
+        } else {
+            let msg = value["error"].as_str().unwrap_or("The community service refused that.").to_string();
+            Err((status, msg))
+        }
+    }
+
+    /// Forget the cached catalogue (after sharing something, say).
+    pub(crate) fn forget(&self) {
+        *self.cache.lock().unwrap() = None;
+    }
+
     /// A file from the library, by its path in the catalogue.
     async fn fetch(&self, path: &str) -> Result<String, String> {
         if path.contains("..") || path.starts_with('/') {
