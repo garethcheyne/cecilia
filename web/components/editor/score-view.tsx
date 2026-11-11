@@ -44,7 +44,12 @@ function render(vf: VF, el: HTMLDivElement, measures: Measure[], staves: StaffId
   const renderer = new Renderer(el, Renderer.Backends.SVG)
   renderer.resize(width, height)
   const ctx = renderer.getContext()
-  const ink = dark ? "#e5e7eb" : "#1f2330"
+  // Like printed music: notes, clefs and signatures in strong ink; staff,
+  // bar and ledger lines in a soft grey behind them.
+  const ink = dark ? "#eceef3" : "#1b1f2b"
+  const rule = dark ? "#5c6273" : "#a4a9b5"
+  const inkStyle = { fillStyle: ink, strokeStyle: ink }
+  const lineStyle = { fillStyle: rule, strokeStyle: rule }
   ctx.setFillStyle(ink)
   ctx.setStrokeStyle(ink)
   const key = keyName(g.fifths)
@@ -68,7 +73,17 @@ function render(vf: VF, el: HTMLDivElement, measures: Measure[], staves: StaffId
           stave.addClef(CLEF[staff]).addKeySignature(key)
           if (line === 0) stave.addTimeSignature(`${g.beats}/${g.beatUnit}`)
         }
+        stave.setStyle(lineStyle)
+        stave.setDefaultLedgerLineStyle(lineStyle)
+        // Clefs and key and time signatures in ink; bar lines stay grey.
+        for (const m of stave.getModifiers()) {
+          if (m.getCategory() !== "Barline") m.setStyle(inkStyle)
+        }
+        // Staff lines take the drawing colour at the time; grey, then back to ink.
+        ctx.setStrokeStyle(rule)
         stave.setContext(ctx).draw()
+        ctx.setStrokeStyle(ink)
+        ctx.setFillStyle(ink)
         created.push(stave)
 
         const notes: InstanceType<VF["StaveNote"]>[] = []
@@ -110,15 +125,23 @@ function render(vf: VF, el: HTMLDivElement, measures: Measure[], staves: StaffId
       if (i === 0) firstStaves.push(...created)
       // Bar line through the whole system.
       if (created.length > 1) {
-        new StaveConnector(created[0], created[created.length - 1]).setType("singleRight").setContext(ctx).draw()
+        new StaveConnector(created[0], created[created.length - 1])
+          .setType("singleRight")
+          .setStyle(lineStyle)
+          .setContext(ctx)
+          .draw()
       }
       const cx = x + (i === 0 ? lead : 10)
       boxes.push({ cx, cw: x + w - 10 - cx, x, y: top - 10, w, h: staves.length * STAFF_GAP - 10, startMs: m.startMs, endMs: m.endMs })
       x += w
     })
     if (firstStaves.length > 1) {
-      new StaveConnector(firstStaves[0], firstStaves[firstStaves.length - 1]).setType("singleLeft").setContext(ctx).draw()
-      new StaveConnector(firstStaves[0], firstStaves[1]).setType("brace").setContext(ctx).draw()
+      new StaveConnector(firstStaves[0], firstStaves[firstStaves.length - 1])
+        .setType("singleLeft")
+        .setStyle(lineStyle)
+        .setContext(ctx)
+        .draw()
+      new StaveConnector(firstStaves[0], firstStaves[1]).setType("brace").setStyle(inkStyle).setContext(ctx).draw()
     }
   }
   return boxes
@@ -155,8 +178,16 @@ export function ScoreView({ track, position }: { track: Track; position: number 
     if (!el) return
     const ro = new ResizeObserver(([e]) => setWidth(Math.max(340, Math.floor(e.contentRect.width))))
     ro.observe(el)
-    setDark(document.documentElement.classList.contains("dark"))
-    return () => ro.disconnect()
+    // Follow the light/dark switch, not just the theme at first render.
+    const html = document.documentElement
+    const theme = () => setDark(html.classList.contains("dark"))
+    theme()
+    const mo = new MutationObserver(theme)
+    mo.observe(html, { attributes: true, attributeFilter: ["class"] })
+    return () => {
+      ro.disconnect()
+      mo.disconnect()
+    }
   }, [])
 
   const grid = React.useMemo(() => gridFor(track, override), [track, override])
