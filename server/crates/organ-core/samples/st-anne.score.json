@@ -11,7 +11,7 @@
   "pickup": 1,
   "verses": 5,
   "gap": 2,
-  "ceciliation": [
+  "registration": [
     "great principal 8",
     "great flute 8",
     "great principal 4",
@@ -22,7 +22,7 @@
     "pedal principal 8",
     "great to pedal"
   ],
-  "verse_ceciliation": {
+  "verse_registration": {
     "2": ["+great principal 2"],
     "3": ["-great principal 2", "-great principal 8", "-great principal 4", "-swell principal 4", "+swell string 8", "+swell celeste 8", "-pedal principal 8", "-great to pedal", "+swell to pedal"],
     "4": ["+great principal 8", "+great principal 4", "+swell principal 4", "-swell string 8", "-swell celeste 8", "+pedal principal 8", "+great to pedal", "-swell to pedal"],

@@ -15,6 +15,8 @@
 //! `cecilia openapi` prints the OpenAPI document and exits.
 //! `cecilia library check <dir>` checks a copy of the shared library;
 //! `cecilia library index <dir>` also prints its catalogue (index.json).
+//! `cecilia library import openhymnal <abc zip or folder> <dir> [--dry-run]`
+//! adds Open Hymnal Project hymns to a copy of the shared library.
 
 use std::net::SocketAddr;
 
@@ -47,6 +49,11 @@ async fn main() -> anyhow::Result<()> {
                 println!("{}", serde_json::to_string_pretty(&catalogue)?);
             }
             std::process::exit(if problems.is_empty() { 0 } else { 1 });
+        }
+        ["library", "import", "openhymnal", source, dir, rest @ ..] => {
+            let write = !rest.contains(&"--dry-run");
+            organ_server::library_cli::import_open_hymnal(std::path::Path::new(source), std::path::Path::new(dir), write)?;
+            return Ok(());
         }
         _ => {}
     }

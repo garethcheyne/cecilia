@@ -26,7 +26,7 @@ Its feature set is modelled on the *publicly documented behaviour* of OrganAssis
 - **Records a whole service with one press.** Each piece is saved to the
   library by itself, with the stops that were drawn when it started.
 - **Plays any recording on any organ.** The virtual organist maps
-  ceciliations onto the stops the connected organ has (never louder).
+  registrations onto the stops the connected organ has (never louder).
   Tempo, verse control ("stop at the end of this verse", "skip to the last
   verse"), latching pause, seek and fade-out.
 - **Runs services** from playlists: each piece waits for Play, starts by

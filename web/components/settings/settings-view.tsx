@@ -177,7 +177,7 @@ export function SettingsView() {
                   onValueChange={(v) => change({ ...settings, playback: { ...settings.playback, settle_ms: v as number } })}
                 />
                 <FieldDescription>
-                  On organs like the Makin, the stops need a moment to clear before the opening ceciliation is set.
+                  On organs like the Makin, the stops need a moment to clear before the opening registration is set.
                 </FieldDescription>
               </Field>
             </FieldGroup>

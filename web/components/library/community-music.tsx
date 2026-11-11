@@ -98,7 +98,7 @@ export function CommunityMusic() {
   const shown = cat.music.filter(
     (m) =>
       (!tag || m.tags.includes(tag)) &&
-      (!q || [m.title, m.composer, m.melody].some((f) => f.toLowerCase().includes(q)))
+      (!q || [m.title, m.composer, m.melody, ...(m.other_titles ?? [])].some((f) => f.toLowerCase().includes(q)))
   )
 
   return (
@@ -142,6 +142,21 @@ export function CommunityMusic() {
                     .filter(Boolean)
                     .join(" · ")}
                 </span>
+                {m.other_titles && m.other_titles.length > 0 && (
+                  <span className="truncate text-xs text-muted-foreground">Also sung as {m.other_titles.join("; ")}</span>
+                )}
+                {m.source && (
+                  <span className="truncate text-xs text-muted-foreground">
+                    From the{" "}
+                    {m.source_url ? (
+                      <a href={m.source_url} target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-foreground">
+                        {m.source}
+                      </a>
+                    ) : (
+                      m.source
+                    )}
+                  </span>
+                )}
               </div>
               <Badge variant="outline" className="hidden sm:inline-flex" title={m.licence}>
                 {LICENCE[m.licence] ?? m.licence}
@@ -164,6 +179,11 @@ export function CommunityMusic() {
       </ul>
       <p className="text-xs text-muted-foreground">
         Shared by Cecilia users and checked before it&apos;s added. Everything here is public domain or freely licensed.
+        Many hymns come from the{" "}
+        <a href="https://openhymnal.org" target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-foreground">
+          Open Hymnal Project
+        </a>
+        , with thanks to Brian J. Dumont and its contributors.
       </p>
     </div>
   )

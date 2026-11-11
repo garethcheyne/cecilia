@@ -459,9 +459,9 @@ A data-driven profile format should support the following. Items marked † are 
 6. **Checksums:** † Roland/Rodgers (two's complement of the 7-bit sum over a byte range, configurable). Leave room for other checksum types.
 7. **Combination handling flags per profile:**
    - `pistonSendsStops` (Rodgers, Peterson, probably Johannus): record the stops and ignore pistons.
-   - `pistonWithoutStopFeedback` (Allen): record the piston Program Change. During playback either send the Program Change and trust the organ's capture memory (fragile if memories change), or emulate combinations by storing the ceciliation per piston and memory level and sending stop messages. Memory-level messages are needed (format unknown for Allen).
+   - `pistonWithoutStopFeedback` (Allen): record the piston Program Change. During playback either send the Program Change and trust the organ's capture memory (fragile if memories change), or emulate combinations by storing the registration per piston and memory level and sending stop messages. Memory-level messages are needed (format unknown for Allen).
    - Piston receive maps (Viscount PC on ch 16; Rodgers PC 1–26).
-8. **Snapshot / initial state:** request or send the full state at record start (Rodgers responds to MIDI Start; Peterson Auto Resend; Johannus all-off plus volume dump). Store the initial ceciliation in each recording.
+8. **Snapshot / initial state:** request or send the full state at record start (Rodgers responds to MIDI Start; Peterson Auto Resend; Johannus all-off plus volume dump). Store the initial registration in each recording.
 9. **Expression mappings per division:** CC7 or CC11 (different makers differ), velocity-mode warnings, clamp ranges (Johannus 55–127, Allen minimum about 20), 14-bit (MSB/LSB on separate channels, Syndyne), and slots for unknown SysEx swell types (Peterson).
 10. **Extra parameters on stops:** tremulant speed and depth carried with the tremulant state (Viscount). Model these as stop "attributes" stored with the event.
 11. **Port roles:** many organs send stops only on a specific port (Johannus SEQ, SSOS OUT2, Peterson Sequencer Out). The profile should state which port to use, so the UI can warn the user.

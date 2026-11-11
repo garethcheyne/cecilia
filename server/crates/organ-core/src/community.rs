@@ -72,6 +72,14 @@ pub struct MusicEntry {
     pub tags: Vec<String>,
     pub verses: usize,
     pub duration_ms: u32,
+    /// Where it came from, for credit (e.g. "Open Hymnal Project").
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub source: String,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub source_url: String,
+    /// Other hymns sung to the same tune.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub other_titles: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
@@ -185,6 +193,9 @@ pub fn build_catalogue(root: &Path) -> (Catalogue, Vec<String>) {
             tags: score.tags.clone(),
             verses: track.verses.len() + 1,
             duration_ms: track.duration_ms,
+            source: score.source.clone(),
+            source_url: score.source_url.clone(),
+            other_titles: score.other_titles.clone(),
         });
     }
 
@@ -222,6 +233,9 @@ pub fn build_catalogue(root: &Path) -> (Catalogue, Vec<String>) {
             tags: Vec::new(),
             verses: t.verses.len() + 1,
             duration_ms: t.duration_ms,
+            source: String::new(),
+            source_url: String::new(),
+            other_titles: Vec::new(),
         });
     }
 

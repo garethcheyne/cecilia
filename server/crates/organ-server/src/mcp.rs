@@ -398,7 +398,7 @@ async fn set_stops(s: &AppState, names: &[String], on: bool) -> ToolResult {
             Resolved::None => problems.push(format!("there's no stop called \"{q}\"")),
         }
     }
-    // Change nothing unless every name was understood: half a ceciliation
+    // Change nothing unless every name was understood: half a registration
     // is worse than none.
     if !problems.is_empty() {
         return Err(format!("{}.", capitalise(&problems.join("; "))));

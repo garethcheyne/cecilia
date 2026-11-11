@@ -9,14 +9,14 @@
   "key": "F",
   "verses": 3,
   "gap": 2,
-  "ceciliation": [
+  "registration": [
     "great flute 8",
     "swell string 8",
     "swell celeste 8",
     "pedal flute 16",
     "swell to pedal"
   ],
-  "verse_ceciliation": {
+  "verse_registration": {
     "2": ["+great principal 4", "+swell flute 8", "-swell celeste 8", "+pedal principal 8"],
     "3": ["-great principal 4", "-swell flute 8", "+swell celeste 8", "+swell tremulant", "-pedal principal 8"]
   },

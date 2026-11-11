@@ -1,10 +1,10 @@
 //! The auto-recorder: "record a whole service with one click".
 //!
 //! Once armed it waits for the first note, then records a track that starts
-//! with the ceciliation showing at that moment. After a stretch of silence
+//! with the registration showing at that moment. After a stretch of silence
 //! the track is finished and handed back, and the recorder waits for the
 //! next piece. Stop and pedal changes made between pieces aren't lost: they
-//! become the next track's starting ceciliation.
+//! become the next track's starting registration.
 //!
 //! This is a pure state machine fed with timestamped input MIDI, so it is
 //! deterministic and easy to test. The server drives it from the engine's
@@ -16,7 +16,7 @@ use utoipa::ToSchema;
 use crate::console::ConsoleState;
 use crate::driver::{Driver, OrganEvent};
 use crate::organ::OrganDefinition;
-use crate::track::{to_track_event, Ceciliation, TimedEvent, Track, TrackEvent, TrackInfo, TrackSource, TRACK_SCHEMA};
+use crate::track::{to_track_event, Registration, TimedEvent, Track, TrackEvent, TrackInfo, TrackSource, TRACK_SCHEMA};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, ToSchema)]
 #[serde(rename_all = "snake_case")]
@@ -58,7 +58,7 @@ pub struct RecorderStatus {
 struct Take {
     /// Engine time (µs) of the first note.
     first_us: u64,
-    initial: Ceciliation,
+    initial: Registration,
     events: Vec<TimedEvent>,
     held: usize,
     /// Engine time of the last note-off (or note-on while keys are held).
@@ -156,7 +156,7 @@ impl AutoRecorder {
         if starts_piece {
             self.take = Some(Take {
                 first_us: t_us,
-                initial: Ceciliation::from_console(self.driver.organ(), &self.console),
+                initial: Registration::from_console(self.driver.organ(), &self.console),
                 events: Vec::new(),
                 held: 0,
                 last_sound_us: t_us,
@@ -294,9 +294,9 @@ mod tests {
     }
 
     #[test]
-    fn records_from_the_first_note_with_the_ceciliation_at_that_moment() {
+    fn records_from_the_first_note_with_the_registration_at_that_moment() {
         let mut r = recorder();
-        // Drawn before arming: still part of the starting ceciliation.
+        // Drawn before arming: still part of the starting registration.
         let m = encode(&r, OrganEvent::Stop { stop: "gt-opendiap".into(), on: true });
         r.on_midi(0, &m);
         r.arm();

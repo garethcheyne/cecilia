@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
 use crate::organ::{CouplerPitch, DivisionRole, Equivalent, Family};
-use crate::track::{Meter, Mode, Ceciliation, StopRef, TimedEvent, Track, TrackEvent, TrackInfo, TrackSource, TRACK_SCHEMA};
+use crate::track::{Meter, Mode, Registration, StopRef, TimedEvent, Track, TrackEvent, TrackInfo, TrackSource, TRACK_SCHEMA};
 
 const START_MARGIN_MS: f64 = 1000.0;
 const END_MARGIN_MS: u32 = 2500;
@@ -380,16 +380,16 @@ pub struct XmlImportOptions {
     pub title: Option<String>,
 }
 
-/// A plain hymn ceciliation: Principal 8′ and 4′, Flute 8′ on the Great,
+/// A plain hymn registration: Principal 8′ and 4′, Flute 8′ on the Great,
 /// Swell to Great, 16′ and 8′ on the Pedal with Great to Pedal.
-pub fn hymn_ceciliation() -> Ceciliation {
+pub fn hymn_registration() -> Registration {
     let voice = |division, family, footage: &str| StopRef {
         division,
         equivalent: Equivalent::Voice { family, footage: footage.into(), ranks: None, tag: String::new() },
     };
     let coupler = |division, source| StopRef { division, equivalent: Equivalent::Coupler { source, pitch: CouplerPitch::Unison } };
     use DivisionRole::*;
-    let mut r = Ceciliation::default();
+    let mut r = Registration::default();
     r.stops.extend([
         voice(Great, Family::Principal, "8"),
         voice(Great, Family::Flute, "8"),
@@ -451,7 +451,7 @@ pub fn import(xml: &str, options: &XmlImportOptions, fallback_title: &str) -> Re
         organ_name: "MusicXML".into(),
         created,
         modified: created,
-        initial: hymn_ceciliation(),
+        initial: hymn_registration(),
         duration_ms: end + END_MARGIN_MS,
         verses: markers,
         meter: Some(Meter {

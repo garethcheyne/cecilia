@@ -2,13 +2,11 @@ import type { Metadata } from "next"
 import { Geist, Geist_Mono, Instrument_Sans } from "next/font/google"
 
 import "./globals.css"
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppChrome } from "@/components/app-chrome"
 import { AuthGate } from "@/components/auth-gate"
 import { EngineProvider } from "@/components/engine-provider"
 import { ThemeProvider } from "@/components/theme-provider"
 import { TextSizeEffect } from "@/components/text-size"
-import { TransportBar } from "@/components/transport/transport-bar"
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
@@ -50,13 +48,7 @@ export default function RootLayout({
           <AuthGate>
             <TooltipProvider>
               <EngineProvider>
-                <SidebarProvider>
-                  <AppSidebar />
-                  <SidebarInset className="min-w-0">
-                    <div className="flex flex-1 flex-col">{children}</div>
-                    <TransportBar />
-                  </SidebarInset>
-                </SidebarProvider>
+                <AppChrome>{children}</AppChrome>
                 <Toaster />
               </EngineProvider>
             </TooltipProvider>

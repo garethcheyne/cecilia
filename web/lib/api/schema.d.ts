@@ -743,7 +743,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Jump to a position; the ceciliation there is re-created. */
+        /** Jump to a position; the registration there is re-created. */
         post: operations["player_seek"];
         delete?: never;
         options?: never;
@@ -1152,16 +1152,6 @@ export interface components {
             /** Format: int32 */
             schema: number;
         };
-        /** @description Stops drawn plus pedal positions at one moment. */
-        Ceciliation: {
-            /** @description Expression per division, 0-127. */
-            expression?: {
-                [key: string]: number;
-            };
-            /** Format: int32 */
-            master_volume?: number | null;
-            stops?: components["schemas"]["StopRef"][];
-        };
         ChannelInfo: {
             /**
              * Format: int32
@@ -1448,8 +1438,13 @@ export interface components {
             kind: components["schemas"]["MusicKind"];
             licence: string;
             melody: string;
+            /** @description Other hymns sung to the same tune. */
+            other_titles?: string[];
             /** @description Path within the library, with forward slashes. */
             path: string;
+            /** @description Where it came from, for credit (e.g. "Open Hymnal Project"). */
+            source?: string;
+            source_url?: string;
             tags: string[];
             title: string;
             verses: number;
@@ -1722,6 +1717,16 @@ export interface components {
              */
             silence_ms: number;
         };
+        /** @description Stops drawn plus pedal positions at one moment. */
+        Registration: {
+            /** @description Expression per division, 0-127. */
+            expression?: {
+                [key: string]: number;
+            };
+            /** Format: int32 */
+            master_volume?: number | null;
+            stops?: components["schemas"]["StopRef"][];
+        };
         RestoreResult: {
             organs: number;
             playlists: number;
@@ -1892,8 +1897,8 @@ export interface components {
             events: components["schemas"]["TimedEvent"][];
             id: string;
             info: components["schemas"]["TrackInfo"];
-            /** @description Ceciliation and pedals when the track starts. */
-            initial: components["schemas"]["Ceciliation"];
+            /** @description Registration and pedals when the track starts. */
+            initial: components["schemas"]["Registration"];
             meter?: null | components["schemas"]["Meter"];
             /** Format: int64 */
             modified: number;

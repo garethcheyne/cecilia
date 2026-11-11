@@ -5,6 +5,7 @@ pub mod api;
 pub mod community_api;
 pub mod files_api;
 pub mod library;
+pub mod library_cli;
 pub mod mcp;
 pub mod music;
 pub mod organ_api;

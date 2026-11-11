@@ -2,11 +2,11 @@
 //!
 //! It runs on its own thread and owns the timing. MIDI is generated as it
 //! plays, through the [`Organist`], so a track recorded on one instrument
-//! plays on another, and seeking re-creates the ceciliation of the new
+//! plays on another, and seeking re-creates the registration of the new
 //! position ("reverse regeneration"). Transport is tape-recorder style:
 //! play, latching pause, stop, seek, tempo, verse control and fade-out.
 //!
-//! Before the opening ceciliation the player clears the organ: with the
+//! Before the opening registration the player clears the organ: with the
 //! organ's general cancel if it has one, otherwise one "off" per drawn stop.
 //! On organs whose stops only toggle (e.g. Makin) it then waits for the
 //! console to settle.
@@ -23,7 +23,7 @@ use crate::console::ConsoleState;
 use crate::driver::{Driver, OrganEvent};
 use crate::organ::{DivisionRole, OrganDefinition, StopBinding};
 use crate::organist::Organist;
-use crate::track::{Ceciliation, Span, Track, TrackEvent};
+use crate::track::{Registration, Span, Track, TrackEvent};
 
 /// Where the player's MIDI goes, and what the organ currently shows.
 pub trait Link: Send + 'static {
@@ -37,7 +37,7 @@ pub trait Link: Send + 'static {
 pub enum PlayerState {
     /// Nothing loaded, or stopped.
     Stopped,
-    /// Clearing the organ and setting the opening ceciliation.
+    /// Clearing the organ and setting the opening registration.
     Starting,
     Playing,
     Paused,
@@ -268,8 +268,8 @@ struct Engine {
     start_at: Option<Instant>,
     next: usize,
 
-    /// The ceciliation the track asks for right now.
-    recorded: Ceciliation,
+    /// The registration the track asks for right now.
+    recorded: Registration,
     /// What we believe the organ has drawn.
     drawn: BTreeSet<String>,
     touched: HashMap<String, Instant>,
@@ -312,7 +312,7 @@ impl Engine {
             rate: 1.0,
             start_at: None,
             next: 0,
-            recorded: Ceciliation::default(),
+            recorded: Registration::default(),
             drawn: BTreeSet::new(),
             touched: HashMap::new(),
             held: BTreeMap::new(),
@@ -454,7 +454,7 @@ impl Engine {
         }
     }
 
-    /// Clear the organ, then (after it settles) set the ceciliation at `pos`
+    /// Clear the organ, then (after it settles) set the registration at `pos`
     /// and start the clock.
     fn begin(&mut self, pos: u32) {
         self.release_all();
@@ -549,7 +549,7 @@ impl Engine {
     fn regenerate(&mut self, track: &Track, ms: u32) {
         let (reg, _) = track.state_at(ms);
         self.recorded = reg;
-        self.apply_ceciliation();
+        self.apply_registration();
         let expression = self.recorded.expression.clone();
         for (d, v) in expression {
             self.expression(d, v);
@@ -582,7 +582,7 @@ impl Engine {
         let pos = self.position();
         let span = self.span().unwrap_or(Span { start: 0, end: track.duration_ms });
 
-        let mut ceciliation_changed = false;
+        let mut registration_changed = false;
         while let Some(e) = track.events.get(self.next) {
             if e.t as f64 > pos || e.t >= span.end {
                 break;
@@ -590,10 +590,10 @@ impl Engine {
             self.next += 1;
             match &e.event {
                 TrackEvent::Note { division, key, velocity } => {
-                    if ceciliation_changed {
+                    if registration_changed {
                         // Draw stops before the chord they colour.
-                        self.apply_ceciliation();
-                        ceciliation_changed = false;
+                        self.apply_registration();
+                        registration_changed = false;
                     }
                     self.note(*division, *key, *velocity);
                 }
@@ -603,7 +603,7 @@ impl Engine {
                     } else {
                         self.recorded.stops.remove(stop);
                     }
-                    ceciliation_changed = true;
+                    registration_changed = true;
                 }
                 TrackEvent::Expression { division, value } => {
                     self.recorded.expression.insert(*division, *value);
@@ -615,8 +615,8 @@ impl Engine {
                 }
             }
         }
-        if ceciliation_changed {
-            self.apply_ceciliation();
+        if registration_changed {
+            self.apply_registration();
         }
         self.pump_fade();
         if self.state == PlayerState::Playing && pos >= span.end as f64 {
@@ -715,7 +715,7 @@ impl Engine {
         }
     }
 
-    fn apply_ceciliation(&mut self) {
+    fn apply_registration(&mut self) {
         let target = self.organist.stops_for(&self.recorded);
         let off: Vec<String> = self.drawn.difference(&target).cloned().collect();
         let on: Vec<String> = target.difference(&self.drawn).cloned().collect();
@@ -884,7 +884,7 @@ mod tests {
     /// Three notes 100 ms apart, in two "verses".
     fn track(o: &OrganDefinition) -> Track {
         let note = |t, key, v| TimedEvent { t, event: TrackEvent::Note { division: DivisionRole::Great, key, velocity: v } };
-        let mut initial = Ceciliation::default();
+        let mut initial = Registration::default();
         initial.stops.insert(sref(o, "gt-opendiap"));
         let mut t = Track {
             schema: TRACK_SCHEMA,
@@ -932,7 +932,7 @@ mod tests {
     }
 
     #[test]
-    fn plays_notes_in_time_with_the_ceciliation() {
+    fn plays_notes_in_time_with_the_registration() {
         let o = organ("demo");
         let (p, probe) = start(&o);
         p.load(track(&o), PlayOptions::default(), true);
@@ -943,7 +943,7 @@ mod tests {
         let gap = |a: usize, b: usize| ons[b].0 as i64 - ons[a].0 as i64;
         assert!((gap(0, 1) - 100).abs() <= 25, "{ons:?}");
         assert!((gap(1, 2) - 90).abs() <= 25, "{ons:?}");
-        // Opening ceciliation, then the trumpet before the last note.
+        // Opening registration, then the trumpet before the last note.
         let c = probe.console();
         assert!(c.is_on("gt-opendiap") && c.is_on("gt-trumpet"));
         assert!(c.notes.is_empty(), "no stuck notes");
@@ -970,7 +970,7 @@ mod tests {
     }
 
     #[test]
-    fn playing_only_the_last_verse_regenerates_its_ceciliation() {
+    fn playing_only_the_last_verse_regenerates_its_registration() {
         let o = organ("demo");
         let (p, probe) = start(&o);
         p.load(track(&o), PlayOptions { verses: Some(VersePlan::List(vec![2])), ..Default::default() }, true);

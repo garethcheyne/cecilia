@@ -128,7 +128,7 @@ pub fn router() -> Router<AppState> {
         ConsoleState, LoadOrgan, Assistant, LiveSnapshot,
         organ_core::track::Track, organ_core::track::TrackSummary, organ_core::track::TrackInfo,
         organ_core::track::TrackEvent, organ_core::track::TimedEvent, organ_core::track::StopRef,
-        organ_core::track::Ceciliation, organ_core::track::Meter, organ_core::track::Mode,
+        organ_core::track::Registration, organ_core::track::Meter, organ_core::track::Mode,
         organ_core::track::TrackSource, organ_core::organist::StopMapping,
         organ_core::recorder::RecorderStatus, organ_core::recorder::RecorderState,
         organ_core::player::PlayerStatus, organ_core::player::PlayerState,

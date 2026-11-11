@@ -9,8 +9,8 @@
 //!   "melody": "OLD 100TH", "copyright": "Public domain",
 //!   "bpm": 72, "time": "4/4", "key": "G", "pickup": 0,
 //!   "verses": 4, "gap": 2,
-//!   "ceciliation": ["great principal 8", "great principal 4", "pedal flute 16", "great to pedal"],
-//!   "verse_ceciliation": { "4": ["+great mixture", "+swell to great"] },
+//!   "registration": ["great principal 8", "great principal 4", "pedal flute 16", "great to pedal"],
+//!   "verse_registration": { "4": ["+great mixture", "+swell to great"] },
 //!   "expression": { "swell": 90 },
 //!   "parts": [
 //!     { "division": "great", "notes": "G4:1 | G4:1 F#4:1 E4:1 D4:1 | …" },
@@ -31,11 +31,11 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::organ::{CouplerPitch, DivisionRole, Equivalent, Family};
 use crate::track::{
-    Meter, Mode, Ceciliation, StopRef, TimedEvent, Track, TrackEvent, TrackInfo, TrackSource, TRACK_SCHEMA,
+    Meter, Mode, Registration, StopRef, TimedEvent, Track, TrackEvent, TrackInfo, TrackSource, TRACK_SCHEMA,
 };
 
 const START_MARGIN_MS: f64 = 1000.0;
@@ -44,7 +44,7 @@ const VELOCITY: u8 = 80;
 /// Notes are released a little early so repeated notes speak again.
 const RELEASE_MS: f64 = 35.0;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Score {
     pub id: String,
@@ -61,12 +61,18 @@ pub struct Score {
     /// the shared library).
     #[serde(default)]
     pub licence: String,
-    /// Where the music came from (hymnal, edition, URL).
-    #[serde(default)]
+    /// Where the music came from (hymnal, edition, project).
+    #[serde(default, skip_serializing_if = "String::is_empty")]
     pub source: String,
+    /// A link to the source, for credit.
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub source_url: String,
     /// For browsing, e.g. ["hymn", "evening", "funeral"].
     #[serde(default)]
     pub tags: Vec<String>,
+    /// Other hymns sung to this tune, for searching.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub other_titles: Vec<String>,
     /// Crotchets per minute.
     pub bpm: f64,
     #[serde(default = "four_four")]
@@ -81,16 +87,18 @@ pub struct Score {
     /// Crotchets of silence between verses.
     #[serde(default = "two")]
     pub gap: f64,
-    pub ceciliation: Vec<String>,
+    /// Stops drawn at the start. (Early files spelled it "ceciliation".)
+    #[serde(alias = "ceciliation")]
+    pub registration: Vec<String>,
     /// Changes at the start of verse N: "+stop" draws, "-stop" pushes in.
-    #[serde(default)]
-    pub verse_ceciliation: BTreeMap<u32, Vec<String>>,
+    #[serde(default, alias = "verse_ceciliation")]
+    pub verse_registration: BTreeMap<u32, Vec<String>>,
     #[serde(default)]
     pub expression: BTreeMap<DivisionRole, u8>,
     pub parts: Vec<Part>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Part {
     pub division: DivisionRole,
@@ -324,8 +332,8 @@ impl Score {
         let stops = |list: &[String]| -> Result<BTreeSet<StopRef>, String> {
             list.iter().map(|s| parse_stop(s)).collect()
         };
-        let initial = Ceciliation {
-            stops: stops(&self.ceciliation)?,
+        let initial = Registration {
+            stops: stops(&self.registration)?,
             expression: self.expression.clone(),
             master_volume: None,
         };
@@ -339,7 +347,7 @@ impl Score {
                 // Marker in the middle of the silence between verses.
                 verses.push(ms(verse_start - self.gap / 2.0));
             }
-            for change in self.verse_ceciliation.get(&(v + 1)).into_iter().flatten() {
+            for change in self.verse_registration.get(&(v + 1)).into_iter().flatten() {
                 let (on, name) = match change.split_at(1) {
                     ("+", rest) => (true, rest),
                     ("-", rest) => (false, rest),
@@ -427,6 +435,15 @@ pub fn sample_tracks() -> Vec<Track> {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn reads_the_early_misspelt_registration() {
+        let old = r#"{"id":"x","title":"X","bpm":90,"ceciliation":["great:principal:8"],
+            "verse_ceciliation":{"2":["+great:principal:4"]},"parts":[]}"#;
+        let s = Score::from_json(old).unwrap();
+        assert_eq!(s.registration, vec!["great:principal:8"]);
+        assert_eq!(s.verse_registration[&2], vec!["+great:principal:4"]);
+    }
+
     use super::*;
     use crate::organ::builtin_organs;
     use crate::organist::Organist;
