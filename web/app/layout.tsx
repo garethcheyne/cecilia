@@ -5,6 +5,7 @@ import "./globals.css"
 import { AppSidebar } from "@/components/app-sidebar"
 import { EngineProvider } from "@/components/engine-provider"
 import { ThemeProvider } from "@/components/theme-provider"
+import { TransportBar } from "@/components/transport/transport-bar"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
@@ -37,7 +38,10 @@ export default function RootLayout({
             <EngineProvider>
               <SidebarProvider>
                 <AppSidebar />
-                <SidebarInset className="min-w-0">{children}</SidebarInset>
+                <SidebarInset className="min-w-0">
+                  <div className="flex flex-1 flex-col">{children}</div>
+                  <TransportBar />
+                </SidebarInset>
               </SidebarProvider>
               <Toaster />
             </EngineProvider>

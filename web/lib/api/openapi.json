@@ -91,6 +91,302 @@
         }
       }
     },
+    "/api/v1/library": {
+      "get": {
+        "tags": [
+          "library"
+        ],
+        "summary": "Every track in the library, newest first.",
+        "operationId": "list_tracks",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrackSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/library/{id}": {
+      "get": {
+        "tags": [
+          "library"
+        ],
+        "summary": "A whole track, with its events.",
+        "operationId": "get_track",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Track id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Track"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "library"
+        ],
+        "summary": "Save a whole track (from the editor or an import). Creates or replaces.",
+        "operationId": "put_track",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Track id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Track"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrackSummary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "library"
+        ],
+        "summary": "Delete a track (a copy is kept in the history folder).",
+        "operationId": "delete_track",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Track id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "library"
+        ],
+        "summary": "Edit a track's details (title, composer, volume, verse markers…).",
+        "operationId": "patch_track",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Track id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrackPatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrackSummary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/library/{id}/duplicate": {
+      "post": {
+        "tags": [
+          "library"
+        ],
+        "summary": "Copy a track under a new name.",
+        "operationId": "duplicate_track",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Track id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrackSummary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/library/{id}/mapping": {
+      "get": {
+        "tags": [
+          "library"
+        ],
+        "summary": "How the track's stops map onto the current organ (the virtual organist's plan).",
+        "operationId": "track_mapping",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Track id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StopMapping"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/midi/config": {
       "get": {
         "tags": [
@@ -366,6 +662,338 @@
         }
       }
     },
+    "/api/v1/player": {
+      "get": {
+        "tags": [
+          "player"
+        ],
+        "summary": "Transport state.",
+        "operationId": "player_status",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/player/fade": {
+      "post": {
+        "tags": [
+          "player"
+        ],
+        "summary": "Fade out and stop (or cancel a fade).",
+        "operationId": "player_fade",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FadeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/player/load": {
+      "post": {
+        "tags": [
+          "player"
+        ],
+        "summary": "Load a track from the library, and by default start playing it.",
+        "operationId": "player_load",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoadTrack"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerStatus"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/player/pause": {
+      "post": {
+        "tags": [
+          "player"
+        ],
+        "summary": "Pause (press again to continue).",
+        "operationId": "player_pause",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/player/play": {
+      "post": {
+        "tags": [
+          "player"
+        ],
+        "summary": "Play, or resume from pause.",
+        "operationId": "player_play",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/player/seek": {
+      "post": {
+        "tags": [
+          "player"
+        ],
+        "summary": "Jump to a position; the registration there is re-created.",
+        "operationId": "player_seek",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Seek"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/player/stop": {
+      "post": {
+        "tags": [
+          "player"
+        ],
+        "summary": "Stop playback.",
+        "operationId": "player_stop",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/player/tempo": {
+      "post": {
+        "tags": [
+          "player"
+        ],
+        "summary": "Change the playback speed.",
+        "operationId": "player_tempo",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Tempo"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/player/verses": {
+      "post": {
+        "tags": [
+          "player"
+        ],
+        "summary": "Verse control for hymns.",
+        "operationId": "player_verses",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerseControl"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/recorder": {
+      "get": {
+        "tags": [
+          "recorder"
+        ],
+        "summary": "Auto-recorder state.",
+        "operationId": "recorder_status",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecorderStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/recorder/start": {
+      "post": {
+        "tags": [
+          "recorder"
+        ],
+        "summary": "Arm the auto-recorder: each piece played from now on is saved to the library.",
+        "operationId": "recorder_start",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecorderStatus"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/recorder/stop": {
+      "post": {
+        "tags": [
+          "recorder"
+        ],
+        "summary": "Stop recording; a piece in progress is saved.",
+        "operationId": "recorder_stop",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecorderStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/simulator": {
       "get": {
         "tags": [
@@ -479,6 +1107,57 @@
             "type": "string"
           }
         }
+      },
+      "AppEvent": {
+        "oneOf": [
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RecorderStatus"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "recorder"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "type": "object",
+            "description": "The library changed; `saved` is a newly recorded track, if any.",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "saved": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/TrackSummary"
+                  }
+                ]
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "library"
+                ]
+              }
+            }
+          }
+        ],
+        "description": "Events for clients besides raw MIDI and simulator snapshots."
       },
       "Assistant": {
         "type": "object",
@@ -823,6 +1502,18 @@
         ],
         "description": "What a stop *is*, independent of what it's called on this organ.\nUnique per `(division, equivalent)` within an organ."
       },
+      "FadeRequest": {
+        "type": "object",
+        "required": [
+          "on"
+        ],
+        "properties": {
+          "on": {
+            "type": "boolean",
+            "description": "true starts a fade-out, false cancels it."
+          }
+        }
+      },
       "Family": {
         "type": "string",
         "description": "Tonal family, used to find a similar stop on another organ.",
@@ -864,6 +1555,24 @@
           }
         }
       },
+      "LoadTrack": {
+        "type": "object",
+        "required": [
+          "track_id"
+        ],
+        "properties": {
+          "options": {
+            "$ref": "#/components/schemas/PlayOptions"
+          },
+          "play": {
+            "type": "boolean",
+            "description": "Start playing straight away (default true)."
+          },
+          "track_id": {
+            "type": "string"
+          }
+        }
+      },
       "Manufacturer": {
         "type": "string",
         "enum": [
@@ -884,6 +1593,47 @@
           "walker",
           "wyvern"
         ]
+      },
+      "Meter": {
+        "type": "object",
+        "description": "Musical framing for the score view. Exact for samples and imports;\nestimated for live recordings.",
+        "required": [
+          "bpm",
+          "beats",
+          "beat_unit"
+        ],
+        "properties": {
+          "beat_unit": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "beats": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Time signature, e.g. 4/4, 3/4, 6/8.",
+            "minimum": 0
+          },
+          "bpm": {
+            "type": "number",
+            "format": "float",
+            "description": "Crotchet (quarter-note) beats per minute at 100 % tempo."
+          },
+          "fifths": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Key signature as sharps (+) or flats (-)."
+          },
+          "mode": {
+            "$ref": "#/components/schemas/Mode"
+          },
+          "offset_ms": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Track time of the first downbeat (after any pick-up).",
+            "minimum": 0
+          }
+        }
       },
       "MidiConfig": {
         "type": "object",
@@ -938,6 +1688,13 @@
             "$ref": "#/components/schemas/TestStatus"
           }
         }
+      },
+      "Mode": {
+        "type": "string",
+        "enum": [
+          "major",
+          "minor"
+        ]
       },
       "OrganDefaults": {
         "type": "object",
@@ -1206,6 +1963,185 @@
         "type": "string",
         "description": "MIDI message as hex bytes, optionally with one `vv` value slot, e.g. \"B1 0B vv\""
       },
+      "PlayOptions": {
+        "type": "object",
+        "properties": {
+          "start_ms": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "description": "Start here instead of at the beginning (track ms).",
+            "minimum": 0
+          },
+          "tempo": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "description": "Percent, 25-400. Default 100.",
+            "minimum": 0
+          },
+          "verses": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/VersePlan",
+                "description": "Default: every recorded verse once."
+              }
+            ]
+          }
+        }
+      },
+      "PlayerEvent": {
+        "oneOf": [
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PlayerStatus"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "status"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "type": "object",
+            "description": "A track played to its end (not stopped by hand).",
+            "required": [
+              "track_id",
+              "type"
+            ],
+            "properties": {
+              "track_id": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "finished"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "PlayerState": {
+        "type": "string",
+        "enum": [
+          "stopped",
+          "starting",
+          "playing",
+          "paused"
+        ]
+      },
+      "PlayerStatus": {
+        "type": "object",
+        "required": [
+          "state",
+          "position_ms",
+          "duration_ms",
+          "elapsed_ms",
+          "total_ms",
+          "tempo",
+          "verse",
+          "verses",
+          "plan",
+          "stop_after_verse",
+          "skip_to_last",
+          "fading",
+          "organ_id"
+        ],
+        "properties": {
+          "duration_ms": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "elapsed_ms": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Progress through the verses being played (repeats included).",
+            "minimum": 0
+          },
+          "fading": {
+            "type": "boolean"
+          },
+          "organ_id": {
+            "type": "string"
+          },
+          "plan": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "description": "Recorded verse numbers to be played, in order."
+          },
+          "position_ms": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Position in the track, in ms.",
+            "minimum": 0
+          },
+          "skip_to_last": {
+            "type": "boolean"
+          },
+          "state": {
+            "$ref": "#/components/schemas/PlayerState"
+          },
+          "stop_after_verse": {
+            "type": "boolean"
+          },
+          "tempo": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Playback speed in percent (100 = as recorded).",
+            "minimum": 0
+          },
+          "title": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "total_ms": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "track_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "verse": {
+            "type": "integer",
+            "description": "1-based verse being played, out of `verses`.",
+            "minimum": 0
+          },
+          "verses": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
       "PortList": {
         "type": "object",
         "required": [
@@ -1224,6 +2160,100 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "RecorderState": {
+        "type": "string",
+        "enum": [
+          "off",
+          "waiting",
+          "recording"
+        ]
+      },
+      "RecorderStatus": {
+        "type": "object",
+        "required": [
+          "state",
+          "elapsed_ms",
+          "notes",
+          "saved"
+        ],
+        "properties": {
+          "elapsed_ms": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Length of the piece being recorded so far.",
+            "minimum": 0
+          },
+          "notes": {
+            "type": "integer",
+            "description": "Notes in the piece being recorded.",
+            "minimum": 0
+          },
+          "saved": {
+            "type": "integer",
+            "description": "Tracks saved since the recorder was armed.",
+            "minimum": 0
+          },
+          "state": {
+            "$ref": "#/components/schemas/RecorderState"
+          }
+        }
+      },
+      "Registration": {
+        "type": "object",
+        "description": "Stops drawn plus pedal positions at one moment.",
+        "properties": {
+          "expression": {
+            "type": "object",
+            "description": "Expression per division, 0-127.",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            },
+            "propertyNames": {
+              "type": "string",
+              "description": "The role of a keyboard, independent of its local name (Great, Hauptwerk,\nGrand Orgue...). Order follows the English convention.",
+              "enum": [
+                "pedal",
+                "great",
+                "swell",
+                "choir",
+                "solo",
+                "echo"
+              ]
+            }
+          },
+          "master_volume": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "minimum": 0
+          },
+          "stops": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StopRef"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "Seek": {
+        "type": "object",
+        "required": [
+          "ms"
+        ],
+        "properties": {
+          "ms": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Track position in ms.",
+            "minimum": 0
           }
         }
       },
@@ -1384,6 +2414,45 @@
         ],
         "description": "How a stop is switched over MIDI."
       },
+      "StopMapping": {
+        "type": "object",
+        "description": "One line of \"how will this track sound here\".",
+        "required": [
+          "recorded",
+          "exact"
+        ],
+        "properties": {
+          "exact": {
+            "type": "boolean"
+          },
+          "recorded": {
+            "$ref": "#/components/schemas/StopRef"
+          },
+          "stop": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Stop id on this organ, or None if it is left out."
+          }
+        }
+      },
+      "StopRef": {
+        "type": "object",
+        "description": "A stop as a track sees it: which keyboard, and what it *is*.",
+        "required": [
+          "division",
+          "equivalent"
+        ],
+        "properties": {
+          "division": {
+            "$ref": "#/components/schemas/DivisionRole"
+          },
+          "equivalent": {
+            "$ref": "#/components/schemas/Equivalent"
+          }
+        }
+      },
       "StopShape": {
         "type": "string",
         "enum": [
@@ -1413,6 +2482,20 @@
               "null"
             ],
             "description": "CSS colour of the label, e.g. \"#1d4ed8\"."
+          }
+        }
+      },
+      "Tempo": {
+        "type": "object",
+        "required": [
+          "percent"
+        ],
+        "properties": {
+          "percent": {
+            "type": "integer",
+            "format": "int32",
+            "description": "25-400 percent.",
+            "minimum": 0
           }
         }
       },
@@ -1455,6 +2538,378 @@
           }
         }
       },
+      "TimedEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/TrackEvent"
+          },
+          {
+            "type": "object",
+            "required": [
+              "t"
+            ],
+            "properties": {
+              "t": {
+                "type": "integer",
+                "format": "int32",
+                "description": "Milliseconds from the start of the track.",
+                "minimum": 0
+              }
+            }
+          }
+        ]
+      },
+      "Track": {
+        "type": "object",
+        "required": [
+          "schema",
+          "id",
+          "info",
+          "source",
+          "created",
+          "modified",
+          "initial",
+          "duration_ms",
+          "events"
+        ],
+        "properties": {
+          "created": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix time in ms.",
+            "minimum": 0
+          },
+          "duration_ms": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Where the track ends (the last note plus the end margin).",
+            "minimum": 0
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TimedEvent"
+            },
+            "description": "Sorted by time; at equal times, stop and pedal changes come first."
+          },
+          "id": {
+            "type": "string"
+          },
+          "info": {
+            "$ref": "#/components/schemas/TrackInfo"
+          },
+          "initial": {
+            "$ref": "#/components/schemas/Registration",
+            "description": "Registration and pedals when the track starts."
+          },
+          "meter": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Meter"
+              }
+            ]
+          },
+          "modified": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "organ_id": {
+            "type": "string",
+            "description": "Organ it was recorded on (empty for samples)."
+          },
+          "organ_name": {
+            "type": "string"
+          },
+          "schema": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "source": {
+            "$ref": "#/components/schemas/TrackSource"
+          },
+          "verses": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            },
+            "description": "Boundaries between hymn verses, in ms. Empty = a single verse."
+          }
+        }
+      },
+      "TrackEvent": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "division",
+              "key",
+              "velocity",
+              "type"
+            ],
+            "properties": {
+              "division": {
+                "$ref": "#/components/schemas/DivisionRole"
+              },
+              "key": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "note"
+                ]
+              },
+              "velocity": {
+                "type": "integer",
+                "format": "int32",
+                "description": "0 = note off.",
+                "minimum": 0
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "stop",
+              "on",
+              "type"
+            ],
+            "properties": {
+              "on": {
+                "type": "boolean"
+              },
+              "stop": {
+                "$ref": "#/components/schemas/StopRef"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "stop"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "division",
+              "value",
+              "type"
+            ],
+            "properties": {
+              "division": {
+                "$ref": "#/components/schemas/DivisionRole"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "expression"
+                ]
+              },
+              "value": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "value",
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "master_volume"
+                ]
+              },
+              "value": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0
+              }
+            }
+          }
+        ],
+        "description": "Something the organist did, in organ-neutral terms."
+      },
+      "TrackInfo": {
+        "type": "object",
+        "description": "Descriptive fields, all editable in the library.",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "composer": {
+            "type": "string"
+          },
+          "copyright": {
+            "type": "string"
+          },
+          "melody": {
+            "type": "string",
+            "description": "Hymn tune name, e.g. \"OLD 100TH\"."
+          },
+          "performer": {
+            "type": "string"
+          },
+          "publication": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "volume": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Playback volume 1-100, applied through the master volume.",
+            "minimum": 0
+          }
+        }
+      },
+      "TrackPatch": {
+        "type": "object",
+        "description": "Fields to change; anything left out stays as it is.",
+        "properties": {
+          "composer": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "copyright": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "melody": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "performer": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "publication": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "title": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "verses": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            },
+            "description": "Verse boundaries in ms."
+          },
+          "volume": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "description": "1-100.",
+            "minimum": 0
+          }
+        }
+      },
+      "TrackSource": {
+        "type": "string",
+        "enum": [
+          "recorded",
+          "sample",
+          "imported"
+        ]
+      },
+      "TrackSummary": {
+        "type": "object",
+        "description": "A library listing row.",
+        "required": [
+          "id",
+          "info",
+          "source",
+          "organ_name",
+          "created",
+          "modified",
+          "duration_ms",
+          "verses",
+          "notes",
+          "divisions"
+        ],
+        "properties": {
+          "created": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "divisions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DivisionRole"
+            },
+            "description": "Divisions with notes in them."
+          },
+          "duration_ms": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "id": {
+            "type": "string"
+          },
+          "info": {
+            "$ref": "#/components/schemas/TrackInfo"
+          },
+          "modified": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "notes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "organ_name": {
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/TrackSource"
+          },
+          "verses": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
       "ValueBinding": {
         "type": "object",
         "description": "A value-carrying control such as an expression pedal or master volume.",
@@ -1477,6 +2932,43 @@
             "description": "Must contain a `vv` slot."
           }
         }
+      },
+      "VerseControl": {
+        "type": "object",
+        "properties": {
+          "skip_to_last": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When this verse ends, go straight to the last one."
+          },
+          "stop_after_verse": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Stop when the verse being played ends."
+          }
+        }
+      },
+      "VersePlan": {
+        "oneOf": [
+          {
+            "type": "integer",
+            "description": "Play this many verses: the first ones, then the last recorded verse\n(repeating the middle when asking for more than were recorded).",
+            "minimum": 0
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "description": "Exactly these recorded verse numbers, e.g. [1, 2, 3, 5, 7]."
+          }
+        ],
+        "description": "Which verses to play."
       }
     }
   }

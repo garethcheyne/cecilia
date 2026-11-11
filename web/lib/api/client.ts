@@ -15,6 +15,16 @@ export type OrganEvent = Schemas["OrganEvent"]
 export type Stop = Schemas["Stop"]
 export type Division = Schemas["Division"]
 export type DivisionRole = Division["role"]
+export type Track = Schemas["Track"]
+export type TrackSummary = Schemas["TrackSummary"]
+export type TrackInfo = Schemas["TrackInfo"]
+export type TimedEvent = Schemas["TimedEvent"]
+export type StopRef = Schemas["StopRef"]
+export type StopMapping = Schemas["StopMapping"]
+export type PlayerStatus = Schemas["PlayerStatus"]
+export type PlayerState = Schemas["PlayerState"]
+export type PlayOptions = Schemas["PlayOptions"]
+export type RecorderStatus = Schemas["RecorderStatus"]
 
 /** Empty string = same origin (production, served by organ-server). */
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? ""

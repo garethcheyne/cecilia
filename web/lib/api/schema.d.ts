@@ -39,6 +39,77 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/library": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every track in the library, newest first. */
+        get: operations["list_tracks"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/library/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A whole track, with its events. */
+        get: operations["get_track"];
+        /** Save a whole track (from the editor or an import). Creates or replaces. */
+        put: operations["put_track"];
+        post?: never;
+        /** Delete a track (a copy is kept in the history folder). */
+        delete: operations["delete_track"];
+        options?: never;
+        head?: never;
+        /** Edit a track's details (title, composer, volume, verse markers…). */
+        patch: operations["patch_track"];
+        trace?: never;
+    };
+    "/api/v1/library/{id}/duplicate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Copy a track under a new name. */
+        post: operations["duplicate_track"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/library/{id}/mapping": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** How the track's stops map onto the current organ (the virtual organist's plan). */
+        get: operations["track_mapping"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/midi/config": {
         parameters: {
             query?: never;
@@ -196,6 +267,210 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/player": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Transport state. */
+        get: operations["player_status"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/player/fade": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Fade out and stop (or cancel a fade). */
+        post: operations["player_fade"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/player/load": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Load a track from the library, and by default start playing it. */
+        post: operations["player_load"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/player/pause": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Pause (press again to continue). */
+        post: operations["player_pause"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/player/play": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Play, or resume from pause. */
+        post: operations["player_play"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/player/seek": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Jump to a position; the registration there is re-created. */
+        post: operations["player_seek"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/player/stop": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Stop playback. */
+        post: operations["player_stop"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/player/tempo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Change the playback speed. */
+        post: operations["player_tempo"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/player/verses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Verse control for hymns. */
+        post: operations["player_verses"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/recorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Auto-recorder state. */
+        get: operations["recorder_status"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/recorder/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Arm the auto-recorder: each piece played from now on is saved to the library. */
+        post: operations["recorder_start"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/recorder/stop": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Stop recording; a piece in progress is saved. */
+        post: operations["recorder_stop"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/simulator": {
         parameters: {
             query?: never;
@@ -273,6 +548,15 @@ export interface components {
     schemas: {
         ApiErrorBody: {
             error: string;
+        };
+        /** @description Events for clients besides raw MIDI and simulator snapshots. */
+        AppEvent: (components["schemas"]["RecorderStatus"] & {
+            /** @enum {string} */
+            type: "recorder";
+        }) | {
+            saved?: null | components["schemas"]["TrackSummary"];
+            /** @enum {string} */
+            type: "library";
         };
         Assistant: {
             /** @description What the assistant is called (and, with voice control, its wake word). */
@@ -377,6 +661,10 @@ export interface components {
             /** @enum {string} */
             type: "unison_off";
         };
+        FadeRequest: {
+            /** @description true starts a fade-out, false cancels it. */
+            on: boolean;
+        };
         /**
          * @description Tonal family, used to find a similar stop on another organ.
          * @enum {string}
@@ -389,8 +677,43 @@ export interface components {
         LoadOrgan: {
             organ_id: string;
         };
+        LoadTrack: {
+            options?: components["schemas"]["PlayOptions"];
+            /** @description Start playing straight away (default true). */
+            play?: boolean;
+            track_id: string;
+        };
         /** @enum {string} */
         Manufacturer: "generic" | "hauptwerk" | "allen" | "classic_organ_works" | "content" | "johannus" | "johannus_programmable" | "makin" | "peterson" | "rodgers" | "rodgers_phase2" | "solid_state1" | "solid_state2" | "viscount" | "walker" | "wyvern";
+        /**
+         * @description Musical framing for the score view. Exact for samples and imports;
+         *     estimated for live recordings.
+         */
+        Meter: {
+            /** Format: int32 */
+            beat_unit: number;
+            /**
+             * Format: int32
+             * @description Time signature, e.g. 4/4, 3/4, 6/8.
+             */
+            beats: number;
+            /**
+             * Format: float
+             * @description Crotchet (quarter-note) beats per minute at 100 % tempo.
+             */
+            bpm: number;
+            /**
+             * Format: int32
+             * @description Key signature as sharps (+) or flats (-).
+             */
+            fifths?: number;
+            mode?: components["schemas"]["Mode"];
+            /**
+             * Format: int32
+             * @description Track time of the first downbeat (after any pick-up).
+             */
+            offset_ms?: number;
+        };
         /**
          * @description Which MIDI ports to use. Ports are identified by name, because OS-level port
          *     ids are not stable across restarts or replugging.
@@ -410,6 +733,8 @@ export interface components {
             output?: string | null;
             test: components["schemas"]["TestStatus"];
         };
+        /** @enum {string} */
+        Mode: "major" | "minor";
         OrganDefaults: {
             /**
              * Format: int32
@@ -487,9 +812,96 @@ export interface components {
         };
         /** @description MIDI message as hex bytes, optionally with one `vv` value slot, e.g. "B1 0B vv" */
         Pattern: string;
+        PlayOptions: {
+            /**
+             * Format: int32
+             * @description Start here instead of at the beginning (track ms).
+             */
+            start_ms?: number | null;
+            /**
+             * Format: int32
+             * @description Percent, 25-400. Default 100.
+             */
+            tempo?: number | null;
+            verses?: null | components["schemas"]["VersePlan"];
+        };
+        PlayerEvent: (components["schemas"]["PlayerStatus"] & {
+            /** @enum {string} */
+            type: "status";
+        }) | {
+            track_id: string;
+            /** @enum {string} */
+            type: "finished";
+        };
+        /** @enum {string} */
+        PlayerState: "stopped" | "starting" | "playing" | "paused";
+        PlayerStatus: {
+            /** Format: int32 */
+            duration_ms: number;
+            /**
+             * Format: int32
+             * @description Progress through the verses being played (repeats included).
+             */
+            elapsed_ms: number;
+            fading: boolean;
+            organ_id: string;
+            /** @description Recorded verse numbers to be played, in order. */
+            plan: number[];
+            /**
+             * Format: int32
+             * @description Position in the track, in ms.
+             */
+            position_ms: number;
+            skip_to_last: boolean;
+            state: components["schemas"]["PlayerState"];
+            stop_after_verse: boolean;
+            /**
+             * Format: int32
+             * @description Playback speed in percent (100 = as recorded).
+             */
+            tempo: number;
+            title?: string | null;
+            /** Format: int32 */
+            total_ms: number;
+            track_id?: string | null;
+            /** @description 1-based verse being played, out of `verses`. */
+            verse: number;
+            verses: number;
+        };
         PortList: {
             inputs: string[];
             outputs: string[];
+        };
+        /** @enum {string} */
+        RecorderState: "off" | "waiting" | "recording";
+        RecorderStatus: {
+            /**
+             * Format: int32
+             * @description Length of the piece being recorded so far.
+             */
+            elapsed_ms: number;
+            /** @description Notes in the piece being recorded. */
+            notes: number;
+            /** @description Tracks saved since the recorder was armed. */
+            saved: number;
+            state: components["schemas"]["RecorderState"];
+        };
+        /** @description Stops drawn plus pedal positions at one moment. */
+        Registration: {
+            /** @description Expression per division, 0-127. */
+            expression?: {
+                [key: string]: number;
+            };
+            /** Format: int32 */
+            master_volume?: number | null;
+            stops?: components["schemas"]["StopRef"][];
+        };
+        Seek: {
+            /**
+             * Format: int32
+             * @description Track position in ms.
+             */
+            ms: number;
         };
         SimSnapshot: {
             /** @description Name of the audio device, if sound is available. */
@@ -539,6 +951,18 @@ export interface components {
             /** @enum {string} */
             type: "switch";
         };
+        /** @description One line of "how will this track sound here". */
+        StopMapping: {
+            exact: boolean;
+            recorded: components["schemas"]["StopRef"];
+            /** @description Stop id on this organ, or None if it is left out. */
+            stop?: string | null;
+        };
+        /** @description A stop as a track sees it: which keyboard, and what it *is*. */
+        StopRef: {
+            division: components["schemas"]["DivisionRole"];
+            equivalent: components["schemas"]["Equivalent"];
+        };
         /** @enum {string} */
         StopShape: "round" | "rectangle";
         StopStyle: {
@@ -548,6 +972,13 @@ export interface components {
             shape?: components["schemas"]["StopShape"];
             /** @description CSS colour of the label, e.g. "#1d4ed8". */
             text_color?: string | null;
+        };
+        Tempo: {
+            /**
+             * Format: int32
+             * @description 25-400 percent.
+             */
+            percent: number;
         };
         /** @enum {string} */
         TestState: "idle" | "recording" | "playing";
@@ -566,6 +997,121 @@ export interface components {
             position_ms: number;
             state: components["schemas"]["TestState"];
         };
+        TimedEvent: components["schemas"]["TrackEvent"] & {
+            /**
+             * Format: int32
+             * @description Milliseconds from the start of the track.
+             */
+            t: number;
+        };
+        Track: {
+            /**
+             * Format: int64
+             * @description Unix time in ms.
+             */
+            created: number;
+            /**
+             * Format: int32
+             * @description Where the track ends (the last note plus the end margin).
+             */
+            duration_ms: number;
+            /** @description Sorted by time; at equal times, stop and pedal changes come first. */
+            events: components["schemas"]["TimedEvent"][];
+            id: string;
+            info: components["schemas"]["TrackInfo"];
+            /** @description Registration and pedals when the track starts. */
+            initial: components["schemas"]["Registration"];
+            meter?: null | components["schemas"]["Meter"];
+            /** Format: int64 */
+            modified: number;
+            /** @description Organ it was recorded on (empty for samples). */
+            organ_id?: string;
+            organ_name?: string;
+            /** Format: int32 */
+            schema: number;
+            source: components["schemas"]["TrackSource"];
+            /** @description Boundaries between hymn verses, in ms. Empty = a single verse. */
+            verses?: number[];
+        };
+        /** @description Something the organist did, in organ-neutral terms. */
+        TrackEvent: {
+            division: components["schemas"]["DivisionRole"];
+            /** Format: int32 */
+            key: number;
+            /** @enum {string} */
+            type: "note";
+            /**
+             * Format: int32
+             * @description 0 = note off.
+             */
+            velocity: number;
+        } | {
+            on: boolean;
+            stop: components["schemas"]["StopRef"];
+            /** @enum {string} */
+            type: "stop";
+        } | {
+            division: components["schemas"]["DivisionRole"];
+            /** @enum {string} */
+            type: "expression";
+            /** Format: int32 */
+            value: number;
+        } | {
+            /** @enum {string} */
+            type: "master_volume";
+            /** Format: int32 */
+            value: number;
+        };
+        /** @description Descriptive fields, all editable in the library. */
+        TrackInfo: {
+            composer?: string;
+            copyright?: string;
+            /** @description Hymn tune name, e.g. "OLD 100TH". */
+            melody?: string;
+            performer?: string;
+            publication?: string;
+            title: string;
+            /**
+             * Format: int32
+             * @description Playback volume 1-100, applied through the master volume.
+             */
+            volume?: number;
+        };
+        /** @description Fields to change; anything left out stays as it is. */
+        TrackPatch: {
+            composer?: string | null;
+            copyright?: string | null;
+            melody?: string | null;
+            performer?: string | null;
+            publication?: string | null;
+            title?: string | null;
+            /** @description Verse boundaries in ms. */
+            verses?: number[] | null;
+            /**
+             * Format: int32
+             * @description 1-100.
+             */
+            volume?: number | null;
+        };
+        /** @enum {string} */
+        TrackSource: "recorded" | "sample" | "imported";
+        /** @description A library listing row. */
+        TrackSummary: {
+            /** Format: int64 */
+            created: number;
+            /** @description Divisions with notes in them. */
+            divisions: components["schemas"]["DivisionRole"][];
+            /** Format: int32 */
+            duration_ms: number;
+            id: string;
+            info: components["schemas"]["TrackInfo"];
+            /** Format: int64 */
+            modified: number;
+            notes: number;
+            organ_name: string;
+            source: components["schemas"]["TrackSource"];
+            verses: number;
+        };
         /** @description A value-carrying control such as an expression pedal or master volume. */
         ValueBinding: {
             /** Format: int32 */
@@ -575,6 +1121,14 @@ export interface components {
             /** @description Must contain a `vv` slot. */
             pattern: components["schemas"]["Pattern"];
         };
+        VerseControl: {
+            /** @description When this verse ends, go straight to the last one. */
+            skip_to_last?: boolean | null;
+            /** @description Stop when the verse being played ends. */
+            stop_after_verse?: boolean | null;
+        };
+        /** @description Which verses to play. */
+        VersePlan: number | number[];
     };
     responses: never;
     parameters: never;
@@ -649,6 +1203,219 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Health"];
+                };
+            };
+        };
+    };
+    list_tracks: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackSummary"][];
+                };
+            };
+        };
+    };
+    get_track: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Track id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Track"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    put_track: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Track id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Track"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackSummary"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    delete_track: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Track id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    patch_track: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Track id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TrackPatch"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackSummary"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    duplicate_track: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Track id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackSummary"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    track_mapping: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Track id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StopMapping"][];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
                 };
             };
         };
@@ -884,6 +1651,278 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    player_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlayerStatus"];
+                };
+            };
+        };
+    };
+    player_fade: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FadeRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlayerStatus"];
+                };
+            };
+        };
+    };
+    player_load: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoadTrack"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlayerStatus"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    player_pause: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlayerStatus"];
+                };
+            };
+        };
+    };
+    player_play: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlayerStatus"];
+                };
+            };
+        };
+    };
+    player_seek: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Seek"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlayerStatus"];
+                };
+            };
+        };
+    };
+    player_stop: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlayerStatus"];
+                };
+            };
+        };
+    };
+    player_tempo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Tempo"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlayerStatus"];
+                };
+            };
+        };
+    };
+    player_verses: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerseControl"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlayerStatus"];
+                };
+            };
+        };
+    };
+    recorder_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecorderStatus"];
+                };
+            };
+        };
+    };
+    recorder_start: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecorderStatus"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorBody"];
+                };
+            };
+        };
+    };
+    recorder_stop: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecorderStatus"];
                 };
             };
         };

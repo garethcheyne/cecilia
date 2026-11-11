@@ -2,7 +2,7 @@
 
 import { ActivityIcon, EraserIcon, PauseIcon, PlayIcon } from "lucide-react"
 
-import { useEngine } from "@/components/engine-provider"
+import { useMonitor } from "@/components/engine-provider"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -32,7 +32,7 @@ import {
 import { describeMidi, toHex } from "@/lib/midi"
 
 export function MonitorCard() {
-  const { events, skipped, paused, setPaused, clearEvents } = useEngine()
+  const { events, skipped, paused, setPaused, clearEvents } = useMonitor()
 
   return (
     <Card className="flex min-h-0 flex-col">
