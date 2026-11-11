@@ -22,8 +22,11 @@ use serde::{Deserialize, Serialize};
 use tokio::sync::broadcast::error::RecvError;
 use utoipa::{OpenApi, ToSchema};
 
+use crate::library::LibraryStore;
 use crate::organs::OrganStore;
+use crate::services::{AppEvent, Recorder};
 use crate::settings::SettingsStore;
+use organ_core::player::{Player, PlayerEvent};
 
 #[derive(Clone)]
 pub struct AppState {
@@ -37,6 +40,23 @@ pub struct AppState {
     pub allowed_origins: Arc<Vec<HeaderValue>>,
     /// Bearer token required by `/mcp`, if set.
     pub mcp_token: Option<Arc<str>>,
+    pub library: Arc<LibraryStore>,
+    pub recorder: Recorder,
+    pub player: Player,
+    pub app_events: tokio::sync::broadcast::Sender<AppEvent>,
+}
+
+impl AppState {
+    /// Make `organ` the current organ: the simulator plays it, and the live
+    /// tracker, recorder and player all speak its MIDI. Saved.
+    pub fn set_organ(&self, organ: OrganDefinition) -> anyhow::Result<()> {
+        self.settings.update(|st| st.simulator_organ = Some(organ.id.clone()))?;
+        self.simulator.load_organ(organ.clone());
+        self.live.load_organ(organ.clone());
+        self.recorder.load_organ(organ.clone());
+        self.player.set_organ(organ);
+        Ok(())
+    }
 }
 
 pub fn router() -> Router<AppState> {
@@ -70,12 +90,29 @@ pub fn router() -> Router<AppState> {
     paths(
         health, ports, get_config, put_config, status, panic, test_record, test_stop, test_play,
         list_organs, get_organ, sim_state, sim_load_organ, sim_act, sim_reset, get_assistant,
-        put_assistant
+        put_assistant,
+        crate::music::list_tracks, crate::music::get_track, crate::music::put_track,
+        crate::music::patch_track, crate::music::delete_track, crate::music::duplicate_track,
+        crate::music::track_mapping, crate::music::recorder_status, crate::music::recorder_start,
+        crate::music::recorder_stop, crate::music::player_status, crate::music::player_load,
+        crate::music::player_play, crate::music::player_pause, crate::music::player_stop,
+        crate::music::player_seek, crate::music::player_tempo, crate::music::player_verses,
+        crate::music::player_fade
     ),
     components(schemas(
         Health, ApiErrorBody, PortList, MidiConfig, MidiStatus, TestStatus, TestState,
         EngineEvent, Direction, OrganSummary, OrganDefinition, OrganEvent, SimSnapshot,
-        ConsoleState, LoadOrgan, Assistant
+        ConsoleState, LoadOrgan, Assistant,
+        organ_core::track::Track, organ_core::track::TrackSummary, organ_core::track::TrackInfo,
+        organ_core::track::TrackEvent, organ_core::track::TimedEvent, organ_core::track::StopRef,
+        organ_core::track::Registration, organ_core::track::Meter, organ_core::track::Mode,
+        organ_core::track::TrackSource, organ_core::organist::StopMapping,
+        organ_core::recorder::RecorderStatus, organ_core::recorder::RecorderState,
+        organ_core::player::PlayerStatus, organ_core::player::PlayerState,
+        organ_core::player::PlayOptions, organ_core::player::VersePlan,
+        organ_core::player::PlayerEvent, crate::services::AppEvent,
+        crate::music::LoadTrack, crate::music::TrackPatch, crate::music::Seek, crate::music::Tempo,
+        crate::music::VerseControl, crate::music::FadeRequest
     ))
 )]
 pub struct ApiDoc;
@@ -241,11 +278,7 @@ pub struct LoadOrgan {
     responses((status = 200, body = SimSnapshot), (status = 404, body = ApiErrorBody)))]
 async fn sim_load_organ(State(s): State<AppState>, Json(req): Json<LoadOrgan>) -> Result<Json<SimSnapshot>, Response> {
     let organ = s.organs.get(&req.organ_id).ok_or_else(|| not_found(&req.organ_id))?;
-    s.settings
-        .update(|st| st.simulator_organ = Some(req.organ_id.clone()))
-        .map_err(|e| ApiError::Internal(e).into_response())?;
-    s.simulator.load_organ(organ.clone());
-    s.live.load_organ(organ);
+    s.set_organ(organ).map_err(|e| ApiError::Internal(e).into_response())?;
     Ok(Json(s.simulator.snapshot()))
 }
 
@@ -315,7 +348,7 @@ async fn events(ws: WebSocketUpgrade, headers: HeaderMap, State(s): State<AppSta
     if !origin_allowed(&headers, &s.allowed_origins) {
         return StatusCode::FORBIDDEN.into_response();
     }
-    ws.on_upgrade(move |socket| stream_events(socket, s.hub, s.simulator))
+    ws.on_upgrade(move |socket| stream_events(socket, s))
 }
 
 /// True for requests from non-browser clients (no `Origin`), from the page
@@ -335,9 +368,13 @@ pub fn origin_allowed(headers: &HeaderMap, allowed: &[HeaderValue]) -> bool {
     same_origin || allowed.contains(origin)
 }
 
-async fn stream_events(mut socket: WebSocket, hub: MidiHub, simulator: Simulator) {
+async fn stream_events(mut socket: WebSocket, state: AppState) {
+    let hub = state.hub.clone();
+    let simulator = state.simulator.clone();
     let mut rx = hub.subscribe();
     let mut sim_rx = simulator.subscribe();
+    let mut player_rx = state.player.subscribe();
+    let mut app_rx = state.app_events.subscribe();
 
     // Start every client with full snapshots.
     if let Ok(status) = hub.status().await {
@@ -347,6 +384,14 @@ async fn stream_events(mut socket: WebSocket, hub: MidiHub, simulator: Simulator
     }
     let snapshot = simulator.snapshot();
     if send_json(&mut socket, &Tagged { kind: "simulator", data: &snapshot }).await.is_err() {
+        return;
+    }
+    let player = state.player.status();
+    if send_json(&mut socket, &Tagged { kind: "player", data: &player }).await.is_err() {
+        return;
+    }
+    let recorder = AppEvent::Recorder(state.recorder.status());
+    if send_json(&mut socket, &recorder).await.is_err() {
         return;
     }
 
@@ -374,6 +419,30 @@ async fn stream_events(mut socket: WebSocket, hub: MidiHub, simulator: Simulator
                         break;
                     }
                 }
+                Err(RecvError::Closed) => break,
+            },
+            ev = player_rx.recv() => match ev {
+                Ok(PlayerEvent::Status(st)) => {
+                    if send_json(&mut socket, &Tagged { kind: "player", data: &st }).await.is_err() {
+                        break;
+                    }
+                }
+                Ok(PlayerEvent::Finished { track_id }) => {
+                    let msg = serde_json::json!({ "type": "player_finished", "track_id": track_id });
+                    if send_json(&mut socket, &msg).await.is_err() {
+                        break;
+                    }
+                }
+                Err(RecvError::Lagged(_)) => {}
+                Err(RecvError::Closed) => break,
+            },
+            ev = app_rx.recv() => match ev {
+                Ok(ev) => {
+                    if send_json(&mut socket, &ev).await.is_err() {
+                        break;
+                    }
+                }
+                Err(RecvError::Lagged(_)) => {}
                 Err(RecvError::Closed) => break,
             },
             incoming = socket.recv() => match incoming {

@@ -468,11 +468,7 @@ fn select_organ(s: &AppState, query: &str) -> ToolResult {
             return Err(format!("\"{query}\" could be {}.", or_list(&names)));
         }
     };
-    s.settings
-        .update(|st| st.simulator_organ = Some(organ.id.clone()))
-        .map_err(|e| e.to_string())?;
-    s.simulator.load_organ(organ.clone());
-    s.live.load_organ(organ.clone());
+    s.set_organ(organ.clone()).map_err(|e| e.to_string())?;
     Ok(format!("Now using {}.", organ.name))
 }
 

@@ -12,7 +12,9 @@ use serde_json::{json, Value};
 pub struct TestServer {
     pub base: String,
     pub http: reqwest::Client,
-    pub data: tempfile::TempDir,
+    /// The data folder (removed when the server is dropped, if we own it).
+    pub dir: std::path::PathBuf,
+    _owned: Option<tempfile::TempDir>,
 }
 
 impl TestServer {
@@ -22,13 +24,18 @@ impl TestServer {
     }
 
     pub async fn start_in(data: tempfile::TempDir) -> Self {
-        let app = build(Config::for_tests(data.path().to_path_buf()))
-            .await
-            .expect("server builds");
+        let mut s = Self::start_at(data.path().to_path_buf()).await;
+        s._owned = Some(data);
+        s
+    }
+
+    /// A server on an existing data folder (not removed afterwards).
+    pub async fn start_at(dir: std::path::PathBuf) -> Self {
+        let app = build(Config::for_tests(dir.clone())).await.expect("server builds");
         let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
         let addr = listener.local_addr().unwrap();
         tokio::spawn(async move { axum::serve(listener, app.router).await.unwrap() });
-        Self { base: format!("http://{addr}"), http: reqwest::Client::new(), data }
+        Self { base: format!("http://{addr}"), http: reqwest::Client::new(), dir, _owned: None }
     }
 
     /// Start, then route the simulator as Organ in and Organ out.

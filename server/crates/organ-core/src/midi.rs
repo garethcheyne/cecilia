@@ -140,6 +140,7 @@ enum Cmd {
 pub struct MidiHub {
     tx: mpsc::Sender<Cmd>,
     events: broadcast::Sender<EngineEvent>,
+    epoch: Instant,
 }
 
 impl MidiHub {
@@ -150,11 +151,18 @@ impl MidiHub {
         let (tx, rx) = mpsc::channel();
         let (events, _) = broadcast::channel(4096);
         let engine_events = events.clone();
+        let epoch = Instant::now();
         std::thread::Builder::new()
             .name("midi-engine".into())
-            .spawn(move || Engine::new(engine_events, simulator).run(rx))
+            .spawn(move || Engine::new(engine_events, simulator, epoch).run(rx))
             .expect("failed to spawn MIDI engine thread");
-        Self { tx, events }
+        Self { tx, events, epoch }
+    }
+
+    /// Microseconds since the engine started: the clock of
+    /// [`EngineEvent::Midi::t_us`].
+    pub fn now_us(&self) -> u64 {
+        self.epoch.elapsed().as_micros() as u64
     }
 
     /// Deliver MIDI from the simulator's console as if it came from a port.
@@ -280,11 +288,11 @@ fn handle_input(
 }
 
 impl Engine {
-    fn new(events: broadcast::Sender<EngineEvent>, simulator: Option<mpsc::Sender<Vec<u8>>>) -> Self {
+    fn new(events: broadcast::Sender<EngineEvent>, simulator: Option<mpsc::Sender<Vec<u8>>>, epoch: Instant) -> Self {
         raise_timer_resolution();
         let now = Instant::now();
         Self {
-            epoch: now,
+            epoch,
             events,
             inputs: Vec::new(),
             output: None,

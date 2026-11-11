@@ -5,6 +5,39 @@ use std::sync::Mutex;
 
 use organ_core::MidiConfig;
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
+
+/// How the auto-recorder splits a service into pieces.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ToSchema)]
+#[serde(default)]
+pub struct RecordingSettings {
+    /// Silence (after the last key is released) that ends a piece. 2-60 s.
+    pub silence_ms: u32,
+    /// Silence kept before the first note and after the last. 0-15 s.
+    pub margin_start_ms: u32,
+    pub margin_end_ms: u32,
+}
+
+impl Default for RecordingSettings {
+    fn default() -> Self {
+        Self { silence_ms: 8000, margin_start_ms: 2000, margin_end_ms: 2000 }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ToSchema)]
+#[serde(default)]
+pub struct PlaybackSettings {
+    /// Length of a fade-out. 1-30 s.
+    pub fade_ms: u32,
+    /// Wait after a general cancel on organs whose stops toggle.
+    pub settle_ms: u32,
+}
+
+impl Default for PlaybackSettings {
+    fn default() -> Self {
+        Self { fade_ms: 5000, settle_ms: 400 }
+    }
+}
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Settings {
@@ -16,6 +49,13 @@ pub struct Settings {
     /// What the assistant (MCP / voice control) is called.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub assistant_name: Option<String>,
+    #[serde(default)]
+    pub recording: RecordingSettings,
+    #[serde(default)]
+    pub playback: PlaybackSettings,
+    /// Bundled samples already put in the library (deleted ones stay gone).
+    #[serde(default)]
+    pub samples_seen: Vec<String>,
 }
 
 pub struct SettingsStore {

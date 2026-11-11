@@ -2,8 +2,11 @@
 //! engine. `main.rs` runs it; integration tests start it on a spare port.
 
 pub mod api;
+pub mod library;
 pub mod mcp;
+pub mod music;
 pub mod organs;
+pub mod services;
 pub mod settings;
 
 use std::path::PathBuf;
@@ -21,7 +24,9 @@ use tower_http::services::{ServeDir, ServeFile};
 use tower_http::trace::TraceLayer;
 
 use crate::api::AppState;
+use crate::library::LibraryStore;
 use crate::organs::OrganStore;
+use crate::services::{install_samples, player_settings, recorder_config, start_player, Recorder};
 use crate::settings::SettingsStore;
 
 /// Everything the server needs to start.
@@ -94,7 +99,22 @@ pub async fn build(config: Config) -> anyhow::Result<App> {
         .or_else(|| organs.get("demo"))
         .context("no organ definition available for the simulator")?;
     let live = LiveOrgan::start(&hub, sim_organ.clone());
-    let simulator = Simulator::start(from_engine, hub.clone(), sim_organ, synth);
+    let simulator = Simulator::start(from_engine, hub.clone(), sim_organ.clone(), synth);
+
+    let library = Arc::new(LibraryStore::load(&config.data_dir)?);
+    if let Err(err) = install_samples(&library, &settings) {
+        tracing::warn!(%err, "could not add the sample music");
+    }
+    let (app_events, _) = tokio::sync::broadcast::channel(256);
+    let current = settings.get();
+    let recorder = Recorder::start(
+        hub.clone(),
+        sim_organ.clone(),
+        recorder_config(&current.recording),
+        Arc::clone(&library),
+        app_events.clone(),
+    );
+    let player = start_player(hub.clone(), live.clone(), sim_organ, player_settings(&current.playback));
 
     let status = hub.configure(settings.get().midi).await?;
     if !status.missing.is_empty() {
@@ -109,9 +129,13 @@ pub async fn build(config: Config) -> anyhow::Result<App> {
         live,
         allowed_origins: Arc::new(config.allowed_origins.clone()),
         mcp_token: config.mcp_token.map(Into::into),
+        library,
+        recorder,
+        player,
+        app_events,
     };
     let mut router = Router::new()
-        .nest("/api/v1", api::router())
+        .nest("/api/v1", api::router().merge(music::router()))
         .route("/mcp", post(mcp::post).get(mcp::get))
         .with_state(state.clone())
         .layer(cors_layer(config.allowed_origins))
