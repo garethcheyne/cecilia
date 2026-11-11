@@ -99,6 +99,8 @@ pub struct TrackPatch {
     pub melody: Option<String>,
     /// 1-100.
     pub volume: Option<u8>,
+    /// Usual playback speed, 25-400 percent.
+    pub tempo: Option<u16>,
     /// Verse boundaries in ms.
     pub verses: Option<Vec<u32>>,
 }
@@ -126,6 +128,9 @@ pub async fn patch_track(
     set(&mut t.info.melody, p.melody);
     if let Some(v) = p.volume {
         t.info.volume = v;
+    }
+    if let Some(v) = p.tempo {
+        t.info.tempo = v;
     }
     if let Some(mut v) = p.verses {
         v.sort_unstable();
@@ -264,8 +269,17 @@ pub async fn player_load(State(s): State<AppState>, Json(req): Json<LoadTrack>) 
         return Err(error(StatusCode::CONFLICT, "Choose an Organ out on MIDI Setup first."));
     }
     let id = track.id.clone();
+    let tempo = req.options.tempo.unwrap_or(track.info.tempo).clamp(25, 400);
+    // Wait for this load to take effect (the same piece may already be loaded).
+    let before = s.player.status();
     s.player.load(track, req.options, req.play);
-    Ok(Json(wait_for_player(&s, |st| st.track_id.as_deref() == Some(id.as_str())).await))
+    let status = wait_for_player(&s, |st| {
+        st.track_id.as_deref() == Some(id.as_str())
+            && st.tempo == tempo
+            && (before.track_id.as_deref() != Some(id.as_str()) || st.state != before.state || st.tempo != before.tempo || !req.play)
+    })
+    .await;
+    Ok(Json(status))
 }
 
 /// Play, or resume from pause.

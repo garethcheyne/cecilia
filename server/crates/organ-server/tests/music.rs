@@ -106,6 +106,18 @@ async fn a_hymn_plays_with_verse_control_and_tempo() {
 }
 
 #[tokio::test]
+async fn a_saved_speed_is_used_unless_another_is_asked_for() {
+    let s = TestServer::with_simulator().await;
+    s.patch("/library/sample-crimond", json!({ "tempo": 90 })).await;
+    let p = s.post("/player/load", json!({ "track_id": "sample-crimond", "play": false })).await;
+    assert_eq!(p["tempo"], 90);
+    let p = s
+        .post("/player/load", json!({ "track_id": "sample-crimond", "play": false, "options": { "tempo": 110 } }))
+        .await;
+    assert_eq!(p["tempo"], 110, "a playlist's tempo wins for that performance");
+}
+
+#[tokio::test]
 async fn transport_pause_seek_tempo_and_stop() {
     let s = TestServer::with_simulator().await;
     s.post("/player/load", json!({ "track_id": "sample-old-hundredth" })).await;
@@ -146,6 +158,8 @@ async fn library_edits() {
     assert_eq!(t["info"]["volume"], 80);
     let (code, _) = s.request(Method::PATCH, &format!("/library/{id}"), Some(json!({ "volume": 0 }))).await;
     assert_eq!(code, 400, "volume is 1-100");
+    let t = s.patch(&format!("/library/{id}"), json!({ "tempo": 90 })).await;
+    assert_eq!(t["info"]["tempo"], 90, "a saved speed");
     let (code, _) = s.request(Method::PATCH, &format!("/library/{id}"), Some(json!({ "title": " " }))).await;
     assert_eq!(code, 400, "a title is required");
 

@@ -372,6 +372,7 @@ impl Score {
                 copyright: self.copyright.clone(),
                 melody: self.melody.clone(),
                 volume: 100,
+                tempo: 100,
             },
             source: TrackSource::Sample,
             organ_id: String::new(),

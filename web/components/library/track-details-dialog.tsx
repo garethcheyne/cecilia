@@ -26,7 +26,7 @@ const FIELDS = [
   { key: "copyright", label: "Copyright", placeholder: "" },
 ] as const
 
-type Draft = Record<(typeof FIELDS)[number]["key"], string> & { volume: number }
+type Draft = Record<(typeof FIELDS)[number]["key"], string> & { volume: number; tempo: number }
 
 function draftOf(t: TrackSummary): Draft {
   const i = t.info
@@ -38,6 +38,7 @@ function draftOf(t: TrackSummary): Draft {
     publication: i.publication ?? "",
     copyright: i.copyright ?? "",
     volume: i.volume ?? 100,
+    tempo: i.tempo ?? 100,
   }
 }
 
@@ -112,6 +113,19 @@ export function TrackDetailsDialog({
                   onValueChange={(v) => setDraft({ ...draft, volume: v as number })}
                 />
                 <FieldDescription>Applied through the organ&apos;s master volume while this track plays.</FieldDescription>
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="track-tempo">Speed: {draft.tempo}%</FieldLabel>
+                <Slider
+                  id="track-tempo"
+                  min={50}
+                  max={150}
+                  value={draft.tempo}
+                  onValueChange={(v) => setDraft({ ...draft, tempo: v as number })}
+                />
+                <FieldDescription>
+                  How fast it usually plays (100% is as recorded). A playlist can still set another speed.
+                </FieldDescription>
               </Field>
             </FieldGroup>
           )}

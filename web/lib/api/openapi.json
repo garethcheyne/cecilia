@@ -4700,6 +4700,12 @@
           "publication": {
             "type": "string"
           },
+          "tempo": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Usual playback speed in percent (100 = as recorded). A playlist or\nthe tempo slider can still change it for one performance.",
+            "minimum": 0
+          },
           "title": {
             "type": "string"
           },
@@ -4744,6 +4750,15 @@
               "string",
               "null"
             ]
+          },
+          "tempo": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "description": "Usual playback speed, 25-400 percent.",
+            "minimum": 0
           },
           "title": {
             "type": [

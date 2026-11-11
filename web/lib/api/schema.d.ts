@@ -1828,6 +1828,12 @@ export interface components {
             melody?: string;
             performer?: string;
             publication?: string;
+            /**
+             * Format: int32
+             * @description Usual playback speed in percent (100 = as recorded). A playlist or
+             *     the tempo slider can still change it for one performance.
+             */
+            tempo?: number;
             title: string;
             /**
              * Format: int32
@@ -1842,6 +1848,11 @@ export interface components {
             melody?: string | null;
             performer?: string | null;
             publication?: string | null;
+            /**
+             * Format: int32
+             * @description Usual playback speed, 25-400 percent.
+             */
+            tempo?: number | null;
             title?: string | null;
             /** @description Verse boundaries in ms. */
             verses?: number[] | null;

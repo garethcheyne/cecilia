@@ -136,6 +136,7 @@ pub async fn build(config: Config) -> anyhow::Result<App> {
     if !status.missing.is_empty() {
         tracing::warn!(missing = ?status.missing, "some configured MIDI ports are unavailable");
     }
+    reconnect_when_plugged_in(hub.clone(), Arc::clone(&settings));
 
     let state = AppState {
         hub,
@@ -206,6 +207,31 @@ fn cors_layer(origins: Vec<HeaderValue>) -> CorsLayer {
         .allow_headers(AllowHeaders::mirror_request())
         // So the sign-in cookie works for the dev UI on another port.
         .allow_credentials(true)
+}
+
+/// Ports that were missing (the organ or the MIDI lead switched on or
+/// plugged in after Cecilia started) are connected as soon as they appear.
+/// Working connections are only touched once a missing port is really back.
+fn reconnect_when_plugged_in(hub: MidiHub, settings: Arc<SettingsStore>) {
+    tokio::spawn(async move {
+        let mut tick = tokio::time::interval(std::time::Duration::from_secs(3));
+        loop {
+            tick.tick().await;
+            let Ok(status) = hub.status().await else { continue };
+            if status.missing.is_empty() {
+                continue;
+            }
+            let Ok(ports) = hub.ports().await else { continue };
+            let available: Vec<&str> =
+                ports.inputs.iter().chain(&ports.outputs).map(|n| organ_core::midi::port_key(n)).collect();
+            let back = status.missing.iter().any(|m| available.contains(&organ_core::midi::port_key(m)));
+            if back {
+                if let Ok(s) = hub.configure(settings.get().midi).await {
+                    tracing::info!(inputs = ?s.inputs, output = ?s.output, still_missing = ?s.missing, "reconnected MIDI");
+                }
+            }
+        }
+    });
 }
 
 /// A setting from `CECILIA_<name>`, or the older `REGISTRA_<name>` (the

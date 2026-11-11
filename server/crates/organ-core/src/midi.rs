@@ -443,10 +443,10 @@ impl Engine {
         let mut midi_in = MidiInput::new(CLIENT_NAME).map_err(|e| e.to_string())?;
         // Clock and active-sensing would flood the monitor and the recorder.
         midi_in.ignore(Ignore::TimeAndActiveSense);
-        let port = midi_in
-            .ports()
-            .into_iter()
-            .find(|p| midi_in.port_name(p).ok().as_deref() == Some(name))
+        let ports = midi_in.ports();
+        let names: Vec<String> = ports.iter().map(|p| midi_in.port_name(p).unwrap_or_default()).collect();
+        let port = find_port(&names, name)
+            .map(|i| ports[i].clone())
             .ok_or_else(|| "port not found".to_string())?;
 
         let recorder = Arc::clone(&self.recorder);
@@ -638,25 +638,73 @@ fn list_ports() -> Result<PortList, MidiError> {
         .ports()
         .iter()
         .filter_map(|p| midi_in.port_name(p).ok())
+        .filter(|n| useful_port(n))
         .collect();
     let outputs = midi_out
         .ports()
         .iter()
         .filter_map(|p| midi_out.port_name(p).ok())
+        .filter(|n| useful_port(n))
         .collect();
     Ok(PortList { inputs, outputs })
 }
 
+/// A port name without the ALSA client:port numbers Linux appends
+/// ("UM-ONE:UM-ONE MIDI 1 20:0" becomes "UM-ONE:UM-ONE MIDI 1"). Those
+/// numbers can change after a reboot or replugging, so they're ignored when
+/// finding a saved port.
+pub fn port_key(name: &str) -> &str {
+    match name.rsplit_once(' ') {
+        Some((head, tail))
+            if tail.split_once(':').is_some_and(|(a, b)| {
+                !a.is_empty() && !b.is_empty() && a.bytes().all(|c| c.is_ascii_digit()) && b.bytes().all(|c| c.is_ascii_digit())
+            }) =>
+        {
+            head
+        }
+        _ => name,
+    }
+}
+
+/// The saved port: exactly, or else the same device with different numbers.
+fn find_port(names: &[String], wanted: &str) -> Option<usize> {
+    names
+        .iter()
+        .position(|n| n == wanted)
+        .or_else(|| names.iter().position(|n| port_key(n) == port_key(wanted)))
+}
+
+/// Hide Linux's "Midi Through" loopback, which is never what an organist wants.
+fn useful_port(name: &str) -> bool {
+    !name.starts_with("Midi Through")
+}
+
 fn open_output(name: &str) -> Result<MidiOutputConnection, String> {
     let midi_out = MidiOutput::new(CLIENT_NAME).map_err(|e| e.to_string())?;
-    let port = midi_out
-        .ports()
-        .into_iter()
-        .find(|p| midi_out.port_name(p).ok().as_deref() == Some(name))
+    let ports = midi_out.ports();
+    let names: Vec<String> = ports.iter().map(|p| midi_out.port_name(p).unwrap_or_default()).collect();
+    let port = find_port(&names, name)
+        .map(|i| ports[i].clone())
         .ok_or_else(|| "port not found".to_string())?;
     midi_out
         .connect(&port, "cecilia-out")
         .map_err(|e| e.to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn linux_port_numbers_dont_matter() {
+        assert_eq!(port_key("UM-ONE:UM-ONE MIDI 1 20:0"), "UM-ONE:UM-ONE MIDI 1");
+        assert_eq!(port_key("Microsoft GS Wavetable Synth"), "Microsoft GS Wavetable Synth");
+        assert_eq!(port_key("Port 2"), "Port 2", "only client:port pairs are stripped");
+        let names = vec!["Midi Through:Midi Through Port-0 14:0".to_string(), "UM-ONE:UM-ONE MIDI 1 24:0".to_string()];
+        assert_eq!(find_port(&names, "UM-ONE:UM-ONE MIDI 1 20:0"), Some(1), "renumbered after a reboot");
+        assert_eq!(find_port(&names, "Gone 20:0"), None);
+        assert!(!useful_port("Midi Through:Midi Through Port-0 14:0"));
+    }
 }
 
 /// Windows' default scheduler tick is ~15.6 ms, far too coarse for MIDI

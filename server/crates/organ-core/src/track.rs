@@ -129,6 +129,14 @@ pub struct TrackInfo {
     /// Playback volume 1-100, applied through the master volume.
     #[serde(default = "full_volume")]
     pub volume: u8,
+    /// Usual playback speed in percent (100 = as recorded). A playlist or
+    /// the tempo slider can still change it for one performance.
+    #[serde(default = "as_recorded")]
+    pub tempo: u16,
+}
+
+fn as_recorded() -> u16 {
+    100
 }
 
 fn full_volume() -> u8 {
@@ -145,6 +153,7 @@ impl TrackInfo {
             copyright: String::new(),
             melody: String::new(),
             volume: 100,
+            tempo: 100,
         }
     }
 }
@@ -328,6 +337,9 @@ impl Track {
         }
         if !(1..=100).contains(&self.info.volume) {
             return Err("volume must be 1-100".into());
+        }
+        if !(25..=400).contains(&self.info.tempo) {
+            return Err("speed must be 25-400%".into());
         }
         if self.events.windows(2).any(|w| w[0].t > w[1].t) {
             return Err("events are not in time order".into());

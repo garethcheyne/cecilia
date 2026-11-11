@@ -437,7 +437,8 @@ impl Engine {
         self.spans = track.verse_spans();
         let plan = options.verses.unwrap_or(VersePlan::Count(self.spans.len())).resolve(self.spans.len());
         self.plan = if plan.is_empty() { vec![0] } else { plan.into_iter().map(|v| v - 1).collect() };
-        self.rate = options.tempo.unwrap_or(100).clamp(25, 400) as f64 / 100.0;
+        // The piece's own usual speed, unless asked for another.
+        self.rate = options.tempo.unwrap_or(track.info.tempo).clamp(25, 400) as f64 / 100.0;
         self.track = Some(Arc::new(track));
         self.step = 0;
         let start = options.start_ms.unwrap_or_else(|| self.span().map_or(0, |s| s.start));

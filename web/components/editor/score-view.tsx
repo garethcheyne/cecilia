@@ -4,6 +4,7 @@ import * as React from "react"
 import { InfoIcon } from "lucide-react"
 
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -21,6 +22,9 @@ const CLEF: Record<StaffId, string> = { treble: "treble", bass: "bass", pedal: "
 const REST_KEY: Record<StaffId, string> = { treble: "b/4", bass: "d/3", pedal: "d/3" }
 
 interface Box {
+  /** Where the notes of the bar start and how wide they run. */
+  cx: number
+  cw: number
   x: number
   y: number
   w: number
@@ -108,7 +112,8 @@ function render(vf: VF, el: HTMLDivElement, measures: Measure[], staves: StaffId
       if (created.length > 1) {
         new StaveConnector(created[0], created[created.length - 1]).setType("singleRight").setContext(ctx).draw()
       }
-      boxes.push({ x, y: top - 10, w, h: staves.length * STAFF_GAP - 10, startMs: m.startMs, endMs: m.endMs })
+      const cx = x + (i === 0 ? lead : 10)
+      boxes.push({ cx, cw: x + w - 10 - cx, x, y: top - 10, w, h: staves.length * STAFF_GAP - 10, startMs: m.startMs, endMs: m.endMs })
       x += w
     })
     if (firstStaves.length > 1) {
@@ -128,7 +133,13 @@ export function ScoreView({ track, position }: { track: Track; position: number 
   const [boxes, setBoxes] = React.useState<Box[]>([])
   const [override, setOverride] = React.useState<Partial<Grid>>({})
   const verses = (track.verses ?? []).length + 1
-  const [verse, setVerse] = React.useState(1)
+  const [chosenVerse, setChosenVerse] = React.useState(1)
+  // While it plays, the score follows the verse being played, unless
+  // someone picks a verse to look at.
+  const [follow, setFollow] = React.useState(true)
+  const bounds = React.useMemo(() => [0, ...(track.verses ?? []), track.duration_ms], [track])
+  const playingVerse = position == null ? null : Math.max(1, bounds.findIndex((b) => b > position))
+  const verse = follow && playingVerse ? Math.min(playingVerse, verses) : chosenVerse
   const [dark, setDark] = React.useState(false)
 
   React.useEffect(() => {
@@ -149,10 +160,10 @@ export function ScoreView({ track, position }: { track: Track; position: number 
   }, [])
 
   const grid = React.useMemo(() => gridFor(track, override), [track, override])
-  const span = React.useMemo(() => {
-    const bounds = [0, ...(track.verses ?? []), track.duration_ms]
-    return { start: bounds[verse - 1] ?? 0, end: bounds[verse] ?? track.duration_ms }
-  }, [track, verse])
+  const span = React.useMemo(
+    () => ({ start: bounds[verse - 1] ?? 0, end: bounds[verse] ?? track.duration_ms }),
+    [bounds, verse, track.duration_ms]
+  )
   const { measures, staves } = React.useMemo(() => layout(track, grid, span), [track, grid, span])
 
   React.useEffect(() => {
@@ -167,19 +178,24 @@ export function ScoreView({ track, position }: { track: Track; position: number 
 
   const current = position == null ? -1 : boxes.findIndex((b) => position >= b.startMs && position < b.endMs)
   const box = current >= 0 ? boxes[current] : null
+  // Keep the bar being played in view (in the page or in a drawer).
+  const highlight = React.useRef<HTMLDivElement>(null)
   React.useEffect(() => {
-    if (!box || !host.current) return
-    const top = host.current.getBoundingClientRect().top + window.scrollY + box.y
-    if (Math.abs(window.scrollY + window.innerHeight / 3 - top) > window.innerHeight / 3) {
-      window.scrollTo({ top: top - window.innerHeight / 3, behavior: "smooth" })
-    }
-  }, [box])
+    if (current >= 0) highlight.current?.scrollIntoView({ block: "center", behavior: "smooth" })
+  }, [current])
+  const progress = box && position != null ? Math.min(1, Math.max(0, (position - box.startMs) / (box.endMs - box.startMs))) : 0
 
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-end gap-3">
         {verses > 1 && (
-          <Tabs value={String(verse)} onValueChange={(v) => setVerse(Number(v))}>
+          <Tabs
+            value={String(verse)}
+            onValueChange={(v) => {
+              setChosenVerse(Number(v))
+              setFollow(false)
+            }}
+          >
             <TabsList>
               {Array.from({ length: verses }, (_, i) => (
                 <TabsTrigger key={i} value={String(i + 1)}>
@@ -188,6 +204,11 @@ export function ScoreView({ track, position }: { track: Track; position: number 
               ))}
             </TabsList>
           </Tabs>
+        )}
+        {position != null && !follow && (
+          <Button variant="outline" size="sm" onClick={() => setFollow(true)}>
+            Follow the music
+          </Button>
         )}
         {grid.approximate && (
           <>
@@ -240,11 +261,20 @@ export function ScoreView({ track, position }: { track: Track; position: number 
       )}
       <div ref={host} className="relative w-full overflow-x-auto rounded-xl border bg-card">
         {box && (
-          <div
-            className="pointer-events-none absolute rounded-md bg-primary/10 ring-1 ring-primary/40 transition-all duration-150"
-            style={{ left: box.x, top: box.y, width: box.w, height: box.h }}
-            aria-hidden
-          />
+          <>
+            <div
+              ref={highlight}
+              className="pointer-events-none absolute rounded-md bg-primary/10 ring-1 ring-primary/40 transition-all duration-150"
+              style={{ left: box.x, top: box.y, width: box.w, height: box.h }}
+              aria-hidden
+            />
+            {/* Where the music is now, moving through the bar. */}
+            <div
+              className="pointer-events-none absolute z-10 w-0.5 rounded-full bg-primary"
+              style={{ left: box.cx + progress * box.cw, top: box.y, height: box.h }}
+              aria-hidden
+            />
+          </>
         )}
         <div ref={scoreEl} className="relative" />
         {!vf && (

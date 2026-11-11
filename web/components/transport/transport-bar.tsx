@@ -25,7 +25,10 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Slider } from "@/components/ui/slider"
 import { Toggle } from "@/components/ui/toggle"
+import { NowPlayingScore } from "@/components/transport/now-playing-score"
 import { useTransport } from "@/hooks/use-transport"
+import { api, call } from "@/lib/api/client"
+import { toast } from "sonner"
 import { formatClock } from "@/lib/time"
 import { cn } from "@/lib/utils"
 
@@ -114,6 +117,16 @@ function TempoControl({ t }: { t: Transport }) {
 function TempoSlider({ t }: { t: Transport }) {
   const tempo = t.player?.tempo ?? 100
   const [draft, setDraft] = React.useState<number | null>(null)
+  const id = t.player?.track_id
+  async function keep() {
+    if (!id) return
+    try {
+      await call(api.PATCH("/api/v1/library/{id}", { params: { path: { id } }, body: { tempo } }))
+      toast.success(tempo === 100 ? "Back to the recorded speed" : `This piece will play at ${tempo}% from now on`)
+    } catch (e) {
+      toast.error((e as Error).message)
+    }
+  }
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between text-sm">
@@ -138,6 +151,9 @@ function TempoSlider({ t }: { t: Transport }) {
           Reset to 100%
         </Button>
       </div>
+      <Button variant="secondary" size="sm" onClick={keep} disabled={!id} title="Save this speed with the piece">
+        Keep {tempo}% for this piece
+      </Button>
     </div>
   )
 }
@@ -298,6 +314,7 @@ export function TransportBar() {
                   <VerseControls t={t} />
                   <FadeButton t={t} />
                 </div>
+                {p?.track_id && <NowPlayingScore label />}
                 {!p?.track_id && (
                   <Button variant="outline" render={<Link href="/library" />} nativeButton={false}>
                     <LibraryIcon data-icon="inline-start" />
@@ -331,6 +348,7 @@ export function TransportBar() {
         </div>
         <SeekBar t={t} className="min-w-40 flex-1" />
         <div className="flex items-center gap-1">
+          <NowPlayingScore />
           <VerseControls t={t} />
           <FadeButton t={t} />
           <TempoControl t={t} />
