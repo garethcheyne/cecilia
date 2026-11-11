@@ -66,9 +66,10 @@ Its feature set is modelled on the *publicly documented behaviour* of OrganAssis
 | [cecilia-community](https://github.com/garethcheyne/cecilia-community) | The community service: accounts, review queue, catalogue (Cloudflare Workers; runs locally for now) |
 | [cecilia-site](https://github.com/garethcheyne/cecilia-site) | Website and user guide, published at [garethcheyne.github.io/cecilia-site](https://garethcheyne.github.io/cecilia-site/) |
 | [cecilia-pi](https://github.com/garethcheyne/cecilia-pi) | The Raspberry Pi SD card image, branded, for Raspberry Pi Imager |
+| [cecilia-hardware](https://github.com/garethcheyne/cecilia-hardware) | The all-in-one Cecilia unit: Compute Module 5 carrier board, build list and case |
 
 Clone them side by side and open `cecilia.code-workspace` in VS Code to work
-on all five together.
+on all six together.
 
 Cecilia is inspired by **OrganAssist** by David Glover
 (https://www.organassist.com). It is an independent, clean-room project: it
