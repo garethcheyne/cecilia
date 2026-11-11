@@ -13,6 +13,7 @@ pub mod console;
 pub mod driver;
 pub mod live;
 pub mod midi;
+pub mod musicxml;
 pub mod organ;
 pub mod organist;
 pub mod player;
@@ -20,6 +21,7 @@ pub mod playlist;
 pub mod recorder;
 pub mod sample;
 pub mod simulator;
+pub mod smf;
 pub mod synth;
 pub mod track;
 

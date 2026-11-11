@@ -2,6 +2,7 @@
 //! engine. `main.rs` runs it; integration tests start it on a spare port.
 
 pub mod api;
+pub mod files_api;
 pub mod library;
 pub mod mcp;
 pub mod music;
@@ -147,7 +148,8 @@ pub async fn build(config: Config) -> anyhow::Result<App> {
         service,
     };
     let mut router = Router::new()
-        .nest("/api/v1", api::router().merge(music::router()).merge(playlist_api::router()))
+        .nest("/api/v1", api::router().merge(music::router()).merge(playlist_api::router())
+                .merge(files_api::router().layer(axum::extract::DefaultBodyLimit::max(files_api::MAX_IMPORT_BYTES))))
         .route("/mcp", post(mcp::post).get(mcp::get))
         .with_state(state.clone())
         .layer(cors_layer(config.allowed_origins))

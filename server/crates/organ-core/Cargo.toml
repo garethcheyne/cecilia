@@ -12,6 +12,9 @@ audio = ["dep:cpal"]
 
 [dependencies]
 cpal = { workspace = true, optional = true }
+midly = { version = "0.5", default-features = false, features = ["alloc", "std"] }
+roxmltree = "0.20"
+zip = { version = "2", default-features = false, features = ["deflate"] }
 midir.workspace = true
 serde.workspace = true
 serde_json.workspace = true

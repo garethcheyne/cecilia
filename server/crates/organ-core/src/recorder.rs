@@ -148,7 +148,8 @@ impl AutoRecorder {
         }
     }
 
-    fn on_event(&mut self, t_us: u64, e: &OrganEvent) {
+    /// Feed an already-decoded console event (used by imports).
+    pub fn on_event(&mut self, t_us: u64, e: &OrganEvent) {
         let starts_piece = self.armed
             && self.take.is_none()
             && matches!(e, OrganEvent::Note { velocity, .. } if *velocity > 0);
