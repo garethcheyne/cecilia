@@ -44,6 +44,13 @@ Its feature set is modelled on the *publicly documented behaviour* of OrganAssis
 - A built-in **simulator** with sound, so all of this works without an
   organ.
 
+## Shared library
+
+Music and organ setups to share between churches live in
+[cecilia-library](https://github.com/garethcheyne/cecilia-library). Open
+`cecilia.code-workspace` in VS Code to work on both repos together (clone them
+side by side).
+
 ## Running (development)
 
 ```sh

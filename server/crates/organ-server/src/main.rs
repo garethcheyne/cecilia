@@ -13,6 +13,8 @@
 //! Older `REGISTRA_*` names still work.
 //!
 //! `cecilia openapi` prints the OpenAPI document and exits.
+//! `cecilia library check <dir>` checks a copy of the shared library;
+//! `cecilia library index <dir>` also prints its catalogue (index.json).
 
 use std::net::SocketAddr;
 
@@ -23,9 +25,30 @@ use utoipa::OpenApi;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    if std::env::args().nth(1).as_deref() == Some("openapi") {
-        println!("{}", ApiDoc::openapi().to_pretty_json()?);
-        return Ok(());
+    let args: Vec<String> = std::env::args().skip(1).collect();
+    match args.iter().map(String::as_str).collect::<Vec<_>>().as_slice() {
+        ["openapi"] => {
+            println!("{}", ApiDoc::openapi().to_pretty_json()?);
+            return Ok(());
+        }
+        // For the shared library repository's checks.
+        ["library", "check", dir] | ["library", "index", dir] => {
+            let (catalogue, problems) = organ_core::community::build_catalogue(std::path::Path::new(dir));
+            for p in &problems {
+                eprintln!("problem: {p}");
+            }
+            eprintln!(
+                "{} pieces and {} organs are fine; {} problem(s)",
+                catalogue.music.len(),
+                catalogue.organs.len(),
+                problems.len()
+            );
+            if args[1] == "index" {
+                println!("{}", serde_json::to_string_pretty(&catalogue)?);
+            }
+            std::process::exit(if problems.is_empty() { 0 } else { 1 });
+        }
+        _ => {}
     }
 
     tracing_subscriber::fmt()

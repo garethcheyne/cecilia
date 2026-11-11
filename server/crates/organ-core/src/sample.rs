@@ -57,6 +57,16 @@ pub struct Score {
     pub copyright: String,
     #[serde(default)]
     pub publication: String,
+    /// Licence of this file, e.g. "CC0-1.0" or "public-domain" (required in
+    /// the shared library).
+    #[serde(default)]
+    pub licence: String,
+    /// Where the music came from (hymnal, edition, URL).
+    #[serde(default)]
+    pub source: String,
+    /// For browsing, e.g. ["hymn", "evening", "funeral"].
+    #[serde(default)]
+    pub tags: Vec<String>,
     /// Crotchets per minute.
     pub bpm: f64,
     #[serde(default = "four_four")]

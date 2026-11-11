@@ -1,0 +1,76 @@
+{
+  // Cecilia and its shared library, side by side. Clone both into the same
+  // parent folder:
+  //   git clone https://github.com/garethcheyne/cecilia
+  //   git clone https://github.com/garethcheyne/cecilia-library
+  "folders": [
+    { "name": "cecilia", "path": "." },
+    { "name": "cecilia-library", "path": "../cecilia-library" }
+  ],
+  "settings": {
+    "files.eol": "\n",
+    "editor.formatOnSave": true,
+    "rust-analyzer.linkedProjects": ["server/Cargo.toml"],
+    "[rust]": { "editor.defaultFormatter": "rust-lang.rust-analyzer" },
+    "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+    "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+    "eslint.workingDirectories": ["web"],
+    "typescript.tsdk": "web/node_modules/typescript/lib",
+    "json.schemas": [
+      { "fileMatch": ["*.track.json"], "url": "./web/lib/api/openapi.json#/components/schemas/Track" }
+    ],
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/target": true,
+      "web/out": true,
+      "web/.next": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "rust-lang.rust-analyzer",
+      "tamasfe.even-better-toml",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "bradlc.vscode-tailwindcss",
+      "ms-playwright.playwright",
+      "vitest.explorer"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Cecilia: run server",
+        "type": "shell",
+        "command": "cargo run",
+        "options": { "cwd": "${workspaceFolder:cecilia}/server" },
+        "isBackground": true,
+        "problemMatcher": []
+      },
+      {
+        "label": "Cecilia: web UI (dev)",
+        "type": "shell",
+        "command": "npm run dev",
+        "options": { "cwd": "${workspaceFolder:cecilia}/web" },
+        "isBackground": true,
+        "problemMatcher": []
+      },
+      {
+        "label": "Cecilia: all tests",
+        "type": "shell",
+        "command": "node scripts/test-all.mjs",
+        "options": { "cwd": "${workspaceFolder:cecilia}" },
+        "group": "test",
+        "problemMatcher": []
+      },
+      {
+        "label": "Library: check",
+        "type": "shell",
+        "command": "cargo run -q --manifest-path ${workspaceFolder:cecilia}/server/Cargo.toml -p organ-server -- library check ${workspaceFolder:cecilia-library}",
+        "group": "test",
+        "problemMatcher": []
+      }
+    ]
+  }
+}

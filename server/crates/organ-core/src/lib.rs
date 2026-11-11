@@ -9,6 +9,7 @@
 //! * [`simulator`] + [`synth`]: the built-in virtual organ and its sound.
 //! * [`track`]: organ-neutral recordings; [`recorder`]: the auto-recorder.
 
+pub mod community;
 pub mod console;
 pub mod driver;
 pub mod live;
