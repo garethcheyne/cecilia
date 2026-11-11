@@ -56,6 +56,9 @@ pub struct Settings {
     /// Bundled samples already put in the library (deleted ones stay gone).
     #[serde(default)]
     pub samples_seen: Vec<String>,
+    /// "salt$sha256" of the password, if one is set.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub password: Option<String>,
 }
 
 pub struct SettingsStore {

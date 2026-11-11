@@ -46,6 +46,9 @@ pub struct AppState {
     pub app_events: tokio::sync::broadcast::Sender<AppEvent>,
     pub playlists: Arc<crate::playlists::PlaylistStore>,
     pub service: crate::playlists::Service,
+    pub data_dir: std::path::PathBuf,
+    pub sessions: crate::system_api::Sessions,
+    pub omr_command: Option<String>,
 }
 
 impl AppState {
@@ -111,7 +114,10 @@ pub fn router() -> Router<AppState> {
         crate::playlist_api::service_end,
         crate::files_api::analyse, crate::files_api::import, crate::files_api::export_midi,
         crate::files_api::export_csv, crate::files_api::export_zip,
-        crate::organ_api::copy_organ, crate::organ_api::save_organ, crate::organ_api::delete_organ
+        crate::organ_api::copy_organ, crate::organ_api::save_organ, crate::organ_api::delete_organ,
+        crate::system_api::get_settings, crate::system_api::put_settings, crate::system_api::backup,
+        crate::system_api::restore, crate::system_api::auth_status, crate::system_api::login,
+        crate::system_api::logout, crate::system_api::set_password, crate::system_api::omr
     ),
     components(schemas(
         Health, ApiErrorBody, PortList, MidiConfig, MidiStatus, TestStatus, TestState,
@@ -135,7 +141,10 @@ pub fn router() -> Router<AppState> {
         crate::files_api::FileKind, crate::files_api::ImportAnalysis,
         organ_core::smf::MidiAnalysis, organ_core::smf::ChannelInfo, organ_core::smf::ImportOptions,
         organ_core::smf::ExportFormat, organ_core::musicxml::XmlAnalysis, organ_core::musicxml::Stream,
-        organ_core::musicxml::XmlImportOptions, crate::organ_api::CopyOrgan
+        organ_core::musicxml::XmlImportOptions, crate::organ_api::CopyOrgan,
+        crate::system_api::SettingsBody, crate::system_api::RestoreResult, crate::system_api::AuthStatus,
+        crate::system_api::Login, crate::system_api::NewPassword,
+        crate::settings::RecordingSettings, crate::settings::PlaybackSettings
     ))
 )]
 pub struct ApiDoc;

@@ -31,11 +31,17 @@ impl TestServer {
 
     /// A server on an existing data folder (not removed afterwards).
     pub async fn start_at(dir: std::path::PathBuf) -> Self {
-        let app = build(Config::for_tests(dir.clone())).await.expect("server builds");
+        Self::start_with(Config::for_tests(dir)).await
+    }
+
+    pub async fn start_with(config: Config) -> Self {
+        let dir = config.data_dir.clone();
+        let app = build(config).await.expect("server builds");
         let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
         let addr = listener.local_addr().unwrap();
         tokio::spawn(async move { axum::serve(listener, app.router).await.unwrap() });
-        Self { base: format!("http://{addr}"), http: reqwest::Client::new(), dir, _owned: None }
+        let http = reqwest::Client::builder().cookie_store(true).build().unwrap();
+        Self { base: format!("http://{addr}"), http, dir, _owned: None }
     }
 
     /// Start, then route the simulator as Organ in and Organ out.

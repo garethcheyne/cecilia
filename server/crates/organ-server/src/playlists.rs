@@ -30,8 +30,16 @@ impl PlaylistStore {
     pub fn load(data_dir: &Path) -> anyhow::Result<Self> {
         let dir = data_dir.join("playlists");
         std::fs::create_dir_all(&dir)?;
+        let store = Self { dir, all: RwLock::new(BTreeMap::new()) };
+        store.reload();
+        Ok(store)
+    }
+
+    /// Re-scan the playlists folder.
+    pub fn reload(&self) {
         let mut all = BTreeMap::new();
-        for path in std::fs::read_dir(&dir)?.flatten().map(|e| e.path()) {
+        let Ok(entries) = std::fs::read_dir(&self.dir) else { return };
+        for path in entries.flatten().map(|e| e.path()) {
             if !path.to_string_lossy().ends_with(".playlist.json") {
                 continue;
             }
@@ -46,7 +54,7 @@ impl PlaylistStore {
                 Err(err) => tracing::warn!(path = %path.display(), %err, "skipping playlist file"),
             }
         }
-        Ok(Self { dir, all: RwLock::new(all) })
+        *self.all.write().unwrap() = all;
     }
 
     pub fn list(&self) -> Vec<PlaylistSummary> {

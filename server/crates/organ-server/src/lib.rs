@@ -12,6 +12,7 @@ pub mod playlist_api;
 pub mod playlists;
 pub mod services;
 pub mod settings;
+pub mod system_api;
 
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -46,6 +47,8 @@ pub struct Config {
     pub audio: bool,
     /// Bearer token required by `/mcp`.
     pub mcp_token: Option<String>,
+    /// OMR command template with `{input}` and `{output}` placeholders.
+    pub omr_command: Option<String>,
 }
 
 impl Config {
@@ -64,6 +67,7 @@ impl Config {
             ),
             audio: std::env::var("REGISTRA_AUDIO").as_deref() != Ok("0"),
             mcp_token: std::env::var("REGISTRA_MCP_TOKEN").ok().filter(|t| !t.is_empty()),
+            omr_command: std::env::var("REGISTRA_OMR").ok().filter(|c| !c.trim().is_empty()).or_else(find_audiveris),
         })
     }
 
@@ -75,6 +79,7 @@ impl Config {
             allowed_origins: Vec::new(),
             audio: false,
             mcp_token: None,
+            omr_command: None,
         }
     }
 }
@@ -147,13 +152,18 @@ pub async fn build(config: Config) -> anyhow::Result<App> {
         app_events,
         playlists,
         service,
+        data_dir: config.data_dir.clone(),
+        sessions: Default::default(),
+        omr_command: config.omr_command.clone(),
     };
     let mut router = Router::new()
         .nest("/api/v1", api::router().merge(music::router()).merge(playlist_api::router())
                 .merge(organ_api::router())
+                .merge(system_api::router().layer(axum::extract::DefaultBodyLimit::max(200 * 1024 * 1024)))
                 .merge(files_api::router().layer(axum::extract::DefaultBodyLimit::max(files_api::MAX_IMPORT_BYTES))))
         .route("/mcp", post(mcp::post).get(mcp::get))
         .with_state(state.clone())
+        .layer(axum::middleware::from_fn_with_state(state.clone(), system_api::require_session))
         .layer(cors_layer(config.allowed_origins))
         .layer(TraceLayer::new_for_http());
 
@@ -195,6 +205,16 @@ fn cors_layer(origins: Vec<HeaderValue>) -> CorsLayer {
         .allow_origin(origins)
         .allow_methods([Method::GET, Method::POST, Method::PUT, Method::PATCH, Method::DELETE])
         .allow_headers(AllowHeaders::mirror_request())
+}
+
+/// Audiveris on the PATH, if installed.
+fn find_audiveris() -> Option<String> {
+    let path = std::env::var_os("PATH")?;
+    let names = if cfg!(windows) { ["Audiveris.exe", "audiveris.bat"] } else { ["audiveris", "Audiveris"] };
+    std::env::split_paths(&path)
+        .flat_map(|d| names.map(|n| d.join(n)))
+        .find(|p| p.is_file())
+        .map(|p| format!("{} -batch -export -output {{output}} {{input}}", p.display()))
 }
 
 fn web_dir() -> Option<PathBuf> {
