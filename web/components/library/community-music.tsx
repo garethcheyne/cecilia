@@ -145,7 +145,7 @@ export function CommunityMusic() {
                 {m.other_titles && m.other_titles.length > 0 && (
                   <span className="truncate text-xs text-muted-foreground">Also sung as {m.other_titles.join("; ")}</span>
                 )}
-                {m.source && (
+                {m.source && m.source_url && (
                   <span className="truncate text-xs text-muted-foreground">
                     From the{" "}
                     {m.source_url ? (
